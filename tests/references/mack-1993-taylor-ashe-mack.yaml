@@ -1,0 +1,74 @@
+id: mack-1993-taylor-ashe-mack
+methode: mack
+source:
+  reference: Mack, T. (1993). Distribution-free calculation of the standard error of chain ladder reserve
+    estimates. ASTIN Bulletin 23(2), 213-225.
+  url: https://www.casact.org/library/astin/vol23no2/213.pdf
+  emplacement: 'Section 4 : sigma²_k/1000 (p. 221) et tableau 3, colonne ''Chain ladder'' (p. 222)'
+donnees: donnees/taylor_ashe_cumule.csv
+options:
+  type: cumule
+statut: en_attente
+saisie_par: Claude, extraction du texte du PDF fourni par Yassine
+valide_par: null
+date_validation: null
+note: 'Erreurs publiées en % de la provision, arrondies au point de pourcentage ; sigma² publiés en milliers
+  à 3 chiffres significatifs. Le sigma²_9 publié (0,477 × 1000) n''est pas testé : la formule d''extrapolation
+  de Mack donne min(s⁴_8/s²_7, s²_7, s²_8) = s²_7 = 0,447 × 1000, et seule cette valeur reproduit l''erreur
+  de 80 % de l''année 2 du tableau 3 (0,477 donnerait 82 %). Probable coquille d''impression (0,447 /
+  0,477), à confirmer.'
+valeurs:
+- chemin: resultats.par_origine.2.erreur_prediction_pct
+  attendu: 0.8
+  tolerance_absolue: 0.005
+- chemin: resultats.par_origine.3.erreur_prediction_pct
+  attendu: 0.26
+  tolerance_absolue: 0.005
+- chemin: resultats.par_origine.4.erreur_prediction_pct
+  attendu: 0.19
+  tolerance_absolue: 0.005
+- chemin: resultats.par_origine.5.erreur_prediction_pct
+  attendu: 0.27
+  tolerance_absolue: 0.005
+- chemin: resultats.par_origine.6.erreur_prediction_pct
+  attendu: 0.29
+  tolerance_absolue: 0.005
+- chemin: resultats.par_origine.7.erreur_prediction_pct
+  attendu: 0.26
+  tolerance_absolue: 0.005
+- chemin: resultats.par_origine.8.erreur_prediction_pct
+  attendu: 0.22
+  tolerance_absolue: 0.005
+- chemin: resultats.par_origine.9.erreur_prediction_pct
+  attendu: 0.23
+  tolerance_absolue: 0.005
+- chemin: resultats.par_origine.10.erreur_prediction_pct
+  attendu: 0.29
+  tolerance_absolue: 0.005
+- chemin: resultats.total.erreur_prediction_pct
+  attendu: 0.13
+  tolerance_absolue: 0.005
+- chemin: resultats.sigma2.0
+  attendu: 160000
+  tolerance_absolue: 500
+- chemin: resultats.sigma2.1
+  attendu: 37700.0
+  tolerance_absolue: 50
+- chemin: resultats.sigma2.2
+  attendu: 42000.0
+  tolerance_absolue: 50
+- chemin: resultats.sigma2.3
+  attendu: 15200.0
+  tolerance_absolue: 50
+- chemin: resultats.sigma2.4
+  attendu: 13700.0
+  tolerance_absolue: 50
+- chemin: resultats.sigma2.5
+  attendu: 8189.999999999999
+  tolerance_absolue: 5
+- chemin: resultats.sigma2.6
+  attendu: 447.0
+  tolerance_absolue: 0.5
+- chemin: resultats.sigma2.7
+  attendu: 1150.0
+  tolerance_absolue: 5

@@ -1,0 +1,42 @@
+id: ev-2002-raa-bootstrap-tableau33
+methode: bootstrap
+source:
+  reference: England, P. D. et Verrall, R. J. (2002). Stochastic Claims Reserving in General Insurance.
+    British Actuarial Journal 8(3), 443-544.
+  url: ''
+  emplacement: 'Section 8.2, tableau 33 (moyennes et erreurs de prédiction bootstrap, p. 55) et tableau
+    34 (percentiles, p. 55) ; procédure : annexe 3'
+donnees: donnees/raa_cumule.csv
+options:
+  type: cumule
+  simulations: 10000
+  graine: 2026
+statut: en_attente
+saisie_par: Claude, extraction du texte du PDF fourni par Yassine
+valide_par: null
+date_validation: null
+note: 'Les auteurs ont publié 1 000 simulations : leurs chiffres portent une erreur de Monte-Carlo d''environ
+  2 à 3 %. Tolérance de 5 %. Les premières années (erreurs de 10 % entre graines) ne sont pas testées.
+  Vérifié avec 5 autres graines.'
+valeurs:
+- chemin: resultats.total.moyenne
+  attendu: 53210
+  tolerance_relative: 0.05
+- chemin: resultats.total.erreur_prediction
+  attendu: 19267
+  tolerance_relative: 0.05
+- chemin: resultats.par_origine.1988.erreur_prediction
+  attendu: 5135
+  tolerance_relative: 0.05
+- chemin: resultats.par_origine.1989.erreur_prediction
+  attendu: 6018
+  tolerance_relative: 0.05
+- chemin: resultats.par_origine.1990.erreur_prediction
+  attendu: 13644
+  tolerance_relative: 0.05
+- chemin: resultats.total.quantiles.0.75
+  attendu: 64428
+  tolerance_relative: 0.05
+- chemin: resultats.total.quantiles.0.95
+  attendu: 87668
+  tolerance_relative: 0.05
