@@ -24,6 +24,7 @@ from actuaire.sortie import Hypothese, Resultat  # noqa: E402
 from actuaire.cli_provisionnement import COMMANDES as COMMANDES_PROVISIONNEMENT  # noqa: E402
 from actuaire.cli_provisionnement import args_triangle  # noqa: E402
 from actuaire.cli_stochastique import COMMANDES as COMMANDES_STOCHASTIQUE  # noqa: E402
+from actuaire.cli_vie import COMMANDES as COMMANDES_VIE  # noqa: E402
 from actuaire.triangle import lire_triangle  # noqa: E402
 
 
@@ -83,6 +84,7 @@ COMMANDES = {
                  args_triangle),
     **COMMANDES_PROVISIONNEMENT,
     **COMMANDES_STOCHASTIQUE,
+    **COMMANDES_VIE,
 }
 
 
