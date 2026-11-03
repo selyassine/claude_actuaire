@@ -7,10 +7,11 @@ source:
   emplacement: Annexe, état S.25.01.21 (p. 67), en milliers d'euros
 donnees: donnees/scr_ccr_2024.json
 options: {}
-statut: en_attente
+statut: valide
 saisie_par: Claude, extraction du texte du PDF fourni par Yassine
-valide_par: null
-date_validation: null
+valide_par: Yassine
+date_validation: '2026-11-03'
+methode_validation: Yassine a contrôlé les valeurs contre le SFCR publié et les matrices de corrélation contre le règlement délégué (UE) 2015/35 le 2026-11-03.
 note: 'Le moteur n''agrège que des SCR déjà calculés par l''organisme : le test porte sur les matrices
   de corrélation et la formule d''agrégation. Les montants d''entrée sont publiés arrondis à l''euro (au
   millier d''euros pour CCR), d''où une tolérance de quelques unités.'
