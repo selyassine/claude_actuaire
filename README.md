@@ -17,7 +17,7 @@ Moteur de calcul actuariel pour Claude, livré comme skill. Les calculs sont fai
 | Mack, ODP analytique, bootstrap ODP | disponible (Mack 1993, England et Verrall 2002) |
 | Survie, primes et provisions vie (SSSM d'AMLCR, Zillmer FPT) | disponible (note MLC SN2.3-SN2.4, validée par Yassine) |
 | GPD (valeurs extrêmes) | testé, en attente de validation (McNeil 1997, données danoises) |
-| Crédibilité | phase 4, source à fournir |
+| Crédibilité (Bühlmann, Bühlmann-Straub, hiérarchique, Hachemeister) | testé, en attente de validation (vignette actuar, données de Hachemeister) |
 | Agrégation SCR | phase 5 |
 
 ## Installation
