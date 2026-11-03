@@ -1,0 +1,15 @@
+famille: vie
+fiche_source: amlcr-mlc-note-sn2-3-sn2-4
+valeurs:
+- nom: prime_commerciale
+  attendu: 1435.89
+  tolerance_absolue: 0.005
+- nom: prime_pure
+  attendu: 1321.31
+  tolerance_absolue: 0.005
+- nom: provision_nette_10
+  attendu: 14416.12
+  tolerance_absolue: 0.005
+- nom: provision_brute_10
+  attendu: 13645.98
+  tolerance_absolue: 0.005

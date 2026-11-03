@@ -1,0 +1,12 @@
+famille: chain_ladder
+fiche_source: friedland-ch7-us-auto-declares
+valeurs:
+- nom: ultime_total
+  attendu: 569172456
+  tolerance_absolue: 1
+- nom: ibnr_total
+  attendu: 25690869
+  tolerance_absolue: 1
+- nom: cdf_12
+  attendu: 1.292
+  tolerance_absolue: 0.0005

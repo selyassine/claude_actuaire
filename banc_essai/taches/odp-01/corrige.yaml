@@ -1,0 +1,12 @@
+famille: bootstrap_odp
+fiche_source: ev-2002-raa-odp-tableau3
+valeurs:
+- nom: dispersion
+  attendu: 1049.8
+  tolerance_absolue: 0.05
+- nom: erreur_prediction_totale
+  attendu: 18193
+  tolerance_relative: 0.001
+- nom: erreur_prediction_1990
+  attendu: 12987
+  tolerance_relative: 0.001

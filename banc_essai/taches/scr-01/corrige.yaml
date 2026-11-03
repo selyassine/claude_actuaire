@@ -1,0 +1,12 @@
+famille: scr
+fiche_source: sfcr-ccr-2024-s2501
+valeurs:
+- nom: diversification
+  attendu: -542418
+  tolerance_absolue: 1
+- nom: bscr
+  attendu: 2738047
+  tolerance_absolue: 1
+- nom: scr
+  attendu: 2414456
+  tolerance_absolue: 1

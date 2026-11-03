@@ -1,0 +1,12 @@
+famille: mack
+fiche_source: mack-1993-taylor-ashe-mack
+valeurs:
+- nom: erreur_relative_totale
+  attendu: 0.13
+  tolerance_absolue: 0.005
+- nom: erreur_relative_origine_10
+  attendu: 0.29
+  tolerance_absolue: 0.005
+- nom: sigma2_1_2
+  attendu: 160000
+  tolerance_absolue: 500

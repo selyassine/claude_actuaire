@@ -1,0 +1,12 @@
+famille: bf_cape_cod
+fiche_source: friedland-ch10-cape-cod-us-auto
+valeurs:
+- nom: ratio_cape_cod
+  attendu: 0.695
+  tolerance_absolue: 0.0005
+- nom: ultime_total
+  attendu: 570800677
+  tolerance_absolue: 1
+- nom: ibnr_total
+  attendu: 27319090
+  tolerance_absolue: 1

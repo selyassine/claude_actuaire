@@ -1,0 +1,18 @@
+famille: gpd
+fiche_source: mcneil-1997-danish-u4
+valeurs:
+- nom: n_depassements
+  attendu: 362
+  tolerance_absolue: 0
+- nom: xi
+  attendu: 0.72
+  tolerance_absolue: 0.005
+- nom: erreur_type_xi
+  attendu: 0.09
+  tolerance_absolue: 0.005
+- nom: quantile_995
+  attendu: 46.3
+  tolerance_relative: 0.015
+- nom: quantile_9999
+  attendu: 770
+  tolerance_relative: 0.015

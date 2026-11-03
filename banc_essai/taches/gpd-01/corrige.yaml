@@ -1,0 +1,15 @@
+famille: gpd
+fiche_source: mcneil-1997-danish-u10
+valeurs:
+- nom: n_depassements
+  attendu: 109
+  tolerance_absolue: 0
+- nom: xi
+  attendu: 0.5
+  tolerance_absolue: 0.005
+- nom: quantile_999
+  attendu: 95
+  tolerance_relative: 0.015
+- nom: prime_tranche
+  attendu: 0.13
+  tolerance_absolue: 0.01

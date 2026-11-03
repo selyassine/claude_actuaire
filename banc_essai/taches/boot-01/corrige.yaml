@@ -1,0 +1,13 @@
+famille: bootstrap_odp
+fiche_source: ev-2002-raa-bootstrap-tableau33
+valeurs:
+- nom: provision_moyenne
+  attendu: 53210
+  tolerance_relative: 0.05
+- nom: erreur_prediction
+  attendu: 19267
+  tolerance_relative: 0.05
+- nom: quantile_95
+  attendu: 87668
+  tolerance_relative: 0.05
+note: 'Tolérance de 5 % au lieu de 2 % : voir l''amendement du 2026-11-03 dans REGLES.md.'

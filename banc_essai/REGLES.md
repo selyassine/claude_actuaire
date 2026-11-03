@@ -48,3 +48,19 @@ Claude calcule-t-il plus juste avec le skill `calcul-actuariel` que sans ?
 1. Condition C : au moins 95 % de valeurs justes sur l'ensemble, et au moins 90 % pour chaque famille.
 2. Écart C − B : au moins 30 points visés sur l'ensemble.
 3. Les résultats sont publiés par famille, y compris quand ils sont défavorables. Une famille sans écart est signalée et sa place dans le skill est rediscutée.
+
+## Amendement du 2026-11-03 : banc d'essai réduit (premier passage)
+
+Décidé par Yassine le 2026-11-03, après la construction des méthodes et **avant tout passage**.
+
+Ce qui change par rapport aux règles ci-dessus :
+
+1. **16 tâches au lieu d'environ 40** : 2 par famille de méthodes (8 familles).
+2. **Toutes sur données publiées**, sans variantes. Les valeurs attendues sont celles des fiches de référence déjà validées par Yassine (champ `fiche_source` du corrigé). Le risque de mémorisation n'est donc pas neutralisé : il sera discuté dans le rapport.
+3. **Un passage par tâche et par condition au lieu de trois**, soit 48 sessions au lieu de 360.
+4. **Bootstrap : tolérance de 5 % au lieu de 2 %.** Les valeurs publiées sont elles-mêmes issues d'une simulation. Entre la publication et le moteur (graine 2026, 10 000 simulations), l'écart sur l'erreur de prédiction atteint 2,1 %, ce qui rend 2 % plus strict que le bruit Monte-Carlo.
+5. **Les autres tolérances sont celles des fiches** : arrondi publié, 1,5 % sur les quantiles GPD (écart de jeu de données documenté) et 0,1 % sur l'ODP analytique.
+
+Pourquoi : obtenir une première mesure rapide sans nouveau corrigé externe. R n'est pas accessible depuis l'environnement de développement, et les 20 variantes demandaient des corrigés indépendants. Le protocole complet reste l'objectif : le rapport présentera ces résultats comme une **première mesure**, pas comme la validation finale.
+
+Les seuils de réussite (95 % en C, au moins 90 % par famille, écart C − B d'au moins 30 points) restent inchangés.
