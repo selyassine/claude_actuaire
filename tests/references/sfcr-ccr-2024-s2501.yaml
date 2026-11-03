@@ -1,0 +1,26 @@
+id: sfcr-ccr-2024-s2501
+methode: scr
+source:
+  reference: CCR (Caisse Centrale de Réassurance), Rapport sur la solvabilité et la situation financière
+    (SFCR) 2024, publié le 28/03/2025.
+  url: ''
+  emplacement: Annexe, état S.25.01.21 (p. 67), en milliers d'euros
+donnees: donnees/scr_ccr_2024.json
+options: {}
+statut: en_attente
+saisie_par: Claude, extraction du texte du PDF fourni par Yassine
+valide_par: null
+date_validation: null
+note: 'Le moteur n''agrège que des SCR déjà calculés par l''organisme : le test porte sur les matrices
+  de corrélation et la formule d''agrégation. Les montants d''entrée sont publiés arrondis à l''euro (au
+  millier d''euros pour CCR), d''où une tolérance de quelques unités.'
+valeurs:
+- chemin: resultats.diversification_bscr
+  attendu: -542418
+  tolerance_absolue: 1
+- chemin: resultats.bscr
+  attendu: 2738047
+  tolerance_absolue: 1
+- chemin: resultats.scr
+  attendu: 2414456
+  tolerance_absolue: 1

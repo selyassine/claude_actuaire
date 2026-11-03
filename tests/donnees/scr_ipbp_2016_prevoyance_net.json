@@ -1,0 +1,17 @@
+{
+ "marche": {
+  "actions": 9468038,
+  "spread": 7661187,
+  "concentration": 2968847
+ },
+ "contrepartie": 0,
+ "vie": {
+  "catastrophe": 11738471
+ },
+ "sante": {
+  "nslt": {
+   "primes_provisions": 9415420
+  }
+ },
+ "non_vie": 0
+}

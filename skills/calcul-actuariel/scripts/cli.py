@@ -25,6 +25,7 @@ from actuaire.cli_provisionnement import COMMANDES as COMMANDES_PROVISIONNEMENT 
 from actuaire.cli_provisionnement import args_triangle  # noqa: E402
 from actuaire.cli_stochastique import COMMANDES as COMMANDES_STOCHASTIQUE  # noqa: E402
 from actuaire.cli_credibilite import COMMANDES as COMMANDES_CREDIBILITE  # noqa: E402
+from actuaire.cli_scr import COMMANDES as COMMANDES_SCR  # noqa: E402
 from actuaire.cli_extremes import COMMANDES as COMMANDES_EXTREMES  # noqa: E402
 from actuaire.cli_vie import COMMANDES as COMMANDES_VIE  # noqa: E402
 from actuaire.triangle import lire_triangle  # noqa: E402
@@ -89,6 +90,7 @@ COMMANDES = {
     **COMMANDES_VIE,
     **COMMANDES_EXTREMES,
     **COMMANDES_CREDIBILITE,
+    **COMMANDES_SCR,
 }
 
 

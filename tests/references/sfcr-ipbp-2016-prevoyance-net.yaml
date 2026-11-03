@@ -1,0 +1,26 @@
+id: sfcr-ipbp-2016-prevoyance-net
+methode: scr
+source:
+  reference: IPBP (Institution de prévoyance des Banques Populaires), Rapport sur la solvabilité et la
+    situation financière (SFCR) 2016, validé par le conseil d'administration le 27/04/2017.
+  url: ''
+  emplacement: Section E.2.3, colonne Net, et sections E.2.5.2 et E.2.6 (colonnes Net) (p. 36-39)
+donnees: donnees/scr_ipbp_2016_prevoyance_net.json
+options: {}
+statut: en_attente
+saisie_par: Claude, extraction du texte du PDF fourni par Yassine
+valide_par: null
+date_validation: null
+note: 'Le moteur n''agrège que des SCR déjà calculés par l''organisme : le test porte sur les matrices
+  de corrélation et la formule d''agrégation. Les montants d''entrée sont publiés arrondis à l''euro (au
+  millier d''euros pour CCR), d''où une tolérance de quelques unités.'
+valeurs:
+- chemin: resultats.details.marche.scr
+  attendu: 16308163
+  tolerance_absolue: 1
+- chemin: resultats.diversification_bscr
+  attendu: -10626446
+  tolerance_absolue: 1
+- chemin: resultats.bscr
+  attendu: 26835609
+  tolerance_absolue: 1

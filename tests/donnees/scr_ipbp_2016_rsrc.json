@@ -1,0 +1,22 @@
+{
+ "marche": {
+  "scenario_taux": "baisse",
+  "taux": 65029878,
+  "actions": 49228183,
+  "immobilier": 7426613,
+  "spread": 20071973,
+  "change": 1863889,
+  "concentration": 3955635
+ },
+ "contrepartie": {
+  "type1": 11237144,
+  "type2": 51115
+ },
+ "vie": {
+  "longevite": 30276378,
+  "frais": 19290581
+ },
+ "sante": 0,
+ "non_vie": 0,
+ "operationnel": 2569898.65
+}

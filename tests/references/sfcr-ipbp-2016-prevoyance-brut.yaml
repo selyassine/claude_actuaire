@@ -1,0 +1,58 @@
+id: sfcr-ipbp-2016-prevoyance-brut
+methode: scr
+source:
+  reference: IPBP (Institution de prévoyance des Banques Populaires), Rapport sur la solvabilité et la
+    situation financière (SFCR) 2016, validé par le conseil d'administration le 27/04/2017.
+  url: ''
+  emplacement: Sections E.2.3 (BSCR brut prévoyance), E.2.4 (santé, santé SLT, NSLT et catastrophe), E.2.5.2
+    (vie), E.2.6 (marché) et défaut de contrepartie (p. 36-40)
+donnees: donnees/scr_ipbp_2016_prevoyance_brut.json
+options: {}
+statut: en_attente
+saisie_par: Claude, extraction du texte du PDF fourni par Yassine
+valide_par: null
+date_validation: null
+note: 'Le moteur n''agrège que des SCR déjà calculés par l''organisme : le test porte sur les matrices
+  de corrélation et la formule d''agrégation. Les montants d''entrée sont publiés arrondis à l''euro (au
+  millier d''euros pour CCR), d''où une tolérance de quelques unités. Le SCR notionnel prévoyance publié
+  (28 273 262) s''obtient à partir du BSCR brut.'
+valeurs:
+- chemin: resultats.details.marche.scr
+  attendu: 27123250
+  tolerance_absolue: 2
+- chemin: resultats.details.contrepartie.scr
+  attendu: 2718916
+  tolerance_absolue: 1
+- chemin: resultats.details.vie.scr
+  attendu: 16792568
+  tolerance_absolue: 1
+- chemin: resultats.details.vie.diversification
+  attendu: -3513148
+  tolerance_absolue: 1
+- chemin: resultats.details.sante.slt.scr
+  attendu: 4215918
+  tolerance_absolue: 1
+- chemin: resultats.details.sante.slt.diversification
+  attendu: -1025416
+  tolerance_absolue: 1
+- chemin: resultats.details.sante.catastrophe.scr
+  attendu: 1601061
+  tolerance_absolue: 1
+- chemin: resultats.details.sante.catastrophe.diversification
+  attendu: -1148985
+  tolerance_absolue: 1
+- chemin: resultats.details.sante.scr
+  attendu: 12633070
+  tolerance_absolue: 1
+- chemin: resultats.details.sante.diversification
+  attendu: -2599330
+  tolerance_absolue: 1
+- chemin: resultats.diversification_bscr
+  attendu: -17236219
+  tolerance_absolue: 2
+- chemin: resultats.bscr
+  attendu: 42031585
+  tolerance_absolue: 2
+- chemin: resultats.scr
+  attendu: 28273262
+  tolerance_absolue: 2

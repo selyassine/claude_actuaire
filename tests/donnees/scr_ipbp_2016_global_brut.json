@@ -1,0 +1,13 @@
+{
+ "marche": 147251206,
+ "contrepartie": 13994448,
+ "vie": 56551970,
+ "sante": 12633070,
+ "non_vie": 0,
+ "operationnel": 4178204,
+ "ajustements": {
+  "fonds_cantonnes": 1967640,
+  "provisions_techniques": -4195621,
+  "impots_differes": -11171008
+ }
+}

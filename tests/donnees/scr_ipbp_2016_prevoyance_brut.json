@@ -1,0 +1,43 @@
+{
+ "marche": {
+  "scenario_taux": "baisse",
+  "taux": 3158602,
+  "actions": 13663659,
+  "immobilier": 1427438,
+  "spread": 11955823,
+  "change": 537822,
+  "concentration": 2968847
+ },
+ "contrepartie": {
+  "type1": 817527,
+  "type2": 2051457
+ },
+ "vie": {
+  "mortalite": 2437877,
+  "longevite": 1760283,
+  "frais": 173463,
+  "catastrophe": 15934093
+ },
+ "sante": {
+  "slt": {
+   "longevite": 1612388,
+   "frais": 274474,
+   "revision": 3354472
+  },
+  "nslt": {
+   "primes_provisions": 9415420,
+   "cessation": 0
+  },
+  "catastrophe": {
+   "accident_de_masse": 979965,
+   "concentration": 750000,
+   "pandemie": 1020081
+  }
+ },
+ "non_vie": 0,
+ "operationnel": 1608306,
+ "ajustements": {
+  "provisions_techniques": -4195621,
+  "impots_differes": -11171008
+ }
+}
