@@ -1,0 +1,123 @@
+"""Lecture et contrôle des triangles de développement.
+
+Format attendu (CSV ou Excel) : une ligne par année d'origine, une colonne
+par période de développement, la première colonne contient le libellé de
+l'année d'origine. Les cellules futures sont vides.
+"""
+
+from __future__ import annotations
+
+import csv
+from dataclasses import dataclass
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+
+
+@dataclass
+class Triangle:
+    origines: list[str]
+    developpements: list[str]
+    valeurs: np.ndarray  # NaN pour les cellules non observées
+
+    @property
+    def n_origines(self) -> int:
+        return self.valeurs.shape[0]
+
+    @property
+    def n_dev(self) -> int:
+        return self.valeurs.shape[1]
+
+    def observe(self) -> np.ndarray:
+        return ~np.isnan(self.valeurs)
+
+    def derniere_diagonale(self) -> np.ndarray:
+        """Dernière valeur observée de chaque ligne."""
+        out = np.full(self.n_origines, np.nan)
+        for i in range(self.n_origines):
+            idx = np.where(self.observe()[i])[0]
+            if idx.size:
+                out[i] = self.valeurs[i, idx[-1]]
+        return out
+
+    def en_cumule(self) -> "Triangle":
+        cum = np.where(self.observe(), np.nancumsum(self.valeurs, axis=1), np.nan)
+        return Triangle(self.origines, self.developpements, cum)
+
+    def en_incremental(self) -> "Triangle":
+        inc = self.valeurs.copy()
+        inc[:, 1:] = self.valeurs[:, 1:] - self.valeurs[:, :-1]
+        return Triangle(self.origines, self.developpements, inc)
+
+    def controles(self) -> list[str]:
+        """Anomalies de forme ou de contenu, en clair. Liste vide si tout va bien."""
+        alertes: list[str] = []
+        obs = self.observe()
+        for i in range(self.n_origines):
+            idx = np.where(obs[i])[0]
+            if idx.size == 0:
+                alertes.append(f"Ligne {self.origines[i]} : aucune valeur observée.")
+                continue
+            if idx[0] != 0:
+                alertes.append(f"Ligne {self.origines[i]} : la première période est vide.")
+            if idx.size != idx[-1] + 1:
+                alertes.append(f"Ligne {self.origines[i]} : trou dans les valeurs observées.")
+        longueurs = obs.sum(axis=1)
+        if np.any(np.diff(longueurs) > 0):
+            alertes.append(
+                "Le nombre de valeurs observées augmente d'une ligne à la suivante : "
+                "vérifier l'ordre des années d'origine."
+            )
+        if np.any(self.valeurs[obs] < 0):
+            alertes.append("Le triangle contient des valeurs négatives.")
+        return alertes
+
+    def semble_cumule(self) -> bool:
+        """Vrai si chaque ligne est croissante (indice, pas une preuve)."""
+        d = np.diff(self.valeurs, axis=1)
+        d = d[~np.isnan(d)]
+        return bool(d.size) and bool(np.all(d >= 0))
+
+
+def _nombre(x) -> float:
+    if x is None:
+        return np.nan
+    if isinstance(x, (int, float, np.number)):
+        return float(x)
+    s = str(x).strip().replace(" ", "").replace(" ", "").replace(" ", "")
+    if s == "" or s.lower() in {"nan", "na", "-"}:
+        return np.nan
+    if "," in s and "." in s:
+        # 1.234,56 (européen) ou 1,234.56 (anglo-saxon)
+        if s.rfind(",") > s.rfind("."):
+            s = s.replace(".", "").replace(",", ".")
+        else:
+            s = s.replace(",", "")
+    elif "," in s:
+        s = s.replace(",", ".")
+    return float(s)
+
+
+def lire_tableau(chemin: str | Path, feuille: str | int | None = None) -> pd.DataFrame:
+    """Lit un CSV (séparateur détecté) ou un Excel en texte brut."""
+    chemin = Path(chemin)
+    if chemin.suffix.lower() in {".xlsx", ".xlsm", ".xls"}:
+        return pd.read_excel(chemin, sheet_name=feuille or 0, header=0, dtype=object)
+    with open(chemin, newline="", encoding="utf-8-sig") as f:
+        echantillon = f.read(4096)
+    try:
+        sep = csv.Sniffer().sniff(echantillon, delimiters=",;\t").delimiter
+    except csv.Error:
+        sep = ","
+    return pd.read_csv(chemin, sep=sep, header=0, dtype=str, keep_default_na=False,
+                       encoding="utf-8-sig")
+
+
+def lire_triangle(chemin: str | Path, feuille: str | int | None = None) -> Triangle:
+    df = lire_tableau(chemin, feuille)
+    origines = [str(v).strip() for v in df.iloc[:, 0].tolist()]
+    devs = [str(c).strip() for c in df.columns[1:]]
+    valeurs = np.array([[_nombre(v) for v in ligne] for ligne in df.iloc[:, 1:].values],
+                       dtype=float)
+    return Triangle(origines, devs, valeurs)

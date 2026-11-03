@@ -1,0 +1,11 @@
+{
+  "name": "claude-actuaire",
+  "owner": { "name": "Yassine" },
+  "plugins": [
+    {
+      "name": "claude-actuaire",
+      "source": "./",
+      "description": "Moteur de calcul actuariel validé sur des résultats publiés."
+    }
+  ]
+}
