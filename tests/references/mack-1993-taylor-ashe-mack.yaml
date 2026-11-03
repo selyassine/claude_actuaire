@@ -8,15 +8,18 @@ source:
 donnees: donnees/taylor_ashe_cumule.csv
 options:
   type: cumule
-statut: en_attente
+statut: valide
 saisie_par: Claude, extraction du texte du PDF fourni par Yassine
-valide_par: null
-date_validation: null
+valide_par: Yassine
+date_validation: '2026-11-03'
 note: 'Erreurs publiées en % de la provision, arrondies au point de pourcentage ; sigma² publiés en milliers
   à 3 chiffres significatifs. Le sigma²_9 publié (0,477 × 1000) n''est pas testé : la formule d''extrapolation
   de Mack donne min(s⁴_8/s²_7, s²_7, s²_8) = s²_7 = 0,447 × 1000, et seule cette valeur reproduit l''erreur
   de 80 % de l''année 2 du tableau 3 (0,477 donnerait 82 %). Probable coquille d''impression (0,447 /
   0,477), à confirmer.'
+methode_validation: >-
+  Yassine a contrôlé les valeurs clés contre le PDF (2026-11-03). Contrôle
+  complémentaire par Claude : valeurs relevées dans le texte du PDF et reproduites par le moteur.
 valeurs:
 - chemin: resultats.par_origine.2.erreur_prediction_pct
   attendu: 0.8
