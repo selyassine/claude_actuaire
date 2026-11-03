@@ -29,6 +29,9 @@ python <skill>/scripts/cli.py cape-cod --entree declares.csv --primes primes.csv
 python <skill>/scripts/cli.py mack --entree payes.csv --type cumule
 python <skill>/scripts/cli.py odp --entree payes.csv --type cumule
 python <skill>/scripts/cli.py bootstrap --entree payes.csv --type cumule --simulations 10000 --graine 2026
+python <skill>/scripts/cli.py survie --modele sssm --taux 0.04 --age 50 --n 20
+python <skill>/scripts/cli.py tarif-vie --modele sssm --taux 0.04 --type vie-entiere --age 50 --capital 100000 \
+    --frais-initiaux-pct 0.5 --frais-initiaux-fixe 250 --frais-renouvellement-pct 0.03 --frais-renouvellement-fixe 25 --durees 0,1,2,10
 ```
 
 Sortie par défaut : JSON avec `methode`, `moteur`, `entrees` (fichier + empreinte SHA-256), `options`, `hypotheses`, `resultats`, `avertissements`.
@@ -66,4 +69,11 @@ Chaque choix de jugement apparaît dans `hypotheses` : explique-le à l'utilisat
 
 Ces trois commandes exigent un triangle carré complet et utilisent les facteurs Chain Ladder standards (sans queue ni exclusion). Options : `mack --sigma-dernier mack|precedent`, `odp --dispersion pearson|deviance`, `bootstrap --simulations N --graine G`. Donne toujours la graine utilisée : elle rend le résultat reproductible.
 
-Les méthodes suivantes arrivent par phases : survie et provisions vie, GPD, crédibilité, agrégation SCR. Le fichier `references/methodes.md` indique pour chacune la publication qui la valide.
+| Commande | Rôle | Statut |
+| --- | --- | --- |
+| `survie` | q, espérance de vie, annuités dues, assurances décès, mixte, capital différé | propriétés testées |
+| `tarif-vie` | Primes pure et commerciale, provisions nette, brute, de frais et Zillmer FPT | testé : note MLC (Dickson, Hardy, Waters) SN2.3-SN2.4, au centime |
+
+Modèle de survie : `--modele sssm` (défaut, Standard Select Survival Model d'AMLCR), `susm` (ultime), `makeham --A --B --c`, ou `table --table qx.csv` (colonnes `Age`, `qx`). Sélection libre avec `--selection-facteur k --selection-duree d`. Temps discret annuel : capital décès en fin d'année, primes et annuités d'avance. Contrats : `vie-entiere`, `temporaire --duree n`, `mixte --duree n`, avec `--duree-primes`. Les frais initiaux sont payés à la souscription, les frais de renouvellement à chaque échéance suivante. Les provisions sont prospectives, juste avant la prime de l'année t.
+
+Les méthodes suivantes arrivent par phases : GPD, crédibilité, agrégation SCR. Le fichier `references/methodes.md` indique pour chacune la publication qui la valide.

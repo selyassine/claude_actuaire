@@ -21,7 +21,9 @@ FICHES = charger_fiches()
 
 @pytest.mark.parametrize("fiche", FICHES, ids=lambda f: f.id)
 def test_valeurs_publiees(fiche):
-    argv = [fiche.contenu["methode"], "--entree", str(DOSSIER_TESTS / fiche.contenu["donnees"])]
+    argv = [fiche.contenu["methode"]]
+    if fiche.contenu["donnees"]:  # null pour les méthodes sans fichier (ex. tarif-vie sur le SSSM)
+        argv += ["--entree", str(DOSSIER_TESTS / fiche.contenu["donnees"])]
     for cle, val in (fiche.contenu.get("options") or {}).items():
         if isinstance(val, str) and val.startswith("donnees/"):
             val = DOSSIER_TESTS / val

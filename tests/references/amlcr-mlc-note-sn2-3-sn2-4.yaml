@@ -1,0 +1,82 @@
+id: amlcr-mlc-note-sn2-3-sn2-4
+methode: tarif-vie
+source:
+  reference: Dickson, D. C. M., Hardy, M. R. et Waters, H. R. Supplementary Note for Actuarial Mathematics
+    for Life Contingent Risks (note d'étude SOA MLC, printemps 2012, version 2.0).
+  url: ''
+  emplacement: Exemple SN2.3 (primes et provisions à t = 10, p. 13-14) et exemple SN2.4 (primes et
+    provisions FPT à t = 1, 2 et 10, p. 14-16)
+donnees: null
+options:
+  modele: sssm
+  taux: 0.04
+  type: vie-entiere
+  age: 50
+  capital: 100000
+  frais-initiaux-pct: 0.5
+  frais-initiaux-fixe: 250
+  frais-renouvellement-pct: 0.03
+  frais-renouvellement-fixe: 25
+  durees: 0,1,2,10
+statut: en_attente
+saisie_par: Claude, extraction du texte du PDF fourni par Yassine
+valide_par: null
+date_validation: null
+note: >-
+  Le SSSM n'est pas défini dans la note : le moteur utilise les paramètres d'AMLCR (Makeham
+  A = 0,00022, B = 2,7e-6, c = 1,124 ; mu sélectionné = 0,9^(2-s) mu ultime pour s < 2), à confirmer
+  dans le livre (sections 4.3 et 6.3). Toutes les valeurs sont reproduites au centime, sauf la prime FPT
+  des années suivantes : le moteur trouve 1387,89498, la note publie 1387,90 (calculée à partir de
+  valeurs de table arrondies), d'où une tolérance de 0,01 sur cette seule valeur. Dans la note, la
+  formule écrite pour 2Vg mentionne A[50]+1 (coquille pour A52) ; la valeur publiée 1697,30 est bien
+  celle à t = 2.
+valeurs:
+- chemin: resultats.prime_commerciale
+  attendu: 1435.89
+  tolerance_absolue: 0.005
+- chemin: resultats.prime_nette
+  attendu: 1321.31
+  tolerance_absolue: 0.005
+- chemin: resultats.chargement
+  attendu: 114.58
+  tolerance_absolue: 0.005
+- chemin: resultats.provisions.10.frais
+  attendu: -770.14
+  tolerance_absolue: 0.005
+- chemin: resultats.provisions.10.nette
+  attendu: 14416.12
+  tolerance_absolue: 0.005
+- chemin: resultats.provisions.10.brute
+  attendu: 13645.98
+  tolerance_absolue: 0.005
+- chemin: resultats.fpt.prime_premiere_annee
+  attendu: 99.36
+  tolerance_absolue: 0.005
+- chemin: resultats.fpt.prime_annees_suivantes
+  attendu: 1387.90
+  tolerance_absolue: 0.01
+  note: arrondi de la note à partir de valeurs de table
+- chemin: resultats.provisions.0.nette
+  attendu: 0
+  tolerance_absolue: 0.005
+- chemin: resultats.provisions.1.nette
+  attendu: 1272.15
+  tolerance_absolue: 0.005
+- chemin: resultats.provisions.1.brute
+  attendu: 383.73
+  tolerance_absolue: 0.005
+- chemin: resultats.provisions.1.fpt
+  attendu: 0
+  tolerance_absolue: 0.005
+- chemin: resultats.provisions.2.nette
+  attendu: 2574.01
+  tolerance_absolue: 0.005
+- chemin: resultats.provisions.2.brute
+  attendu: 1697.30
+  tolerance_absolue: 0.005
+- chemin: resultats.provisions.2.fpt
+  attendu: 1318.63
+  tolerance_absolue: 0.005
+- chemin: resultats.provisions.10.fpt
+  attendu: 13313.34
+  tolerance_absolue: 0.005
