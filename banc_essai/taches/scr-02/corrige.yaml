@@ -1,0 +1,15 @@
+famille: scr
+fiche_source: sfcr-ipbp-2016-prevoyance-brut
+valeurs:
+- nom: scr_marche
+  attendu: 27123250
+  tolerance_absolue: 2
+- nom: scr_sante
+  attendu: 12633070
+  tolerance_absolue: 1
+- nom: bscr
+  attendu: 42031585
+  tolerance_absolue: 2
+- nom: scr
+  attendu: 28273262
+  tolerance_absolue: 2

@@ -1,0 +1,12 @@
+famille: mack
+fiche_source: ev-2002-raa-mack-tableau13
+valeurs:
+- nom: provision_totale
+  attendu: 52135
+  tolerance_absolue: 0.5
+- nom: erreur_prediction_totale
+  attendu: 26909
+  tolerance_absolue: 0.5
+- nom: erreur_prediction_1990
+  attendu: 24566
+  tolerance_absolue: 0.5

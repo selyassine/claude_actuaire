@@ -1,0 +1,12 @@
+famille: bf_cape_cod
+fiche_source: friedland-ch9-bf-us-auto-declares
+valeurs:
+- nom: ultime_total
+  attendu: 569091348
+  tolerance_absolue: 1
+- nom: ibnr_total
+  attendu: 25609761
+  tolerance_absolue: 1
+- nom: ultime_2007
+  attendu: 62835336
+  tolerance_absolue: 1

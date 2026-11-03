@@ -3,7 +3,7 @@
 Le moteur agrège des SCR déjà calculés (chocs appliqués par ailleurs) : sous-modules -> modules
 -> BSCR -> SCR. Il ne calcule pas les chocs eux-mêmes.
 
-Matrices de corrélation recopiées du règlement délégué 2015/35 :
+Matrices de corrélation du règlement délégué 2015/35 (contrôlées contre le texte par Yassine le 2026-11-03) :
 - BSCR : annexe IV, point 1 ;
 - marché : article 164, paramètre A = 0 si le capital pour le risque de taux vient du choc à la hausse,
   A = 0,5 s'il vient du choc à la baisse ;

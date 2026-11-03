@@ -1,0 +1,12 @@
+famille: credibilite
+fiche_source: actuar-hachemeister-buhlmann-straub
+valeurs:
+- nom: prime_collective
+  attendu: 1684
+  tolerance_absolue: 0.5
+- nom: variance_entre
+  attendu: 89639
+  tolerance_absolue: 0.5
+- nom: variance_intra
+  attendu: 139120026
+  tolerance_absolue: 0.5

@@ -1,0 +1,15 @@
+famille: credibilite
+fiche_source: actuar-hachemeister-hierarchique
+valeurs:
+- nom: prime_collective
+  attendu: 1746
+  tolerance_absolue: 0.5
+- nom: prime_cohorte_A
+  attendu: 1949
+  tolerance_absolue: 0.5
+- nom: prime_cohorte_B
+  attendu: 1543
+  tolerance_absolue: 0.5
+- nom: prime_etat_4
+  attendu: 1497
+  tolerance_absolue: 0.5

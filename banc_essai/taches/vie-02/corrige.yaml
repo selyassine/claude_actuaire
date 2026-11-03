@@ -1,0 +1,15 @@
+famille: vie
+fiche_source: amlcr-mlc-note-sn2-3-sn2-4
+valeurs:
+- nom: prime_fpt_annee_1
+  attendu: 99.36
+  tolerance_absolue: 0.005
+- nom: prime_fpt_suivantes
+  attendu: 1387.9
+  tolerance_absolue: 0.01
+- nom: provision_fpt_2
+  attendu: 1318.63
+  tolerance_absolue: 0.005
+- nom: provision_fpt_10
+  attendu: 13313.34
+  tolerance_absolue: 0.005

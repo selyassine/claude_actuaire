@@ -1,0 +1,12 @@
+famille: chain_ladder
+fiche_source: mack-1993-taylor-ashe-chain-ladder
+valeurs:
+- nom: provision_totale
+  attendu: 18681000
+  tolerance_absolue: 500
+- nom: provision_origine_10
+  attendu: 4626000
+  tolerance_absolue: 500
+- nom: facteur_1_2
+  attendu: 3.49
+  tolerance_absolue: 0.005
