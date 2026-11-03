@@ -46,9 +46,11 @@ def erreurs_fiche(contenu: dict[str, Any]) -> list[str]:
     if not contenu["valeurs"]:
         err.append("aucune valeur attendue")
     for i, v in enumerate(contenu["valeurs"] or []):
-        for champ in ("chemin", "attendu", "tolerance_absolue"):
+        for champ in ("chemin", "attendu"):
             if champ not in v:
                 err.append(f"valeur {i} : '{champ}' manquant")
+        if ("tolerance_absolue" in v) == ("tolerance_relative" in v):
+            err.append(f"valeur {i} : indiquer soit 'tolerance_absolue', soit 'tolerance_relative'")
     return err
 
 
@@ -64,12 +66,23 @@ def charger_fiches(methode: str | None = None, inclure_modeles: bool = False) ->
 
 
 def lire_chemin(d: dict[str, Any], chemin: str) -> Any:
+    """Suit un chemin pointé ; une clé contenant elle-même un point (ex. quantile '0.75') est reconnue."""
     obj: Any = d
-    for cle in chemin.split("."):
+    morceaux = chemin.split(".")
+    i = 0
+    while i < len(morceaux):
         if isinstance(obj, list):
-            obj = obj[int(cle)]
+            obj = obj[int(morceaux[i])]
+            i += 1
+            continue
+        for j in range(len(morceaux), i, -1):
+            cle = ".".join(morceaux[i:j])
+            if cle in obj:
+                obj = obj[cle]
+                i = j
+                break
         else:
-            obj = obj[cle]
+            raise KeyError(chemin)
     return obj
 
 
@@ -78,7 +91,11 @@ def ecarts(sortie: dict[str, Any], fiche: Fiche) -> list[str]:
     out = []
     for v in fiche.contenu["valeurs"]:
         obtenu = lire_chemin(sortie, v["chemin"])
-        if obtenu is None or abs(float(obtenu) - float(v["attendu"])) > float(v["tolerance_absolue"]):
-            out.append(f"{v['chemin']} : obtenu {obtenu}, publié {v['attendu']} "
-                       f"(tolérance {v['tolerance_absolue']})")
+        attendu = float(v["attendu"])
+        if "tolerance_relative" in v:
+            tol, libelle = abs(attendu) * float(v["tolerance_relative"]), f"{v['tolerance_relative']:.1%}"
+        else:
+            tol, libelle = float(v["tolerance_absolue"]), str(v["tolerance_absolue"])
+        if obtenu is None or abs(float(obtenu) - attendu) > tol:
+            out.append(f"{v['chemin']} : obtenu {obtenu}, publié {v['attendu']} (tolérance {libelle})")
     return out

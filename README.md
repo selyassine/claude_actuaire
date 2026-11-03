@@ -14,7 +14,7 @@ Moteur de calcul actuariel pour Claude, livré comme skill. Les calculs sont fai
 | --- | --- |
 | Lecture et contrôle de triangles | disponible |
 | Chain Ladder, BF, Cape Cod | disponible (Friedland 2010, Mack 1993) |
-| Mack, bootstrap ODP | phase 2 |
+| Mack, ODP analytique, bootstrap ODP | disponible (Mack 1993, England et Verrall 2002) |
 | Survie et provisions vie | phase 3 |
 | GPD, crédibilité | phase 4 |
 | Agrégation SCR | phase 5 |

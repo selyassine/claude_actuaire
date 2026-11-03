@@ -1,0 +1,56 @@
+id: ev-2002-raa-odp-tableau3
+methode: odp
+source:
+  reference: England, P. D. et Verrall, R. J. (2002). Stochastic Claims Reserving in General Insurance.
+    British Actuarial Journal 8(3), 443-544.
+  url: ''
+  emplacement: Section 7.2, tableau 2 (dispersion 1049,8, p. 23) et tableau 3 (erreurs de prédiction,
+    p. 24)
+donnees: donnees/raa_cumule.csv
+options:
+  type: cumule
+  dispersion: deviance
+statut: valide
+saisie_par: Claude, extraction du texte du PDF fourni par Yassine
+valide_par: Yassine
+date_validation: '2026-11-03'
+note: 'Tolérance relative de 0,1 % : le moteur trouve 18 195 au lieu de 18 193 (écarts de 1 à 2 unités
+  par année), écart attribuable à la précision de convergence du logiciel GLM utilisé par les auteurs.
+  La dispersion publiée (1049,8) est reproduite exactement avec l''estimateur par la déviance.'
+methode_validation: >-
+  Yassine a contrôlé les valeurs clés contre le PDF (2026-11-03). Contrôle
+  complémentaire par Claude : valeurs relevées dans le texte du PDF et reproduites par le moteur.
+valeurs:
+- chemin: resultats.phi
+  attendu: 1049.8
+  tolerance_absolue: 0.05
+- chemin: resultats.par_origine.1982.erreur_prediction
+  attendu: 556
+  tolerance_relative: 0.001
+- chemin: resultats.par_origine.1983.erreur_prediction
+  attendu: 1120
+  tolerance_relative: 0.001
+- chemin: resultats.par_origine.1984.erreur_prediction
+  attendu: 1775
+  tolerance_relative: 0.001
+- chemin: resultats.par_origine.1985.erreur_prediction
+  attendu: 2231
+  tolerance_relative: 0.001
+- chemin: resultats.par_origine.1986.erreur_prediction
+  attendu: 2440
+  tolerance_relative: 0.001
+- chemin: resultats.par_origine.1987.erreur_prediction
+  attendu: 3124
+  tolerance_relative: 0.001
+- chemin: resultats.par_origine.1988.erreur_prediction
+  attendu: 5032
+  tolerance_relative: 0.001
+- chemin: resultats.par_origine.1989.erreur_prediction
+  attendu: 6075
+  tolerance_relative: 0.001
+- chemin: resultats.par_origine.1990.erreur_prediction
+  attendu: 12987
+  tolerance_relative: 0.001
+- chemin: resultats.total.erreur_prediction
+  attendu: 18193
+  tolerance_relative: 0.001
