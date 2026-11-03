@@ -11,10 +11,14 @@ options:
   periode: 3
   arrondi: 3
   type: cumule
-statut: en_attente
+statut: valide
 saisie_par: Claude, extraction du texte du PDF fourni par Yassine
-valide_par: null
-date_validation: null
+valide_par: Yassine
+date_validation: '2026-11-03'
+methode_validation: >-
+  Yassine a contrôlé les totaux et valeurs clés contre le PDF (2026-11-03).
+  Contrôle automatisé complémentaire par Claude : chaque valeur attendue et chaque
+  donnée d'entrée retrouvée dans le texte du PDF, et reproduite par le moteur.
 valeurs:
 - chemin: resultats.par_origine.1998.ultime
   attendu: 47742304

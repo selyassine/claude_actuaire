@@ -9,12 +9,16 @@ source:
 donnees: donnees/taylor_ashe_cumule.csv
 options:
   type: cumule
-statut: en_attente
+statut: valide
 saisie_par: Claude, extraction du texte du PDF fourni par Yassine
-valide_par: null
-date_validation: null
+valide_par: Yassine
+date_validation: '2026-11-03'
 note: Provisions publiées en milliers, d'où la tolérance de 500. Triangle recopié du tableau 1 (vérifié
   automatiquement contre le texte du PDF).
+methode_validation: >-
+  Yassine a contrôlé les totaux et valeurs clés contre le PDF (2026-11-03).
+  Contrôle automatisé complémentaire par Claude : chaque valeur attendue et chaque
+  donnée d'entrée retrouvée dans le texte du PDF, et reproduite par le moteur.
 valeurs:
 - chemin: resultats.par_origine.2.provision
   attendu: 95000
