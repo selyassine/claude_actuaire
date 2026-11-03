@@ -1,0 +1,13 @@
+{
+ "marche": 889691,
+ "contrepartie": 31347,
+ "vie": 0,
+ "sante": 3,
+ "non_vie": 2359424,
+ "incorporels": 0,
+ "operationnel": 124858,
+ "ajustements": {
+  "provisions_techniques": 0,
+  "impots_differes": -448449
+ }
+}

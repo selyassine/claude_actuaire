@@ -18,7 +18,7 @@ Moteur de calcul actuariel pour Claude, livré comme skill. Les calculs sont fai
 | Survie, primes et provisions vie (SSSM d'AMLCR, Zillmer FPT) | disponible (note MLC SN2.3-SN2.4, validée par Yassine) |
 | GPD (valeurs extrêmes) | disponible (McNeil 1997, données danoises, validé par Yassine) |
 | Crédibilité (Bühlmann, Bühlmann-Straub, hiérarchique, Hachemeister) | disponible (vignette actuar, données de Hachemeister, validé par Yassine) |
-| Agrégation SCR | phase 5 |
+| Agrégation SCR formule standard | testé, en attente de validation (SFCR CCR 2024 et IPBP 2016) |
 
 ## Installation
 

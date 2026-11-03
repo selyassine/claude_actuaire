@@ -32,6 +32,7 @@ python <skill>/scripts/cli.py bootstrap --entree payes.csv --type cumule --simul
 python <skill>/scripts/cli.py gpd --entree sinistres.csv --seuil 10 --quantiles 0.995,0.999 --tranche 50,200 --diagnostic-seuils 3,5,10,20
 python <skill>/scripts/cli.py credibilite --entree experience.csv --modele buhlmann-straub
 python <skill>/scripts/cli.py credibilite --entree experience.csv --modele regression --barycentre --periode-future 13
+python <skill>/scripts/cli.py scr --entree scr.json
 python <skill>/scripts/cli.py survie --modele sssm --taux 0.04 --age 50 --n 20
 python <skill>/scripts/cli.py tarif-vie --modele sssm --taux 0.04 --type vie-entiere --age 50 --capital 100000 \
     --frais-initiaux-pct 0.5 --frais-initiaux-fixe 250 --frais-renouvellement-pct 0.03 --frais-renouvellement-fixe 25 --durees 0,1,2,10
@@ -91,4 +92,21 @@ Pour `gpd`, le fichier contient une ligne par sinistre (colonne choisie avec `--
 
 Pour `credibilite`, le fichier est au format long : une ligne par entité et période, avec les colonnes `Entite`, `Periode`, `Ratio`, `Poids` (sauf `--modele buhlmann`) et `Cohorte` (modèle `hierarchique`). Estimateurs : `--estimateur sans-biais` (défaut, Bühlmann et Gisler 2005) ou `iteratif` (Bichsel-Straub ; défaut du modèle hiérarchique). Pour la régression, préfère `--barycentre` : sans lui, la droite de crédibilité peut sortir de l'intervalle entre droites individuelle et collective (cas de l'État 4 de Hachemeister).
 
-Les méthodes suivantes arrivent par phases : agrégation SCR. Le fichier `references/methodes.md` indique pour chacune la publication qui la valide.
+| Commande | Rôle | Statut |
+| --- | --- | --- |
+| `scr` | Agrégation formule standard : sous-modules, modules, BSCR, risque opérationnel, ajustements, SCR | testé : SFCR CCR 2024 (S.25.01) et IPBP 2016, à l'euro |
+
+`scr` agrège des SCR déjà calculés (il n'applique pas les chocs). Entrée JSON, chaque module étant un nombre ou un dictionnaire de sous-modules :
+
+```json
+{"marche": {"scenario_taux": "baisse", "taux": 65.0, "actions": 49.2, "immobilier": 7.4, "spread": 20.1, "change": 1.9, "concentration": 4.0},
+ "contrepartie": {"type1": 11.2, "type2": 0.05},
+ "vie": {"mortalite": 0, "longevite": 30.3, "invalidite": 0, "cessation": 0, "frais": 19.3, "revision": 0, "catastrophe": 0},
+ "sante": {"slt": {"longevite": 1.6, "frais": 0.3, "revision": 3.4}, "nslt": {"primes_provisions": 9.4, "cessation": 0}, "catastrophe": {"accident_de_masse": 1.0, "concentration": 0.75, "pandemie": 1.0}},
+ "non_vie": {"primes_provisions": 50, "cessation": 5, "catastrophe": {"naturelle": 30, "reassurance_non_proportionnelle_dommages": 0, "humaine": 20, "autres": 5}},
+ "incorporels": 0,
+ "operationnel": {"op": 4.0, "exp_ul": 0},
+ "ajustements": {"provisions_techniques": -4.2, "impots_differes": -11.2, "fonds_cantonnes": 0}}
+```
+
+`scenario_taux` (`hausse` ou `baisse`) fixe le paramètre A de l'article 164 : demande-le à l'utilisateur s'il manque, ne le devine pas. Les capacités d'absorption se saisissent en négatif. `operationnel` peut aussi être un montant déjà calculé. Le fichier `references/methodes.md` indique pour chacune la publication qui la valide.

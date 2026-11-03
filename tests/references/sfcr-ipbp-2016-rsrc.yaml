@@ -1,0 +1,41 @@
+id: sfcr-ipbp-2016-rsrc
+methode: scr
+source:
+  reference: IPBP (Institution de prévoyance des Banques Populaires), Rapport sur la solvabilité et la
+    situation financière (SFCR) 2016, validé par le conseil d'administration le 27/04/2017.
+  url: ''
+  emplacement: Sections E.2.2 (BSCR notionnel RSRC), E.2.5.1 (vie), E.2.6 (marché, RSRC) et défaut de
+    contrepartie RSRC (p. 36-40)
+donnees: donnees/scr_ipbp_2016_rsrc.json
+options: {}
+statut: en_attente
+saisie_par: Claude, extraction du texte du PDF fourni par Yassine
+valide_par: null
+date_validation: null
+note: 'Le moteur n''agrège que des SCR déjà calculés par l''organisme : le test porte sur les matrices
+  de corrélation et la formule d''agrégation. Les montants d''entrée sont publiés arrondis à l''euro (au
+  millier d''euros pour CCR), d''où une tolérance de quelques unités. Agrégation complète depuis les sous-modules
+  ; le risque de taux du marché est celui du choc à la baisse (A = 0,5), seul choix qui reproduit 120
+  127 956 (A = 0 donne 97 165 802).'
+valeurs:
+- chemin: resultats.details.marche.scr
+  attendu: 120127956
+  tolerance_absolue: 2
+- chemin: resultats.details.contrepartie.scr
+  attendu: 11275531
+  tolerance_absolue: 1
+- chemin: resultats.details.vie.scr
+  attendu: 39759402
+  tolerance_absolue: 1
+- chemin: resultats.details.vie.diversification
+  attendu: -9807557
+  tolerance_absolue: 1
+- chemin: resultats.diversification_bscr
+  attendu: -31777851.44
+  tolerance_absolue: 2
+- chemin: resultats.bscr
+  attendu: 139385037.45
+  tolerance_absolue: 2
+- chemin: resultats.scr
+  attendu: 141954936
+  tolerance_absolue: 2
