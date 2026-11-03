@@ -26,6 +26,9 @@ python <skill>/scripts/cli.py triangle --entree triangle.csv --format texte
 python <skill>/scripts/cli.py chain-ladder --entree payes.csv --type cumule --periode 5 --queue 1.01
 python <skill>/scripts/cli.py bf --entree declares.csv --primes primes.csv --ratio 0.65
 python <skill>/scripts/cli.py cape-cod --entree declares.csv --primes primes.csv
+python <skill>/scripts/cli.py mack --entree payes.csv --type cumule
+python <skill>/scripts/cli.py odp --entree payes.csv --type cumule
+python <skill>/scripts/cli.py bootstrap --entree payes.csv --type cumule --simulations 10000 --graine 2026
 ```
 
 Sortie par défaut : JSON avec `methode`, `moteur`, `entrees` (fichier + empreinte SHA-256), `options`, `hypotheses`, `resultats`, `avertissements`.
@@ -55,4 +58,12 @@ Options de développement communes (`chain-ladder`, `bf`, `cape-cod`) :
 
 Chaque choix de jugement apparaît dans `hypotheses` : explique-le à l'utilisateur.
 
-Les méthodes suivantes arrivent par phases : Mack, bootstrap ODP, survie et provisions vie, GPD, crédibilité, agrégation SCR. Le fichier `references/methodes.md` indique pour chacune la publication qui la valide.
+| Commande | Rôle | Statut |
+| --- | --- | --- |
+| `mack` | Erreur de prédiction de Chain Ladder (Mack 1993), par année et totale | testé : Mack (1993) tableau 3, England et Verrall (2002) tableaux 13-14 |
+| `odp` | Poisson sur-dispersé, erreur de prédiction analytique | testé : England et Verrall (2002) tableau 3 |
+| `bootstrap` | Bootstrap ODP : moyenne, erreur de prédiction, quantiles (dont 99,5 %) | testé : England et Verrall (2002) tableaux 33-34, à 5 % près |
+
+Ces trois commandes exigent un triangle carré complet et utilisent les facteurs Chain Ladder standards (sans queue ni exclusion). Options : `mack --sigma-dernier mack|precedent`, `odp --dispersion pearson|deviance`, `bootstrap --simulations N --graine G`. Donne toujours la graine utilisée : elle rend le résultat reproductible.
+
+Les méthodes suivantes arrivent par phases : survie et provisions vie, GPD, crédibilité, agrégation SCR. Le fichier `references/methodes.md` indique pour chacune la publication qui la valide.
