@@ -23,6 +23,7 @@ from actuaire import __version__  # noqa: E402
 from actuaire.sortie import Hypothese, Resultat  # noqa: E402
 from actuaire.cli_provisionnement import COMMANDES as COMMANDES_PROVISIONNEMENT  # noqa: E402
 from actuaire.cli_provisionnement import args_triangle  # noqa: E402
+from actuaire.cli_stochastique import COMMANDES as COMMANDES_STOCHASTIQUE  # noqa: E402
 from actuaire.triangle import lire_triangle  # noqa: E402
 
 
@@ -81,6 +82,7 @@ COMMANDES = {
     "triangle": (cmd_triangle, "Lit un triangle, contrôle sa forme et donne la dernière diagonale.",
                  args_triangle),
     **COMMANDES_PROVISIONNEMENT,
+    **COMMANDES_STOCHASTIQUE,
 }
 
 
