@@ -1,0 +1,57 @@
+id: friedland-ch9-bf-us-auto-declares
+methode: bf
+source:
+  reference: Friedland, J. (2010). Estimating Unpaid Claims Using Basic Techniques, version 3. Casualty
+    Actuarial Society.
+  url: https://www.casact.org/library/studynotes/Friedland_estimating.pdf
+  emplacement: 'Chapitre 9, Exhibit I, Sheets 1-2, pages 162-163 (sinistres attendus : chapitre 8, Exhibit
+    II, Sheet 1)'
+donnees: donnees/friedland_us_auto_declares.csv
+options:
+  periode: 3
+  arrondi: 3
+  type: cumule
+  primes: donnees/friedland_us_auto_primes.csv
+statut: en_attente
+saisie_par: Claude, extraction du texte du PDF fourni par Yassine
+valide_par: null
+date_validation: null
+valeurs:
+- chemin: resultats.par_origine.1998.ultime
+  attendu: 47742304
+  tolerance_absolue: 1
+- chemin: resultats.par_origine.1999.ultime
+  attendu: 51185767
+  tolerance_absolue: 1
+- chemin: resultats.par_origine.2000.ultime
+  attendu: 54889558
+  tolerance_absolue: 1
+- chemin: resultats.par_origine.2001.ultime
+  attendu: 56462300
+  tolerance_absolue: 1
+- chemin: resultats.par_origine.2002.ultime
+  attendu: 58947116
+  tolerance_absolue: 1
+- chemin: resultats.par_origine.2003.ultime
+  attendu: 58178105
+  tolerance_absolue: 1
+- chemin: resultats.par_origine.2004.ultime
+  attendu: 58317678
+  tolerance_absolue: 1
+- chemin: resultats.par_origine.2005.ultime
+  attendu: 59754938
+  tolerance_absolue: 1
+- chemin: resultats.par_origine.2006.ultime
+  attendu: 60778247
+  tolerance_absolue: 1
+- chemin: resultats.par_origine.2007.ultime
+  attendu: 62835336
+  tolerance_absolue: 1
+- chemin: resultats.total.ultime
+  attendu: 569091348
+  tolerance_absolue: 1
+- chemin: resultats.total.provision
+  attendu: 25609761
+  tolerance_absolue: 1
+note: 'Convention Friedland : facteurs retenus = moyenne pondérée des 3 dernières années, facteurs et
+  CDF arrondis à 3 décimales. Ultimes a priori = sinistres attendus de la colonne (2).'

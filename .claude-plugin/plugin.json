@@ -1,0 +1,9 @@
+{
+  "name": "claude-actuaire",
+  "version": "0.1.0",
+  "description": "Moteur de calcul actuariel validé sur des résultats publiés : provisionnement, vie, valeurs extrêmes, crédibilité, SCR.",
+  "author": { "name": "Yassine" },
+  "repository": "https://github.com/selyassine/claude_actuaire",
+  "license": "MIT",
+  "keywords": ["actuariat", "actuarial", "reserving", "chain-ladder", "solvency"]
+}

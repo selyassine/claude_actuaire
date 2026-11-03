@@ -1,0 +1,60 @@
+id: friedland-ch10-cape-cod-us-auto
+methode: cape-cod
+source:
+  reference: Friedland, J. (2010). Estimating Unpaid Claims Using Basic Techniques, version 3. Casualty
+    Actuarial Society.
+  url: https://www.casact.org/library/studynotes/Friedland_estimating.pdf
+  emplacement: Chapitre 10, Exhibit I, Sheets 1-3, pages 180-182
+donnees: donnees/friedland_us_auto_declares.csv
+options:
+  periode: 3
+  arrondi: 3
+  type: cumule
+  primes: donnees/friedland_us_auto_primes.csv
+statut: en_attente
+saisie_par: Claude, extraction du texte du PDF fourni par Yassine
+valide_par: null
+date_validation: null
+valeurs:
+- chemin: resultats.par_origine.1998.ultime
+  attendu: 47742304
+  tolerance_absolue: 1
+- chemin: resultats.par_origine.1999.ultime
+  attendu: 51185767
+  tolerance_absolue: 1
+- chemin: resultats.par_origine.2000.ultime
+  attendu: 54885803
+  tolerance_absolue: 1
+- chemin: resultats.par_origine.2001.ultime
+  attendu: 56450462
+  tolerance_absolue: 1
+- chemin: resultats.par_origine.2002.ultime
+  attendu: 58921336
+  tolerance_absolue: 1
+- chemin: resultats.par_origine.2003.ultime
+  attendu: 58220945
+  tolerance_absolue: 1
+- chemin: resultats.par_origine.2004.ultime
+  attendu: 58411434
+  tolerance_absolue: 1
+- chemin: resultats.par_origine.2005.ultime
+  attendu: 59962478
+  tolerance_absolue: 1
+- chemin: resultats.par_origine.2006.ultime
+  attendu: 61207299
+  tolerance_absolue: 1
+- chemin: resultats.par_origine.2007.ultime
+  attendu: 63812849
+  tolerance_absolue: 1
+- chemin: resultats.total.ultime
+  attendu: 570800677
+  tolerance_absolue: 1
+- chemin: resultats.total.provision
+  attendu: 27319090
+  tolerance_absolue: 1
+- chemin: resultats.ratio_cape_cod
+  attendu: 0.695
+  tolerance_absolue: 0.0005
+note: 'Convention Friedland : facteurs retenus = moyenne pondérée des 3 dernières années, facteurs et
+  CDF arrondis à 3 décimales. Primes acquises non ajustées, comme dans l''exhibit. Ratio publié arrondi
+  : 69,5 %.'
