@@ -12,10 +12,15 @@ options:
   queue: 1.002
   type: cumule
   primes: donnees/friedland_us_auto_primes.csv
-statut: en_attente
+statut: valide
 saisie_par: Claude, extraction du texte du PDF fourni par Yassine
-valide_par: null
-date_validation: null
+valide_par: "Contrôle automatisé par Claude, à la demande de Yassine (délégation explicite du 2026-11-03)"
+date_validation: '2026-11-03'
+methode_validation: >-
+  Chaque valeur attendue et chaque donnée d'entrée a été retrouvée dans le texte
+  extrait du PDF fourni par Yassine ; les valeurs calculées indépendamment par le
+  moteur coïncident avec toutes les valeurs publiées. Pas de contrôle humain ligne
+  à ligne.
 valeurs:
 - chemin: resultats.par_origine.1998.ultime
   attendu: 47746843
