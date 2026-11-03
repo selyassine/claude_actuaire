@@ -9,6 +9,6 @@ Chaque méthode n'est marquée « disponible » que lorsque ses tests reproduise
 | Mack | Mack (1993), tableau 3 (Taylor-Ashe) ; England et Verrall (2002), tableaux 12-14 (RAA, à l'unité) | disponible, fiches validées par Yassine |
 | ODP analytique, bootstrap ODP | England et Verrall (2002), tableaux 2-3 (à 0,1 %) et 33-34 (à 5 %, Monte-Carlo) | disponible, fiches validées par Yassine |
 | Survie, primes, provisions nette, brute et FPT | Dickson, Hardy, Waters, note MLC (SOA 2012), exemples SN2.3 et SN2.4 (SSSM, 4 %, au centime) | disponible, fiche validée par Yassine |
-| GPD | McNeil (1997), ASTIN Bulletin 27(1) | à venir (phase 4) |
+| GPD | McNeil (1997), ASTIN Bulletin 27(1), tableau 1 et section 4.5 (données danoises du paquet R evir ; dépassements et xi exacts, quantiles à 1,5 %) | testé, fiches en attente de validation |
 | Crédibilité | Hachemeister (1975) ; Bühlmann et Gisler (2005) | à venir (phase 4) |
 | Agrégation SCR | Règlement délégué (UE) 2015/35, annexe IV | à venir (phase 5) |

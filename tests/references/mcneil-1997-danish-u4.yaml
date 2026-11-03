@@ -1,0 +1,43 @@
+id: mcneil-1997-danish-u4
+methode: gpd
+source:
+  reference: McNeil, A. J. (1997). Estimating the tails of loss severity distributions using extreme value
+    theory. ASTIN Bulletin 27(1), 117-137.
+  url: https://doi.org/10.2143/AST.27.1.563210
+  emplacement: Tableau 1, ligne « GPD u = 4 » (p. 133) ; prime P de la tranche (50, 200), section 4.5
+donnees: donnees/danish_mcneil.csv
+options:
+  seuil: 4.0
+  quantiles: 0.995,0.999,0.9999
+  tranche: 50,200
+statut: en_attente
+saisie_par: Claude, extraction du texte du PDF fourni par Yassine
+valide_par: null
+date_validation: null
+note: 'Données : jeu « danish » du paquet R evir (2167 sinistres de plus d''un million de DKK, 1980-1990,
+  en millions), téléchargé depuis le miroir GitHub de CRAN. Le texte de McNeil annonce 2156 sinistres
+  : le nombre de dépassements et xi sont reproduits exactement, mais les quantiles diffèrent jusqu''à
+  1,3 % (effet probable de cette différence de jeu de données), d''où une tolérance relative de 1,5 %
+  sur les quantiles et une tolérance de 0,01 sur les primes de tranche, publiées à deux décimales.'
+valeurs:
+- chemin: resultats.n_depassements
+  attendu: 362
+  tolerance_absolue: 0
+- chemin: resultats.xi
+  attendu: 0.72
+  tolerance_absolue: 0.005
+- chemin: resultats.erreur_type_xi
+  attendu: 0.09
+  tolerance_absolue: 0.005
+- chemin: resultats.quantiles.0.995
+  attendu: 46.3
+  tolerance_relative: 0.015
+- chemin: resultats.quantiles.0.999
+  attendu: 147
+  tolerance_relative: 0.015
+- chemin: resultats.quantiles.0.9999
+  attendu: 770
+  tolerance_relative: 0.015
+- chemin: resultats.tranches.50-200.prime_pure
+  attendu: 0.24
+  tolerance_absolue: 0.01
