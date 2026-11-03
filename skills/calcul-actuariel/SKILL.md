@@ -30,6 +30,8 @@ python <skill>/scripts/cli.py mack --entree payes.csv --type cumule
 python <skill>/scripts/cli.py odp --entree payes.csv --type cumule
 python <skill>/scripts/cli.py bootstrap --entree payes.csv --type cumule --simulations 10000 --graine 2026
 python <skill>/scripts/cli.py gpd --entree sinistres.csv --seuil 10 --quantiles 0.995,0.999 --tranche 50,200 --diagnostic-seuils 3,5,10,20
+python <skill>/scripts/cli.py credibilite --entree experience.csv --modele buhlmann-straub
+python <skill>/scripts/cli.py credibilite --entree experience.csv --modele regression --barycentre --periode-future 13
 python <skill>/scripts/cli.py survie --modele sssm --taux 0.04 --age 50 --n 20
 python <skill>/scripts/cli.py tarif-vie --modele sssm --taux 0.04 --type vie-entiere --age 50 --capital 100000 \
     --frais-initiaux-pct 0.5 --frais-initiaux-fixe 250 --frais-renouvellement-pct 0.03 --frais-renouvellement-fixe 25 --durees 0,1,2,10
@@ -83,4 +85,10 @@ Modèle de survie : `--modele sssm` (défaut, Standard Select Survival Model d'A
 
 Pour `gpd`, le fichier contient une ligne par sinistre (colonne choisie avec `--colonne`, sinon la première colonne numérique). Le seuil est un choix de jugement : utilise `--diagnostic-seuils` (excès moyen empirique) et compare plusieurs seuils avant de conclure, comme McNeil. Les quantiles et les primes de tranche portent sur la distribution des sinistres du fichier (au-delà de son seuil de collecte). Une tranche s'écrit `priorité,limite` et sa priorité doit dépasser le seuil.
 
-Les méthodes suivantes arrivent par phases : crédibilité, agrégation SCR. Le fichier `references/methodes.md` indique pour chacune la publication qui la valide.
+| Commande | Rôle | Statut |
+| --- | --- | --- |
+| `credibilite` | Bühlmann, Bühlmann-Straub, hiérarchique (Jewell), régression de Hachemeister : variances structurelles, facteurs et primes de crédibilité | testé : vignette actuar sur les données de Hachemeister (1975) |
+
+Pour `credibilite`, le fichier est au format long : une ligne par entité et période, avec les colonnes `Entite`, `Periode`, `Ratio`, `Poids` (sauf `--modele buhlmann`) et `Cohorte` (modèle `hierarchique`). Estimateurs : `--estimateur sans-biais` (défaut, Bühlmann et Gisler 2005) ou `iteratif` (Bichsel-Straub ; défaut du modèle hiérarchique). Pour la régression, préfère `--barycentre` : sans lui, la droite de crédibilité peut sortir de l'intervalle entre droites individuelle et collective (cas de l'État 4 de Hachemeister).
+
+Les méthodes suivantes arrivent par phases : agrégation SCR. Le fichier `references/methodes.md` indique pour chacune la publication qui la valide.

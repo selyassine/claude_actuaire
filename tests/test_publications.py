@@ -25,6 +25,9 @@ def test_valeurs_publiees(fiche):
     if fiche.contenu["donnees"]:  # null pour les méthodes sans fichier (ex. tarif-vie sur le SSSM)
         argv += ["--entree", str(DOSSIER_TESTS / fiche.contenu["donnees"])]
     for cle, val in (fiche.contenu.get("options") or {}).items():
+        if val is True:  # option sans valeur, ex. --barycentre
+            argv.append(f"--{cle}")
+            continue
         if isinstance(val, str) and val.startswith("donnees/"):
             val = DOSSIER_TESTS / val
         argv += [f"--{cle}", str(val)]

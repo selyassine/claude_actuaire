@@ -1,0 +1,55 @@
+id: actuar-hachemeister-regression
+methode: credibilite
+source:
+  reference: Dutang, C., Goulet, V., Milhaud, X. et Pigeon, M. Credibility theory features of actuar.
+    Vignette du paquet R actuar (CRAN), version du dépôt cran/actuar.
+  url: https://cran.r-project.org/package=actuar
+  emplacement: Section 5, régression cm(..., regformula = ~ time) et predict(fit, newdata = data.frame(time
+    = 13)) (p. 9-10)
+donnees: donnees/hachemeister.csv
+options:
+  modele: regression
+  periode-future: 13
+statut: valide
+saisie_par: Claude, extraction du texte de la vignette (PDF)
+valide_par: Yassine
+date_validation: '2026-11-03'
+methode_validation: Yassine a contrôlé les valeurs contre la vignette actuar le 2026-11-03.
+note: 'Sortie du logiciel actuar publiée par ses auteurs dans la vignette (pas un article à comité de
+  lecture). Données : matrice hachemeister du même paquet (Hachemeister 1975, 5 États, 12 trimestres),
+  au format long dans donnees/hachemeister.csv. Valeurs publiées arrondies : tolérance d''une demi-unité
+  du dernier chiffre affiché.'
+valeurs:
+- chemin: resultats.coefficients_collectifs.0
+  attendu: 1469
+  tolerance_absolue: 0.5
+- chemin: resultats.coefficients_collectifs.1
+  attendu: 32.05
+  tolerance_absolue: 0.005
+- chemin: resultats.covariance_entre.0.0
+  attendu: 24154
+  tolerance_absolue: 0.5
+- chemin: resultats.covariance_entre.0.1
+  attendu: 2700
+  tolerance_absolue: 0.5
+- chemin: resultats.covariance_entre.1.1
+  attendu: 301.8
+  tolerance_absolue: 0.05
+- chemin: resultats.variance_intra
+  attendu: 49870187
+  tolerance_absolue: 0.5
+- chemin: resultats.primes.0
+  attendu: 2437
+  tolerance_absolue: 0.5
+- chemin: resultats.primes.1
+  attendu: 1651
+  tolerance_absolue: 0.5
+- chemin: resultats.primes.2
+  attendu: 2073
+  tolerance_absolue: 0.5
+- chemin: resultats.primes.3
+  attendu: 1507
+  tolerance_absolue: 0.5
+- chemin: resultats.primes.4
+  attendu: 1759
+  tolerance_absolue: 0.5

@@ -10,10 +10,11 @@ options:
   seuil: 5.0
   quantiles: 0.995,0.999,0.9999
   tranche: 50,200
-statut: en_attente
+statut: valide
 saisie_par: Claude, extraction du texte du PDF fourni par Yassine
-valide_par: null
-date_validation: null
+valide_par: Yassine
+date_validation: '2026-11-03'
+methode_validation: Yassine a contrôlé les valeurs contre le tableau 1 de McNeil (1997) le 2026-11-03.
 note: 'Données : jeu « danish » du paquet R evir (2167 sinistres de plus d''un million de DKK, 1980-1990,
   en millions), téléchargé depuis le miroir GitHub de CRAN. Le texte de McNeil annonce 2156 sinistres
   : le nombre de dépassements et xi sont reproduits exactement, mais les quantiles diffèrent jusqu''à
