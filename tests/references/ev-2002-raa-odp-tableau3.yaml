@@ -10,13 +10,16 @@ donnees: donnees/raa_cumule.csv
 options:
   type: cumule
   dispersion: deviance
-statut: en_attente
+statut: valide
 saisie_par: Claude, extraction du texte du PDF fourni par Yassine
-valide_par: null
-date_validation: null
+valide_par: Yassine
+date_validation: '2026-11-03'
 note: 'Tolérance relative de 0,1 % : le moteur trouve 18 195 au lieu de 18 193 (écarts de 1 à 2 unités
   par année), écart attribuable à la précision de convergence du logiciel GLM utilisé par les auteurs.
   La dispersion publiée (1049,8) est reproduite exactement avec l''estimateur par la déviance.'
+methode_validation: >-
+  Yassine a contrôlé les valeurs clés contre le PDF (2026-11-03). Contrôle
+  complémentaire par Claude : valeurs relevées dans le texte du PDF et reproduites par le moteur.
 valeurs:
 - chemin: resultats.phi
   attendu: 1049.8
