@@ -1,0 +1,87 @@
+id: friedland-ch7-us-auto-payes
+methode: chain-ladder
+source:
+  reference: Friedland, J. (2010). Estimating Unpaid Claims Using Basic Techniques, version 3. Casualty
+    Actuarial Society.
+  url: https://www.casact.org/library/studynotes/Friedland_estimating.pdf
+  emplacement: Chapitre 7, Exhibit I, Sheet 2 (données, facteurs, queue 1,002) et Sheets 3-4 (ultimes,
+    provision totale), pages 107-109
+donnees: donnees/friedland_us_auto_payes.csv
+options:
+  periode: 3
+  arrondi: 3
+  queue: 1.002
+  type: cumule
+statut: en_attente
+saisie_par: Claude, extraction du texte du PDF fourni par Yassine
+valide_par: null
+date_validation: null
+valeurs:
+- chemin: resultats.par_origine.1998.ultime
+  attendu: 47739475
+  tolerance_absolue: 1
+- chemin: resultats.par_origine.1999.ultime
+  attendu: 51204536
+  tolerance_absolue: 1
+- chemin: resultats.par_origine.2000.ultime
+  attendu: 54860424
+  tolerance_absolue: 1
+- chemin: resultats.par_origine.2001.ultime
+  attendu: 56493084
+  tolerance_absolue: 1
+- chemin: resultats.par_origine.2002.ultime
+  attendu: 58963359
+  tolerance_absolue: 1
+- chemin: resultats.par_origine.2003.ultime
+  attendu: 58167880
+  tolerance_absolue: 1
+- chemin: resultats.par_origine.2004.ultime
+  attendu: 58345519
+  tolerance_absolue: 1
+- chemin: resultats.par_origine.2005.ultime
+  attendu: 59963673
+  tolerance_absolue: 1
+- chemin: resultats.par_origine.2006.ultime
+  attendu: 61223522
+  tolerance_absolue: 1
+- chemin: resultats.par_origine.2007.ultime
+  attendu: 65079626
+  tolerance_absolue: 1
+- chemin: resultats.total.ultime
+  attendu: 572041099
+  tolerance_absolue: 1
+- chemin: resultats.total.provision
+  attendu: 73990731
+  tolerance_absolue: 1
+- chemin: resultats.cdf_par_age.12
+  attendu: 2.39
+  tolerance_absolue: 0.0005
+- chemin: resultats.cdf_par_age.24
+  attendu: 1.404
+  tolerance_absolue: 0.0005
+- chemin: resultats.cdf_par_age.36
+  attendu: 1.184
+  tolerance_absolue: 0.0005
+- chemin: resultats.cdf_par_age.48
+  attendu: 1.085
+  tolerance_absolue: 0.0005
+- chemin: resultats.cdf_par_age.60
+  attendu: 1.04
+  tolerance_absolue: 0.0005
+- chemin: resultats.cdf_par_age.72
+  attendu: 1.02
+  tolerance_absolue: 0.0005
+- chemin: resultats.cdf_par_age.84
+  attendu: 1.011
+  tolerance_absolue: 0.0005
+- chemin: resultats.cdf_par_age.96
+  attendu: 1.006
+  tolerance_absolue: 0.0005
+- chemin: resultats.cdf_par_age.108
+  attendu: 1.004
+  tolerance_absolue: 0.0005
+- chemin: resultats.cdf_par_age.120
+  attendu: 1.002
+  tolerance_absolue: 0.0005
+note: 'Convention Friedland : facteurs retenus = moyenne pondérée des 3 dernières années, facteurs et
+  CDF arrondis à 3 décimales. Facteur de queue 1,002 retenu par Friedland.'
