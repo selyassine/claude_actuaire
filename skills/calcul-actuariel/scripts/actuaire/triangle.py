@@ -73,11 +73,19 @@ class Triangle:
             alertes.append("Le triangle contient des valeurs négatives.")
         return alertes
 
-    def semble_cumule(self) -> bool:
-        """Vrai si chaque ligne est croissante (indice, pas une preuve)."""
+    def part_croissante(self) -> float:
+        """Part des passages d'une période à la suivante où le montant ne baisse pas."""
         d = np.diff(self.valeurs, axis=1)
         d = d[~np.isnan(d)]
-        return bool(d.size) and bool(np.all(d >= 0))
+        return float(np.mean(d >= 0)) if d.size else 1.0
+
+    def semble_cumule(self) -> bool:
+        """Vrai si au moins 80 % des passages sont croissants (indice, pas une preuve).
+
+        Un triangle cumulé peut baisser ponctuellement (recours, réévaluations), comme
+        le triangle RAA ; un triangle incrémental décroît en général après les premières périodes.
+        """
+        return self.part_croissante() >= 0.8
 
 
 def _nombre(x) -> float:

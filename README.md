@@ -13,7 +13,7 @@ Moteur de calcul actuariel pour Claude, livré comme skill. Les calculs sont fai
 | Méthode | Statut |
 | --- | --- |
 | Lecture et contrôle de triangles | disponible |
-| Chain Ladder, BF, Cape Cod | phase 1 |
+| Chain Ladder, BF, Cape Cod | disponible (Friedland 2010, Mack 1993) |
 | Mack, bootstrap ODP | phase 2 |
 | Survie et provisions vie | phase 3 |
 | GPD, crédibilité | phase 4 |
