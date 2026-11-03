@@ -29,6 +29,7 @@ python <skill>/scripts/cli.py cape-cod --entree declares.csv --primes primes.csv
 python <skill>/scripts/cli.py mack --entree payes.csv --type cumule
 python <skill>/scripts/cli.py odp --entree payes.csv --type cumule
 python <skill>/scripts/cli.py bootstrap --entree payes.csv --type cumule --simulations 10000 --graine 2026
+python <skill>/scripts/cli.py gpd --entree sinistres.csv --seuil 10 --quantiles 0.995,0.999 --tranche 50,200 --diagnostic-seuils 3,5,10,20
 python <skill>/scripts/cli.py survie --modele sssm --taux 0.04 --age 50 --n 20
 python <skill>/scripts/cli.py tarif-vie --modele sssm --taux 0.04 --type vie-entiere --age 50 --capital 100000 \
     --frais-initiaux-pct 0.5 --frais-initiaux-fixe 250 --frais-renouvellement-pct 0.03 --frais-renouvellement-fixe 25 --durees 0,1,2,10
@@ -76,4 +77,10 @@ Ces trois commandes exigent un triangle carré complet et utilisent les facteurs
 
 Modèle de survie : `--modele sssm` (défaut, Standard Select Survival Model d'AMLCR), `susm` (ultime), `makeham --A --B --c`, ou `table --table qx.csv` (colonnes `Age`, `qx`). Sélection libre avec `--selection-facteur k --selection-duree d`. Temps discret annuel : capital décès en fin d'année, primes et annuités d'avance. Contrats : `vie-entiere`, `temporaire --duree n`, `mixte --duree n`, avec `--duree-primes`. Les frais initiaux sont payés à la souscription, les frais de renouvellement à chaque échéance suivante. Les provisions sont prospectives, juste avant la prime de l'année t.
 
-Les méthodes suivantes arrivent par phases : GPD, crédibilité, agrégation SCR. Le fichier `references/methodes.md` indique pour chacune la publication qui la valide.
+| Commande | Rôle | Statut |
+| --- | --- | --- |
+| `gpd` | Loi de Pareto généralisée au-delà d'un seuil : xi, sigma, erreurs types, quantiles, primes pures de tranches | testé : McNeil (1997) tableau 1, données danoises |
+
+Pour `gpd`, le fichier contient une ligne par sinistre (colonne choisie avec `--colonne`, sinon la première colonne numérique). Le seuil est un choix de jugement : utilise `--diagnostic-seuils` (excès moyen empirique) et compare plusieurs seuils avant de conclure, comme McNeil. Les quantiles et les primes de tranche portent sur la distribution des sinistres du fichier (au-delà de son seuil de collecte). Une tranche s'écrit `priorité,limite` et sa priorité doit dépasser le seuil.
+
+Les méthodes suivantes arrivent par phases : crédibilité, agrégation SCR. Le fichier `references/methodes.md` indique pour chacune la publication qui la valide.

@@ -16,7 +16,8 @@ Moteur de calcul actuariel pour Claude, livré comme skill. Les calculs sont fai
 | Chain Ladder, BF, Cape Cod | disponible (Friedland 2010, Mack 1993) |
 | Mack, ODP analytique, bootstrap ODP | disponible (Mack 1993, England et Verrall 2002) |
 | Survie, primes et provisions vie (SSSM d'AMLCR, Zillmer FPT) | disponible (note MLC SN2.3-SN2.4, validée par Yassine) |
-| GPD, crédibilité | phase 4 |
+| GPD (valeurs extrêmes) | testé, en attente de validation (McNeil 1997, données danoises) |
+| Crédibilité | phase 4, source à fournir |
 | Agrégation SCR | phase 5 |
 
 ## Installation
