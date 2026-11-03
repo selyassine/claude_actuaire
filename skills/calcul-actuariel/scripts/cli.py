@@ -21,6 +21,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from actuaire import __version__  # noqa: E402
 from actuaire.sortie import Hypothese, Resultat  # noqa: E402
+from actuaire.cli_provisionnement import COMMANDES as COMMANDES_PROVISIONNEMENT  # noqa: E402
+from actuaire.cli_provisionnement import args_triangle  # noqa: E402
 from actuaire.triangle import lire_triangle  # noqa: E402
 
 
@@ -74,8 +76,11 @@ def cmd_triangle(args: argparse.Namespace) -> Resultat:
 
 
 COMMANDES = {
-    "environnement": (cmd_environnement, "Vérifie que le moteur et ses dépendances sont disponibles."),
-    "triangle": (cmd_triangle, "Lit un triangle, contrôle sa forme et donne la dernière diagonale."),
+    "environnement": (cmd_environnement, "Vérifie que le moteur et ses dépendances sont disponibles.",
+                      lambda sp: None),
+    "triangle": (cmd_triangle, "Lit un triangle, contrôle sa forme et donne la dernière diagonale.",
+                 args_triangle),
+    **COMMANDES_PROVISIONNEMENT,
 }
 
 
@@ -84,13 +89,10 @@ def construire_parser() -> argparse.ArgumentParser:
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--version", action="version", version=f"claude_actuaire {__version__}")
     sous = p.add_subparsers(dest="commande", required=True)
-    for nom, (_, aide) in COMMANDES.items():
+    for nom, (_, aide, ajouter_args) in COMMANDES.items():
         sp = sous.add_parser(nom, help=aide, description=aide)
         sp.add_argument("--format", choices=["json", "texte"], default="json")
-        if nom == "triangle":
-            sp.add_argument("--entree", required=True, help="Fichier CSV ou Excel du triangle.")
-            sp.add_argument("--feuille", default=None, help="Onglet Excel (nom ou numéro).")
-            sp.add_argument("--type", choices=["auto", "cumule", "incremental"], default="auto")
+        ajouter_args(sp)
     return p
 
 

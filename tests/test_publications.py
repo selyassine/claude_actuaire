@@ -23,6 +23,8 @@ FICHES = charger_fiches()
 def test_valeurs_publiees(fiche):
     argv = [fiche.contenu["methode"], "--entree", str(DOSSIER_TESTS / fiche.contenu["donnees"])]
     for cle, val in (fiche.contenu.get("options") or {}).items():
+        if isinstance(val, str) and val.startswith("donnees/"):
+            val = DOSSIER_TESTS / val
         argv += [f"--{cle}", str(val)]
     problemes = ecarts(calculer(argv), fiche)
     if problemes and not fiche.validee:
