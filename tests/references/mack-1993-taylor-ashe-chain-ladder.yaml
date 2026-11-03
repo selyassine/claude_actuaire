@@ -1,0 +1,75 @@
+id: mack-1993-taylor-ashe-chain-ladder
+methode: chain-ladder
+source:
+  reference: Mack, T. (1993). Distribution-free calculation of the standard error of chain ladder reserve
+    estimates. ASTIN Bulletin 23(2), 213-225.
+  url: https://www.casact.org/library/astin/vol23no2/213.pdf
+  emplacement: Section 4, tableau 1 (données, p. 221), facteurs f_k (p. 221), tableau 2 colonne 'Chain
+    ladder' (p. 221)
+donnees: donnees/taylor_ashe_cumule.csv
+options:
+  type: cumule
+statut: en_attente
+saisie_par: Claude, extraction du texte du PDF fourni par Yassine
+valide_par: null
+date_validation: null
+note: Provisions publiées en milliers, d'où la tolérance de 500. Triangle recopié du tableau 1 (vérifié
+  automatiquement contre le texte du PDF).
+valeurs:
+- chemin: resultats.par_origine.2.provision
+  attendu: 95000
+  tolerance_absolue: 500
+- chemin: resultats.par_origine.3.provision
+  attendu: 470000
+  tolerance_absolue: 500
+- chemin: resultats.par_origine.4.provision
+  attendu: 710000
+  tolerance_absolue: 500
+- chemin: resultats.par_origine.5.provision
+  attendu: 985000
+  tolerance_absolue: 500
+- chemin: resultats.par_origine.6.provision
+  attendu: 1419000
+  tolerance_absolue: 500
+- chemin: resultats.par_origine.7.provision
+  attendu: 2178000
+  tolerance_absolue: 500
+- chemin: resultats.par_origine.8.provision
+  attendu: 3920000
+  tolerance_absolue: 500
+- chemin: resultats.par_origine.9.provision
+  attendu: 4279000
+  tolerance_absolue: 500
+- chemin: resultats.par_origine.10.provision
+  attendu: 4626000
+  tolerance_absolue: 500
+- chemin: resultats.total.provision
+  attendu: 18681000
+  tolerance_absolue: 500
+- chemin: resultats.facteurs.1-2
+  attendu: 3.49
+  tolerance_absolue: 0.005
+- chemin: resultats.facteurs.2-3
+  attendu: 1.75
+  tolerance_absolue: 0.005
+- chemin: resultats.facteurs.3-4
+  attendu: 1.46
+  tolerance_absolue: 0.005
+- chemin: resultats.facteurs.4-5
+  attendu: 1.174
+  tolerance_absolue: 0.0005
+- chemin: resultats.facteurs.5-6
+  attendu: 1.104
+  tolerance_absolue: 0.0005
+- chemin: resultats.facteurs.6-7
+  attendu: 1.086
+  tolerance_absolue: 0.0005
+- chemin: resultats.facteurs.7-8
+  attendu: 1.054
+  tolerance_absolue: 0.0005
+- chemin: resultats.facteurs.8-9
+  attendu: 1.077
+  tolerance_absolue: 0.0005
+- chemin: resultats.facteurs.9-10
+  attendu: 1.018
+  tolerance_absolue: 0.0005

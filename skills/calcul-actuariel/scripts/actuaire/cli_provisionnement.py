@@ -1,0 +1,204 @@
+"""Commandes chain-ladder, bf et cape-cod de la ligne de commande."""
+
+from __future__ import annotations
+
+import argparse
+
+import numpy as np
+
+from .provisionnement import (
+    bornhuetter_ferguson,
+    cape_cod,
+    chain_ladder,
+    description_developpement,
+    estimer_developpement,
+)
+from .sortie import Hypothese, Resultat
+from .triangle import Triangle, _nombre, lire_tableau, lire_triangle
+
+
+def args_triangle(sp: argparse.ArgumentParser) -> None:
+    sp.add_argument("--entree", required=True, help="Fichier CSV ou Excel du triangle.")
+    sp.add_argument("--feuille", default=None, help="Onglet Excel (nom ou numéro).")
+    sp.add_argument("--type", choices=["auto", "cumule", "incremental"], default="auto",
+                    help="Nature du triangle. auto = cumulé si toutes les lignes sont croissantes.")
+
+
+def args_developpement(sp: argparse.ArgumentParser) -> None:
+    args_triangle(sp)
+    sp.add_argument("--moyenne", choices=["ponderee", "simple"], default="ponderee",
+                    help="Moyenne des facteurs individuels (défaut : pondérée par les montants).")
+    sp.add_argument("--periode", type=int, default=None,
+                    help="N'utiliser que les N dernières années calendaires pour chaque facteur.")
+    sp.add_argument("--queue", type=float, default=1.0, help="Facteur de queue (défaut 1).")
+    sp.add_argument("--exclure", default="",
+                    help="Facteurs individuels exclus, ex. '2003@1-2,2005@2-3' (origine@facteur).")
+    sp.add_argument("--facteurs-imposes", default="",
+                    help="Facteurs retenus par jugement, ex. '1-2=1.85,9-10=1.01'.")
+    sp.add_argument("--arrondi", type=int, default=None,
+                    help="Décimales des facteurs retenus et des CDF (ex. 3, convention Friedland). "
+                         "Défaut : pleine précision.")
+
+
+def args_bf(sp: argparse.ArgumentParser) -> None:
+    args_developpement(sp)
+    sp.add_argument("--primes", required=True,
+                    help="CSV/Excel : colonnes Origine, Prime et, au choix, Ratio ou Ultime_a_priori.")
+    sp.add_argument("--ratio", type=float, default=None,
+                    help="Ratio sinistres/primes a priori unique (remplace la colonne Ratio).")
+
+
+def args_cape_cod(sp: argparse.ArgumentParser) -> None:
+    args_developpement(sp)
+    sp.add_argument("--primes", required=True,
+                    help="CSV/Excel : colonnes Origine, Prime (primes déjà ajustées si nécessaire).")
+
+
+# --- préparation commune -------------------------------------------------------------------
+
+def _triangle_cumule(args, res: Resultat) -> Triangle:
+    tri = lire_triangle(args.entree, args.feuille)
+    res.ajouter_entree(args.entree, "triangle")
+    if args.type == "auto":
+        cumule = tri.semble_cumule()
+        res.hypotheses.append(Hypothese(
+            "type_de_triangle", "cumule" if cumule else "incremental",
+            "Détecté automatiquement : lignes croissantes = cumulé. Préciser --type en cas de doute.",
+            "valeur par défaut"))
+        part = tri.part_croissante()
+        if 0.0 < part < 1.0:
+            res.avertissements.append(
+                f"Détection automatique incertaine : {part:.0%} des passages sont croissants. "
+                f"Type retenu : {'cumulé' if cumule else 'incrémental'}. Confirmer avec --type.")
+    else:
+        cumule = args.type == "cumule"
+    res.avertissements.extend(tri.controles())
+    return tri if cumule else tri.en_cumule()
+
+
+def _indice_facteur(tri: Triangle, nom: str) -> int:
+    noms = [f"{tri.developpements[k]}-{tri.developpements[k + 1]}" for k in range(tri.n_dev - 1)]
+    if nom not in noms:
+        raise ValueError(f"facteur inconnu : '{nom}'. Facteurs du triangle : {noms}")
+    return noms.index(nom)
+
+
+def _developpement(tri: Triangle, args, res: Resultat):
+    exclusions = []
+    for item in filter(None, (s.strip() for s in args.exclure.split(","))):
+        origine, facteur = item.split("@")
+        if origine not in tri.origines:
+            raise ValueError(f"origine inconnue dans --exclure : '{origine}'")
+        exclusions.append((tri.origines.index(origine), _indice_facteur(tri, facteur)))
+    imposes = {}
+    for item in filter(None, (s.strip() for s in args.facteurs_imposes.split(","))):
+        nom, val = item.split("=")
+        imposes[_indice_facteur(tri, nom.strip())] = float(val)
+
+    dev = estimer_developpement(tri, args.moyenne, args.periode, exclusions, args.queue, imposes,
+                                args.arrondi)
+    res.options.update({
+        "moyenne": args.moyenne, "periode": args.periode, "queue": args.queue,
+        "exclure": args.exclure or None, "facteurs_imposes": args.facteurs_imposes or None,
+        "arrondi": args.arrondi,
+    })
+    if args.arrondi is not None:
+        res.hypotheses.append(Hypothese("arrondi", args.arrondi,
+                                        "Facteurs et CDF arrondis avant projection (reproduit les exhibits publiés)."))
+    res.hypotheses.append(Hypothese(
+        "moyenne_des_facteurs", args.moyenne,
+        "Pondérée = somme C(k+1) / somme C(k) ; simple = moyenne arithmétique des facteurs individuels.",
+        "option utilisateur" if args.moyenne != "ponderee" else "valeur par défaut"))
+    res.hypotheses.append(Hypothese(
+        "facteur_de_queue", args.queue,
+        "Aucun développement après la dernière période observée." if args.queue == 1.0
+        else "Facteur de queue fourni par l'utilisateur.",
+        "valeur par défaut" if args.queue == 1.0 else "option utilisateur"))
+    if args.periode:
+        res.hypotheses.append(Hypothese("periode", args.periode,
+                                        f"Facteurs estimés sur les {args.periode} dernières années calendaires."))
+    if exclusions:
+        res.hypotheses.append(Hypothese("exclusions", args.exclure,
+                                        "Facteurs individuels retirés par l'utilisateur ; justifier ce choix."))
+    if imposes:
+        res.hypotheses.append(Hypothese("facteurs_imposes", args.facteurs_imposes,
+                                        "Facteurs retenus par jugement ; justifier l'écart avec les facteurs estimés."))
+    if args.queue == 1.0 and not tri.observe()[0].all():
+        res.avertissements.append("La première année d'origine n'est pas complète : un facteur de queue de 1 "
+                                  "suppose qu'il n'y a plus de développement.")
+    return dev
+
+
+def _lire_primes(chemin: str, tri: Triangle) -> dict[str, dict[str, float]]:
+    df = lire_tableau(chemin)
+    cols = {c.strip().lower(): c for c in df.columns}
+    if "origine" not in cols:
+        cols["origine"] = df.columns[0]
+    out = {}
+    for _, ligne in df.iterrows():
+        o = str(ligne[cols["origine"]]).strip()
+        out[o] = {k: _nombre(ligne[cols[k]]) for k in ("prime", "ratio", "ultime_a_priori") if k in cols}
+    manquantes = [o for o in tri.origines if o not in out]
+    if manquantes:
+        raise ValueError(f"origines absentes du fichier de primes : {manquantes}")
+    return out
+
+
+# --- commandes ----------------------------------------------------------------------------
+
+def cmd_chain_ladder(args) -> Resultat:
+    res = Resultat("chain-ladder", {})
+    tri = _triangle_cumule(args, res)
+    dev = _developpement(tri, args, res)
+    res.resultats = {**description_developpement(tri, dev), **chain_ladder(tri, dev)}
+    return res
+
+
+def cmd_bf(args) -> Resultat:
+    res = Resultat("bf", {})
+    tri = _triangle_cumule(args, res)
+    dev = _developpement(tri, args, res)
+    primes = _lire_primes(args.primes, tri)
+    res.ajouter_entree(args.primes, "primes")
+    a_priori = []
+    for o in tri.origines:
+        p = primes[o]
+        if args.ratio is not None:
+            a_priori.append(p["prime"] * args.ratio)
+        elif not np.isnan(p.get("ultime_a_priori", np.nan)):
+            a_priori.append(p["ultime_a_priori"])
+        elif not np.isnan(p.get("ratio", np.nan)):
+            a_priori.append(p["prime"] * p["ratio"])
+        else:
+            raise ValueError(f"pas de ratio ni d'ultime a priori pour l'origine {o} (utiliser --ratio)")
+    res.options["ratio"] = args.ratio
+    res.hypotheses.append(Hypothese(
+        "sinistralite_a_priori",
+        args.ratio if args.ratio is not None else "fichier de primes",
+        "Ultime a priori = prime × ratio a priori ; c'est un choix de jugement à documenter.",
+        "option utilisateur"))
+    res.resultats = {**description_developpement(tri, dev),
+                     **bornhuetter_ferguson(tri, dev, np.array(a_priori))}
+    return res
+
+
+def cmd_cape_cod(args) -> Resultat:
+    res = Resultat("cape-cod", {})
+    tri = _triangle_cumule(args, res)
+    dev = _developpement(tri, args, res)
+    primes = _lire_primes(args.primes, tri)
+    res.ajouter_entree(args.primes, "primes")
+    p = np.array([primes[o]["prime"] for o in tri.origines])
+    res.hypotheses.append(Hypothese(
+        "primes", "fichier de primes",
+        "Le ratio Cape Cod suppose des primes au même niveau tarifaire et de tendance ; "
+        "les ajuster avant l'appel si nécessaire.", "donnée d'entrée"))
+    res.resultats = {**description_developpement(tri, dev), **cape_cod(tri, dev, p)}
+    return res
+
+
+COMMANDES = {
+    "chain-ladder": (cmd_chain_ladder, "Chain Ladder : facteurs, ultimes et provisions.", args_developpement),
+    "bf": (cmd_bf, "Bornhuetter-Ferguson à partir d'une sinistralité a priori.", args_bf),
+    "cape-cod": (cmd_cape_cod, "Cape Cod : sinistralité a priori estimée sur toutes les années.", args_cape_cod),
+}
