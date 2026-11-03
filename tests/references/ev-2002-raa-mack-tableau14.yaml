@@ -1,0 +1,47 @@
+id: ev-2002-raa-mack-tableau14
+methode: mack
+source:
+  reference: England, P. D. et Verrall, R. J. (2002). Stochastic Claims Reserving in General Insurance.
+    British Actuarial Journal 8(3), 443-544.
+  url: ''
+  emplacement: Section 7.5, tableau 14, p. 35
+donnees: donnees/raa_cumule.csv
+options:
+  type: cumule
+  sigma-dernier: precedent
+statut: en_attente
+saisie_par: Claude, extraction du texte du PDF fourni par Yassine
+valide_par: null
+date_validation: null
+note: 'Variante : dernier sigma² égal à l''avant-dernier.'
+valeurs:
+- chemin: resultats.par_origine.1982.erreur_prediction
+  attendu: 500
+  tolerance_absolue: 0.5
+- chemin: resultats.par_origine.1983.erreur_prediction
+  attendu: 863
+  tolerance_absolue: 0.5
+- chemin: resultats.par_origine.1984.erreur_prediction
+  attendu: 1014
+  tolerance_absolue: 0.5
+- chemin: resultats.par_origine.1985.erreur_prediction
+  attendu: 1623
+  tolerance_absolue: 0.5
+- chemin: resultats.par_origine.1986.erreur_prediction
+  attendu: 2065
+  tolerance_absolue: 0.5
+- chemin: resultats.par_origine.1987.erreur_prediction
+  attendu: 2259
+  tolerance_absolue: 0.5
+- chemin: resultats.par_origine.1988.erreur_prediction
+  attendu: 5391
+  tolerance_absolue: 0.5
+- chemin: resultats.par_origine.1989.erreur_prediction
+  attendu: 6348
+  tolerance_absolue: 0.5
+- chemin: resultats.par_origine.1990.erreur_prediction
+  attendu: 24571
+  tolerance_absolue: 0.5
+- chemin: resultats.total.erreur_prediction
+  attendu: 27172
+  tolerance_absolue: 0.5
