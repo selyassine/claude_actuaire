@@ -1,5 +1,18 @@
 # Historique des versions
 
+## 0.5.1 (2026-11-05) : règles de provisions tunisiennes
+
+Nouvelle commande `provisions-tn` (arrêté du ministre des finances du 27 février 2001) :
+
+- PPNA au prorata temporis en jours exacts, contrat par contrat (art. 17).
+- PRC par catégorie à partir du ratio des deux derniers exercices (art. 19).
+- Minimum de 5 % des frais de gestion des sinistres, base au choix (art. 21).
+- Auto matériels : la plus élevée des évaluations dossier par dossier, coût moyen et cadences de règlement, ces dernières reprises d'une sortie `chain-ladder` archivée (art. 22).
+- Provisions d'équilibrage (crédit, caution) et d'égalisation (grêle) : dotation de 75 % de l'excédent dans la limite du plafond, reprise en cas de perte (art. 24 et 25).
+- Rentes majorées de 5 % (art. 27).
+
+Tests : 386. Fiche calculée en R (`tests/references/r/provisions_tunisie.R`), en attente de validation.
+
 ## 0.5.0 (2026-11-05) : réglementation tunisienne, marge de solvabilité et tables TD99 / TV99
 
 Nouvelle commande `marge-solvabilite-tn` :

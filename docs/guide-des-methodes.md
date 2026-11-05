@@ -2,7 +2,7 @@
 
 Ce guide décrit, pour chaque méthode, ce que le moteur calcule, sous quelles conventions, dans quel domaine il refuse de calculer et comment le résultat a été validé. Les valeurs citées en exemple sont les valeurs **publiées** ; le moteur les reproduit dans les tolérances indiquées (fiches de `tests/references/`, tests de `tests/test_publications.py`).
 
-Version du moteur décrite : 0.5.0.
+Version du moteur décrite : 0.5.1.
 
 ## Sommaire
 
@@ -16,6 +16,7 @@ Version du moteur décrite : 0.5.0.
 7. [Crédibilité](#7-crédibilité)
 8. [Agrégation du SCR](#8-agrégation-du-scr)
    - [8 bis. Marge de solvabilité tunisienne](#8-bis-marge-de-solvabilité-tunisienne)
+   - [8 ter. Provisions techniques tunisiennes](#8-ter-provisions-techniques-tunisiennes)
 9. [Traçabilité et reproduction d'un calcul](#9-traçabilité-et-reproduction-dun-calcul)
 10. [Validation d'un modèle externe : comparer](#10-validation-dun-modèle-externe--comparer)
 11. [Contrôle qualité des données : controler](#11-contrôle-qualité-des-données--controler)
@@ -200,6 +201,28 @@ Avec `marge_constituee`, il additionne les éléments de l'article 58 (50 % du c
 **Domaine et refus.** Clés inconnues refusées ; nombre d'exercices de règlements égal à 3 (7 avec `assurance_credit`) ; primes et bruts strictement positifs ; montants de la marge constituée positifs (le signe est appliqué par le moteur). Un net supérieur au brut est signalé. Une marge constituée inférieure au minimum est signalée.
 
 **Validation.** Aucun texte ne publie d'exemple chiffré : trois cas construits (non-vie, vie, mixte avec assurance crédit) sont recalculés indépendamment en R (`tests/references/r/marge_tunisie.R`), fiches en attente de validation par l'actuaire.
+
+## 8 ter. Provisions techniques tunisiennes
+
+Commande : `provisions-tn` (nouveau en 0.5.1). Règles non-vie de l'arrêté du ministre des finances du 27 février 2001. Le fichier JSON contient un ou plusieurs blocs :
+
+| Bloc | Article | Ce que fait le moteur |
+| --- | --- | --- |
+| `ppna` | 17 | Prorata temporis contrat par contrat sur la prime commerciale, en jours exacts : prime × (échéance − inventaire) / (échéance − effet) ; toute la prime pour un contrat à effet futur, rien pour un contrat échu. Totaux par catégorie. |
+| `prc` | 19 | Par catégorie : ratio = (charge de sinistres + frais) / primes acquises des deux derniers exercices ; PRC = max(ratio − 1 ; 0) × PPNA. |
+| `frais_gestion_sinistres` | 21 | Frais retenus = max(frais estimés ; minimum de 5 %). Par défaut le minimum porte sur la PSAP frais compris (frais ≥ 5/95 de la PSAP hors frais) ; `"base_minimum": "psap_hors_frais"` le calcule sur la PSAP hors frais. |
+| `auto_materiels` | 22 | La plus élevée de trois évaluations : dossier par dossier (fournie), coût moyen (nombre de dossiers × coût moyen), cadences de règlement (provision totale d'une sortie `chain-ladder` archivée, passée par `--cadences`). |
+| `equilibrage` | 24 | Crédit et caution : dotation = min(75 % de l'excédent technique ; plafond − provision), plafond = 150 % de la plus forte prime nette des 5 exercices précédents. |
+| `egalisation_grele` | 25 | Grêle : même règle, plafond = 200 % des primes de l'exercice. |
+| `rentes` | 27 | Provision mathématique des rentes × 1,05. |
+
+**Interprétations rendues comme hypothèses.** Les primes acquises de la PRC sont fournies déjà corrigées (primes restant à émettre, primes à annuler, variation de PPNA). La base du minimum de frais est la PSAP frais compris, sauf option. Une perte technique est imputée sur la provision d'équilibrage ou d'égalisation, dans la limite de son montant (l'arrêté ne décrit pas la reprise).
+
+**Ce qu'il ne fait pas.** Il n'évalue pas les dossiers un par un, ne calcule pas le coût moyen des exercices antérieurs, et ne calcule pas les PM de rentes (utiliser `survie` ou `tarif-vie`).
+
+**Domaine et refus.** Clés inconnues refusées ; dates au format AAAA-MM-JJ, échéance après l'effet ; primes acquises strictement positives ; 5 exercices de primes pour l'équilibrage ; `--cadences` obligatoire pour `auto_materiels` et limitée à une sortie `chain-ladder` dont l'empreinte est intacte.
+
+**Validation.** Aucun texte ne publie d'exemple chiffré : un cas construit couvrant les sept règles est recalculé indépendamment en R (`tests/references/r/provisions_tunisie.R`), fiche en attente de validation.
 
 ## 9. Traçabilité et reproduction d'un calcul
 

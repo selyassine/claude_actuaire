@@ -1,0 +1,25 @@
+== ppna (art. 17, jours exacts) ==
+ppna_automobile = 944.510010537408
+ppna_incendie = 1500
+ppna_total = 2444.51001053741
+== prc (art. 19) ==
+prc_ratio_automobile = 1.07407407407407
+prc_automobile = 311.111111111112
+prc_ratio_incendie = 0.65
+prc_incendie = 0
+prc_total = 311.111111111112
+== frais de gestion des sinistres (art. 21, 5 % de la PSAP frais compris) ==
+fgs_minimum = 1052.63157894737
+fgs_retenus = 1052.63157894737
+== auto matériels (art. 22) ==
+auto_cadences = 4589.25183021105
+auto_cout_moyen = 3150
+auto_provision = 4589.25183021105
+== équilibrage (art. 24) et égalisation grêle (art. 25) ==
+equilibrage_plafond = 2850
+equilibrage_dotation = 1800
+grele_plafond = 800
+grele_reprise = 120
+grele_provision_fin = 180
+== rentes (art. 27) ==
+rentes_provision_chargee = 8400

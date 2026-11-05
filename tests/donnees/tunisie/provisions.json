@@ -1,0 +1,26 @@
+{
+  "unite": "milliers de dinars",
+  "commentaire": "Cas construit couvrant les règles des articles 17 à 27 de l'arrêté du 27 février 2001.",
+  "ppna": {
+    "date_inventaire": "2025-12-31",
+    "contrats": [
+      {"id": "A1", "categorie": "automobile", "date_effet": "2025-07-01", "date_echeance": "2026-07-01", "prime_commerciale": 1200},
+      {"id": "A2", "categorie": "automobile", "date_effet": "2025-10-15", "date_echeance": "2026-04-15", "prime_commerciale": 600},
+      {"id": "I1", "categorie": "incendie", "date_effet": "2025-03-01", "date_echeance": "2026-03-01", "prime_commerciale": 3650},
+      {"id": "I2", "categorie": "incendie", "date_effet": "2026-01-01", "date_echeance": "2027-01-01", "prime_commerciale": 900},
+      {"id": "I3", "categorie": "incendie", "date_effet": "2024-12-31", "date_echeance": "2025-12-31", "prime_commerciale": 500}
+    ]
+  },
+  "prc": {
+    "automobile": {"charge_sinistres": 9500, "frais": 2100, "primes_acquises": 10800, "ppna": 4200},
+    "incendie": {"charge_sinistres": 3000, "frais": 900, "primes_acquises": 6000, "ppna": 1500}
+  },
+  "frais_gestion_sinistres": {"psap_hors_frais": 20000, "frais_estimes": 800},
+  "auto_materiels": {
+    "dossier_par_dossier": 2900,
+    "cout_moyen": {"nombre_dossiers": 140, "cout_moyen": 22.5}
+  },
+  "equilibrage": {"provision_debut": 1000, "excedent_technique": 2400, "primes_nettes_5_exercices": [1500, 1800, 1700, 1650, 1900]},
+  "egalisation_grele": {"provision_debut": 300, "excedent_technique": -120, "primes_exercice": 400},
+  "rentes": {"provision_mathematique": 8000}
+}

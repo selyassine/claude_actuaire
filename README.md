@@ -35,6 +35,7 @@ Les erreurs par année d'origine étaient justes dans les deux cas. L'erreur ne 
 | Crédibilité (Bühlmann, Bühlmann-Straub, hiérarchique, Hachemeister) | disponible (vignette actuar, données de Hachemeister, validé par Yassine) |
 | Agrégation SCR formule standard | disponible (SFCR CCR 2024 et IPBP 2016, validé par Yassine) |
 | Marge de solvabilité tunisienne (`marge-solvabilite-tn`) et tables TD99 / TV99 | disponible (cas construits recalculés en R, en attente de validation) |
+| Provisions techniques tunisiennes (`provisions-tn`, arrêté du 27/02/2001) | disponible (cas construit recalculé en R, en attente de validation) |
 | Contrôle qualité des données sans calcul (`controler`) | disponible : triangles, sinistres, primes ; rien n'est corrigé |
 | Registre des hypothèses d'un dossier (`registre`) | disponible : choix de jugement, valeurs par défaut, incohérences entre calculs, note Markdown |
 | Comparaison avec un modèle externe (`comparer`) | disponible : rapport d'écarts ligne à ligne, arrondis publiés, facteurs d'unité |

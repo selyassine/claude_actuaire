@@ -38,6 +38,7 @@ python <skill>/scripts/cli.py credibilite --entree experience.csv --modele buhlm
 python <skill>/scripts/cli.py credibilite --entree experience.csv --modele regression --barycentre --periode-future 13
 python <skill>/scripts/cli.py scr --entree scr.json
 python <skill>/scripts/cli.py marge-solvabilite-tn --entree marge.json          # marge de solvabilité tunisienne (art. 58 bis)
+python <skill>/scripts/cli.py provisions-tn --entree provisions.json --cadences cl_auto_materiels.json   # règles de l'arrêté tunisien de 2001
 python <skill>/scripts/cli.py survie --modele td99 --taux 0.03 --age 60           # tables tunisiennes TD99 / TV99
 python <skill>/scripts/cli.py survie --modele sssm --taux 0.04 --age 50 --n 20
 python <skill>/scripts/cli.py tarif-vie --modele sssm --taux 0.04 --type vie-entiere --age 50 --capital 100000 \
@@ -108,10 +109,13 @@ Pour `tranche-xl`, même fichier de sinistres que `gpd`. `--annees` (nombre d'an
 | Commande | Rôle | Statut |
 | --- | --- | --- |
 | `marge-solvabilite-tn` | Marge de solvabilité minimale du Code des assurances tunisien (art. 58 bis : non-vie, vie, mixte) et taux de couverture (art. 58) | testé : cas construits recalculés en R, fiches en attente de validation |
+| `provisions-tn` | Règles de provisions non-vie de l'arrêté tunisien du 27/02/2001 : PPNA prorata temporis, PRC, minimum de 5 % des frais de gestion des sinistres, auto matériels (la plus haute de trois évaluations), équilibrage, égalisation grêle, rentes + 5 % | testé : cas construit recalculé en R, fiche en attente de validation |
 | `registre` | Registre des hypothèses d'un dossier : consolide les sorties archivées, classe les hypothèses (choix de jugement, valeurs par défaut, méthode), détecte les incohérences, écrit la note d'hypothèses | disponible |
 | `comparer` | Rapport d'écarts ligne à ligne entre les résultats d'un modèle externe et une sortie archivée du moteur | testé (propriétés et refus) |
 
 Pour `marge-solvabilite-tn`, le fichier JSON donne les primes, les règlements de chaque exercice (3, ou 7 pour l'assurance crédit), les PSAP de début et de fin, les recours encaissés, la charge nette, et pour la vie les PM et capitaux brut et net (voir le guide des méthodes, § 8 bis). Ne complète pas un montant manquant : demande-le. Rapporte les deux interprétations rendues en hypothèses (recours déduits, rapport sinistres sur la charge de la période). Pour la vie tunisienne, utilise `--modele td99` (contrats en cas de décès) ou `--modele tv99` (contrats en cas de survie).
+
+Pour `provisions-tn`, chaque bloc est facultatif (voir le guide des méthodes, § 8 ter). Pour les sinistres matériels automobile, lance d'abord `chain-ladder` sur le triangle des règlements, enregistre la sortie, puis passe-la avec `--cadences`. Rapporte les trois évaluations et celle retenue, et les interprétations rendues en hypothèses.
 
 Pour un dossier de plusieurs calculs, enregistre chaque sortie JSON dans un même dossier (par exemple `sorties/`), puis lance `registre --sorties sorties/ --note hypotheses.md` avant de rédiger la synthèse. Présente d'abord les incohérences, puis les valeurs par défaut à faire confirmer par l'utilisateur. Ne présente pas une note dont la conclusion est `bloquant`.
 
