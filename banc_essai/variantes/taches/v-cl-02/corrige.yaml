@@ -1,7 +1,9 @@
 famille: chain_ladder
 fiche_source: variante-cl-02
 source_r: R ChainLadder::chainladder avec poids sur les 3 dernières diagonales
-statut: en_attente_validation
+statut: valide
+valide_par: Yassine Selmi
+date_validation: '2026-11-05'
 valeurs:
 - nom: provision_totale
   attendu: 25018.291783

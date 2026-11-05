@@ -2,7 +2,9 @@ famille: vie
 fiche_source: variante-vie-01
 source_r: R lifecontingencies (axn, Axn, Exn) sur une table Makeham exacte ; équation
   des primes explicite
-statut: en_attente_validation
+statut: valide
+valide_par: Yassine Selmi
+date_validation: '2026-11-05'
 valeurs:
 - nom: prime_commerciale
   attendu: 2218.565975

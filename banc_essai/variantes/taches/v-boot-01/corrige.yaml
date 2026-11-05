@@ -1,7 +1,9 @@
 famille: bootstrap_odp
 fiche_source: variante-boot-01
 source_r: R ChainLadder::BootChainLadder(R = 20000, process.distr = "od.pois"), set.seed(42)
-statut: en_attente_validation
+statut: valide
+valide_par: Yassine Selmi
+date_validation: '2026-11-05'
 valeurs:
 - nom: provision_moyenne
   attendu: 22181.0221

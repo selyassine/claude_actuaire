@@ -1,7 +1,9 @@
 famille: credibilite
 fiche_source: variante-cred-02
 source_r: R actuar::cm(~cohorte + cohorte:entite, method = "iterative")
-statut: en_attente_validation
+statut: valide
+valide_par: Yassine Selmi
+date_validation: '2026-11-05'
 valeurs:
 - nom: prime_collective
   attendu: 2021.364354

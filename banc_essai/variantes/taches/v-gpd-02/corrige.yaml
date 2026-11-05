@@ -1,7 +1,9 @@
 famille: gpd
 fiche_source: variante-gpd-02
 source_r: R evir::gpd et riskmeasures
-statut: en_attente_validation
+statut: valide
+valide_par: Yassine Selmi
+date_validation: '2026-11-05'
 valeurs:
 - nom: n_depassements
   attendu: 698.0

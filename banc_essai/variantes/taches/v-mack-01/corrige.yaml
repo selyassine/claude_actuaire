@@ -1,7 +1,9 @@
 famille: mack
 fiche_source: variante-mack-01
 source_r: R ChainLadder::MackChainLadder(est.sigma = "Mack")
-statut: en_attente_validation
+statut: valide
+valide_par: Yassine Selmi
+date_validation: '2026-11-05'
 valeurs:
 - nom: provision_totale
   attendu: 10941.118993

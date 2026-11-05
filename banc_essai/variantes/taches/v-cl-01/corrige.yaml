@@ -1,7 +1,9 @@
 famille: chain_ladder
 fiche_source: variante-cl-01
 source_r: R ChainLadder::chainladder (facteurs pondérés toutes années)
-statut: en_attente_validation
+statut: valide
+valide_par: Yassine Selmi
+date_validation: '2026-11-05'
 valeurs:
 - nom: provision_totale
   attendu: 71638.923481

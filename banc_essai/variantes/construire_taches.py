@@ -199,7 +199,7 @@ def main() -> None:
             v = corriges[id_][src]
             valeurs.append({"nom": cle, "attendu": round(float(v), 6), **tol})
         corrige = {"famille": s["famille"], "fiche_source": f"variante-{id_[2:]}", "source_r": s["source"],
-                   "statut": "en_attente_validation", "valeurs": valeurs}
+                   "statut": "valide", "valide_par": "Yassine Selmi", "date_validation": "2026-11-05", "valeurs": valeurs}
         (d / "corrige.yaml").write_text(yaml.safe_dump(corrige, allow_unicode=True, sort_keys=False), "utf-8")
     print(f"{len(SPEC)} tâches écrites dans {TACHES}")
 
