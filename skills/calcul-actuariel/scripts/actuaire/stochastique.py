@@ -42,6 +42,12 @@ def mack(tri: Triangle, sigma_dernier: str = "mack") -> dict:
       - "precedent" : sigma²_{n-1} = sigma²_{n-2} (variante d'England et Verrall 2002, tableau 14).
     """
     n = _verifier_carre(tri)
+    if sigma_dernier not in ("mack", "precedent"):
+        raise ValueError(f"sigma_dernier inconnu : {sigma_dernier}")
+    minimum = 4 if sigma_dernier == "mack" else 3
+    if n < minimum:
+        raise ValueError(f"Mack : triangle de {n} × {n} trop petit (au moins {minimum} × {minimum} pour estimer "
+                         "tous les paramètres de variance)")
     C = tri.valeurs
     dev = estimer_developpement(tri)
     f = dev.facteurs
@@ -53,14 +59,15 @@ def mack(tri: Triangle, sigma_dernier: str = "mack") -> dict:
         nb = m.sum()
         if nb >= 2:
             sigma2[k] = (C[m, k] * (indiv[m, k] - f[k]) ** 2).sum() / (nb - 1)
-    if n >= 4:
-        if sigma_dernier == "mack":
-            a, b = sigma2[n - 3], sigma2[n - 4]
-            sigma2[n - 2] = min(a * a / b if b > 0 else a, b, a)
-        elif sigma_dernier == "precedent":
-            sigma2[n - 2] = sigma2[n - 3]
-        else:
-            raise ValueError(f"sigma_dernier inconnu : {sigma_dernier}")
+    if sigma_dernier == "mack":
+        a, b = sigma2[n - 3], sigma2[n - 4]
+        sigma2[n - 2] = min(a * a / b if b > 0 else a, b, a)
+    elif sigma_dernier == "precedent":
+        sigma2[n - 2] = sigma2[n - 3]
+    else:
+        raise ValueError(f"sigma_dernier inconnu : {sigma_dernier}")
+    if not np.all(np.isfinite(sigma2)):
+        raise ValueError("Mack : paramètre de variance non estimable (moins de deux facteurs individuels)")
 
     # Projection complète du triangle
     proj = C.copy()
@@ -128,6 +135,20 @@ def _ajuste_odp(C: np.ndarray, n: int):
     return f, m
 
 
+def _verifier_odp(C: np.ndarray, n: int) -> None:
+    """Conditions du modèle ODP : au moins un degré de liberté, facteurs définis, valeurs ajustées passées > 0."""
+    if n < 3:
+        raise ValueError(f"ODP : triangle de {n} × {n} trop petit (au moins 3 × 3 pour avoir un degré de liberté)")
+    with np.errstate(divide="ignore", invalid="ignore"):
+        f, m = _ajuste_odp(C, n)
+    if not np.all(np.isfinite(f)) or np.any(f <= 0):
+        raise ValueError("ODP : facteur de développement non défini ou négatif (colonne de montants nuls ?)")
+    passe = np.add.outer(np.arange(n), np.arange(n)) < n
+    if np.any(~(m[passe] > 0)):
+        raise ValueError("ODP : valeur ajustée nulle ou négative dans le passé ; le modèle de Poisson "
+                         "sur-dispersé exige des incréments ajustés strictement positifs")
+
+
 def _dispersion(y: np.ndarray, mu: np.ndarray, ddl: int, methode: str) -> float:
     """Paramètre de dispersion phi du modèle ODP.
 
@@ -151,6 +172,7 @@ def odp_analytique(tri: Triangle, dispersion: str = "pearson") -> dict:
     """
     n = _verifier_carre(tri)
     C = tri.valeurs
+    _verifier_odp(C, n)
     inc = C.copy()
     inc[:, 1:] = C[:, 1:] - C[:, :-1]
     _, m = _ajuste_odp(C, n)
@@ -211,8 +233,14 @@ def odp_analytique(tri: Triangle, dispersion: str = "pearson") -> dict:
 def bootstrap_odp(tri: Triangle, simulations: int = 10000, graine: int | None = 2026,
                   quantiles=(0.5, 0.75, 0.9, 0.95, 0.99, 0.995)) -> dict:
     n = _verifier_carre(tri)
+    if simulations < 2:
+        raise ValueError("bootstrap : au moins 2 simulations")
+    for q in quantiles:
+        if not 0 < q < 1:
+            raise ValueError(f"niveau de quantile hors de ]0, 1[ : {q}")
     rng = np.random.default_rng(graine)
     C = tri.valeurs
+    _verifier_odp(C, n)
     inc = C.copy()
     inc[:, 1:] = C[:, 1:] - C[:, :-1]
     _, m = _ajuste_odp(C, n)
@@ -223,6 +251,9 @@ def bootstrap_odp(tri: Triangle, simulations: int = 10000, graine: int | None = 
     ddl = nb_obs - (2 * n - 1)
     r = (inc[passe] - m[passe]) / np.sqrt(m[passe])
     phi = float((r ** 2).sum() / ddl)
+    if not phi > 0:
+        raise ValueError("bootstrap : dispersion nulle (le modèle reproduit exactement les données), "
+                         "la loi de processus n'est pas définie")
     r_adj = r * np.sqrt(nb_obs / ddl)
 
     m_passe = m[passe]
@@ -233,8 +264,12 @@ def bootstrap_odp(tri: Triangle, simulations: int = 10000, graine: int | None = 
         tirage = rng.choice(r_adj, size=nb_obs, replace=True)
         pseudo_inc[passe] = tirage * np.sqrt(m_passe) + m_passe
         pseudo_cum = np.where(passe, np.nancumsum(pseudo_inc, axis=1), np.nan)
-        f = np.array([pseudo_cum[: n - 1 - k, k + 1].sum() / pseudo_cum[: n - 1 - k, k].sum()
-                      for k in range(n - 1)])
+        with np.errstate(divide="ignore", invalid="ignore"):
+            f = np.array([pseudo_cum[: n - 1 - k, k + 1].sum() / pseudo_cum[: n - 1 - k, k].sum()
+                          for k in range(n - 1)])
+        if not np.all(np.isfinite(f)):
+            raise ValueError(f"bootstrap : facteur de développement non défini dans la simulation {s + 1} "
+                             "(pseudo-cumulés nuls) ; triangle trop petit ou trop irrégulier pour ce bootstrap")
         proj = pseudo_cum.copy()
         for i in range(1, n):
             for k in range(n - i, n):

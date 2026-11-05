@@ -41,8 +41,27 @@ class Triangle:
                 out[i] = self.valeurs[i, idx[-1]]
         return out
 
+    def verifier_forme(self) -> None:
+        """Erreur bloquante si une valeur est infinie, une ligne vide, ou s'il manque une valeur
+        avant la dernière valeur observée d'une ligne (trou) : aucune méthode ne doit deviner ces cellules."""
+        if np.any(np.isinf(self.valeurs)):
+            raise ValueError("le triangle contient des valeurs infinies")
+        if len(set(self.origines)) != len(self.origines):
+            raise ValueError("années d'origine en double dans le triangle")
+        if len(set(self.developpements)) != len(self.developpements):
+            raise ValueError("périodes de développement en double dans le triangle")
+        obs = self.observe()
+        for i in range(self.n_origines):
+            idx = np.where(obs[i])[0]
+            if idx.size == 0:
+                raise ValueError(f"ligne {self.origines[i]} : aucune valeur observée")
+            if idx[0] != 0 or idx.size != idx[-1] + 1:
+                raise ValueError(f"ligne {self.origines[i]} : valeur manquante avant la dernière valeur observée ; "
+                                 "compléter la cellule (0 si aucun paiement) plutôt que la laisser vide")
+
     def en_cumule(self) -> "Triangle":
-        cum = np.where(self.observe(), np.nancumsum(self.valeurs, axis=1), np.nan)
+        self.verifier_forme()
+        cum = np.where(self.observe(), np.cumsum(np.nan_to_num(self.valeurs), axis=1), np.nan)
         return Triangle(self.origines, self.developpements, cum)
 
     def en_incremental(self) -> "Triangle":

@@ -18,9 +18,11 @@ def _preparer(X: np.ndarray, W: np.ndarray | None) -> tuple[np.ndarray, np.ndarr
     W = np.ones_like(X) if W is None else np.asarray(W, dtype=float)
     if X.shape != W.shape:
         raise ValueError("ratios et poids n'ont pas la même forme")
+    if np.any(np.isinf(X)) or np.any(np.isinf(W)):
+        raise ValueError("ratios ou poids infinis")
+    if np.any(W[~np.isnan(W)] < 0):
+        raise ValueError("poids négatifs : un poids est un volume (nombre de sinistres, exposition)")
     present = ~np.isnan(X) & ~np.isnan(W) & (W > 0)
-    if np.any(W[present] < 0):
-        raise ValueError("poids négatifs")
     return np.where(present, X, 0.0), np.where(present, W, 0.0), present
 
 

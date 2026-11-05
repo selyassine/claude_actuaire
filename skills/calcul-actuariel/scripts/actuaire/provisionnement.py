@@ -68,19 +68,34 @@ def estimer_developpement(
                     utilise[i, k] = False
     for i, k in exclusions or []:
         utilise[i, k] = False
+    if not (np.isfinite(queue) and queue > 0):
+        raise ValueError(f"facteur de queue invalide : {queue} (nombre fini strictement positif attendu)")
+    imposes = dict(facteurs_imposes or {})
+    for k, v in imposes.items():
+        if not 0 <= k < n_k - 1:
+            raise ValueError(f"facteur imposé hors du triangle : indice {k}")
+        if not (np.isfinite(v) and v > 0):
+            raise ValueError(f"facteur imposé invalide : {v} (nombre fini strictement positif attendu)")
 
     f = np.full(n_k - 1, np.nan)
     for k in range(n_k - 1):
+        if k in imposes:
+            f[k] = imposes[k]
+            continue
         m = utilise[:, k]
         if not m.any():
-            f[k] = 1.0
-            continue
+            raise ValueError(f"facteur {k + 1} → {k + 2} non estimable : aucun facteur individuel utilisable "
+                             "(données, période ou exclusions). L'imposer explicitement (--facteurs-imposes) "
+                             "en justifiant la valeur.")
         if moyenne == "ponderee":
-            f[k] = cum[m, k + 1].sum() / cum[m, k].sum()
+            den = cum[m, k].sum()
+            if not den > 0:
+                raise ValueError(f"facteur {k + 1} → {k + 2} : somme des montants de départ nulle ou négative")
+            f[k] = cum[m, k + 1].sum() / den
         else:
             f[k] = indiv[m, k].mean()
-    for k, v in (facteurs_imposes or {}).items():
-        f[k] = v
+        if not (np.isfinite(f[k]) and f[k] > 0):
+            raise ValueError(f"facteur {k + 1} → {k + 2} estimé invalide : {f[k]}")
     if arrondi is not None:
         f = np.round(f, arrondi)
     cdf = np.empty(n_k)
@@ -106,6 +121,11 @@ def chain_ladder(tri: Triangle, dev: Developpement) -> dict:
 
 
 def bornhuetter_ferguson(tri: Triangle, dev: Developpement, ultimes_a_priori: np.ndarray) -> dict:
+    ultimes_a_priori = np.asarray(ultimes_a_priori, dtype=float)
+    if ultimes_a_priori.shape != (tri.n_origines,):
+        raise ValueError("un ultime a priori par année d'origine est attendu")
+    if not np.all(np.isfinite(ultimes_a_priori)) or np.any(ultimes_a_priori < 0):
+        raise ValueError("ultimes a priori : valeurs finies et positives ou nulles attendues")
     age = _age_courant(tri)
     diag = tri.derniere_diagonale()
     cdf = dev.cdf[age]
@@ -124,6 +144,11 @@ def cape_cod(tri: Triangle, dev: Developpement, primes: np.ndarray) -> dict:
     ELR = somme des dernières diagonales / somme des primes « utilisées » (prime / CDF).
     Les primes doivent déjà être ajustées (niveau tarifaire, tendance) si la méthode l'exige.
     """
+    primes = np.asarray(primes, dtype=float)
+    if primes.shape != (tri.n_origines,):
+        raise ValueError("une prime par année d'origine est attendue")
+    if not np.all(np.isfinite(primes)) or np.any(primes <= 0):
+        raise ValueError("primes : valeurs finies et strictement positives attendues")
     age = _age_courant(tri)
     diag = tri.derniere_diagonale()
     cdf = dev.cdf[age]

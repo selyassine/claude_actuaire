@@ -30,21 +30,52 @@ def _log_vraisemblance_negative(params: np.ndarray, y: np.ndarray) -> float:
     return len(y) * log_sigma + (1.0 / xi + 1.0) * np.log(z).sum()
 
 
-def ajuster_gpd(excedents: np.ndarray) -> tuple[float, float, bool]:
-    """Maximum de vraisemblance (xi, sigma) sur les excès ; rend aussi un indicateur de convergence."""
+def ajuster_gpd(excedents: np.ndarray, diagnostic: dict | None = None) -> tuple[float, float, bool]:
+    """Maximum de vraisemblance (xi, sigma) sur les excès ; rend aussi un indicateur de convergence.
+
+    Plusieurs points de départ (moments, xi = -0,2 / 0,1 / 0,5) ; chacun est relancé une fois depuis
+    son optimum, et la meilleure vraisemblance est retenue. `diagnostic`, s'il est fourni, reçoit la
+    log-vraisemblance, les départs essayés et l'écart entre optima (alerte si plusieurs optima distincts).
+    """
     y = np.asarray(excedents, dtype=float)
-    if y.size < 2 or np.any(y < 0):
-        raise ValueError("il faut au moins deux excès positifs ou nuls")
-    # départ : méthode des moments (valable si xi < 1/2), bornée
+    if y.size < 2 or np.any(y < 0) or not np.all(np.isfinite(y)):
+        raise ValueError("il faut au moins deux excès finis, positifs ou nuls")
     m, v = y.mean(), y.var(ddof=1)
+    if not m > 0:
+        raise ValueError("tous les excès sont nuls : la GPD n'est pas identifiable")
     xi0 = float(np.clip(0.5 * (1.0 - m * m / v), -0.4, 0.9)) if v > 0 else 0.1
-    sigma0 = max(m * (1.0 - xi0), 1e-8)
-    depart = np.array([xi0, math.log(sigma0)])
-    r = optimize.minimize(_log_vraisemblance_negative, depart, args=(y,), method="Nelder-Mead",
-                          options={"xatol": 1e-12, "fatol": 1e-12, "maxiter": 20000})
-    r2 = optimize.minimize(_log_vraisemblance_negative, r.x, args=(y,), method="Nelder-Mead",
-                           options={"xatol": 1e-12, "fatol": 1e-12, "maxiter": 20000})
-    return float(r2.x[0]), float(math.exp(r2.x[1])), bool(r2.success)
+    departs = [(xi0, max(m * (1.0 - xi0), 1e-8))] + [(x, m * (1.0 - x)) for x in (-0.2, 0.1, 0.5)]
+    opts = {"xatol": 1e-12, "fatol": 1e-12, "maxiter": 20000}
+    essais = []
+    for xi_d, s_d in departs:
+        d = np.array([xi_d, math.log(s_d)])
+        if not np.isfinite(_log_vraisemblance_negative(d, y)):
+            continue  # départ hors du support de la GPD
+        r = optimize.minimize(_log_vraisemblance_negative, d, args=(y,), method="Nelder-Mead", options=opts)
+        r2 = optimize.minimize(_log_vraisemblance_negative, r.x, args=(y,), method="Nelder-Mead", options=opts)
+        if np.isfinite(r2.fun):
+            essais.append((float(r2.fun), r2, (xi_d, s_d)))
+    if not essais:
+        raise ValueError("GPD : aucune optimisation n'a trouvé de vraisemblance finie")
+    essais.sort(key=lambda e: e[0])
+    best = essais[0][1]
+    xi, sigma = float(best.x[0]), float(math.exp(best.x[1]))
+    meilleurs = [e for e in essais if e[0] - essais[0][0] < 1e-6]
+    ecart_xi = max(abs(float(e[1].x[0]) - xi) for e in meilleurs)
+    converge = any(e[1].success for e in meilleurs) and ecart_xi < 1e-4
+    distincts = [e for e in essais if e[0] - essais[0][0] > 1e-6]
+    if diagnostic is not None:
+        diagnostic.update({
+            "log_vraisemblance": -essais[0][0],
+            "departs_essayes": len(departs),
+            "departs_convergents": len(essais),
+            "iterations": int(best.nit),
+            "statut_optimiseur": str(best.message),
+            "departs_au_meilleur_optimum": len(meilleurs),
+            "ecart_xi_entre_departs": ecart_xi,
+            "optima_locaux_moins_bons": len(distincts),
+        })
+    return xi, sigma, converge
 
 
 def _survie_queue(x: float, u: float, xi: float, sigma: float, part: float) -> float:
@@ -70,13 +101,20 @@ def _integrale_queue(a: float, b: float, u: float, xi: float, sigma: float, part
 def gpd_seuil(pertes: np.ndarray, seuil: float, quantiles: list[float],
               tranches: list[tuple[float, float]]) -> dict:
     x = np.asarray(pertes, dtype=float)
+    if np.any(np.isinf(x)):
+        raise ValueError("des pertes sont infinies")
+    if not np.isfinite(seuil):
+        raise ValueError(f"seuil invalide : {seuil}")
     x = x[~np.isnan(x)]
+    if np.any(x < 0):
+        raise ValueError("des montants sont négatifs : la GPD s'applique à des pertes positives")
     n = int(x.size)
     excedents = x[x > seuil] - seuil
     nu = int(excedents.size)
     if nu < 2:
         raise ValueError(f"seulement {nu} perte(s) au-dessus du seuil {seuil}")
-    xi, sigma, converge = ajuster_gpd(excedents)
+    diag: dict = {}
+    xi, sigma, converge = ajuster_gpd(excedents, diag)
     part = nu / n
     se_xi = (1.0 + xi) / math.sqrt(nu) if xi > -0.5 else None
     se_sigma = sigma * math.sqrt(2.0 * (1.0 + xi) / nu) if xi > -0.5 else None
@@ -113,6 +151,7 @@ def gpd_seuil(pertes: np.ndarray, seuil: float, quantiles: list[float],
         "erreur_type_xi": se_xi,
         "erreur_type_sigma": se_sigma,
         "convergence": converge,
+        "diagnostic_optimisation": diag,
         "excedent_moyen_empirique": float(excedents.mean()),
         "quantiles": {f"{p:g}": quantile(p) for p in quantiles},
         "tranches": res_tranches,
@@ -126,5 +165,10 @@ def excedent_moyen(pertes: np.ndarray, seuils: list[float]) -> dict:
     out = {}
     for u in seuils:
         y = x[x > u] - u
-        out[f"{u:g}"] = {"n_depassements": int(y.size), "excedent_moyen": float(y.mean()) if y.size else None}
+        ligne = {"n_depassements": int(y.size), "excedent_moyen": float(y.mean()) if y.size else None,
+                 "xi": None, "sigma": None}
+        if y.size >= 10:  # stabilité des paramètres selon le seuil (McNeil 1997, figure 6)
+            xi, sigma, _ = ajuster_gpd(y)
+            ligne.update({"xi": xi, "sigma": sigma})
+        out[f"{u:g}"] = ligne
     return out

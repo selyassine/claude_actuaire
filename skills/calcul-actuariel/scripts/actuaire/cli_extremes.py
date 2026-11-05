@@ -82,7 +82,8 @@ def cmd_gpd(args) -> Resultat:
     if r["xi"] >= 1:
         res.avertissements.append("xi >= 1 : espérance infinie au-delà du seuil ; seules les tranches bornées ont un prix fini.")
     if not r["convergence"]:
-        res.avertissements.append("L'optimisation de la vraisemblance n'a pas signalé de convergence : vérifier les résultats.")
+        res.avertissements.append("Optimisation non concluante (non convergée ou optima différents selon le point de départ, "
+                                  "voir diagnostic_optimisation) : vérifier les résultats.")
     for p, q in r["quantiles"].items():
         if q > 2 * r["maximum_observe"]:
             res.avertissements.append(f"Le quantile {p} ({q:.4g}) dépasse le double du maximum observé : extrapolation forte.")

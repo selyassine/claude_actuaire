@@ -34,8 +34,23 @@ class ModeleSurvie:
     description: str = ""
     makeham_params: tuple[float, float, float] | None = None
 
+    def __post_init__(self):
+        if not (math.isfinite(self.facteur_selection) and self.facteur_selection > 0):
+            raise ValueError(f"facteur de sélection invalide : {self.facteur_selection} (> 0 attendu)")
+        if self.periode_selection < 0:
+            raise ValueError(f"période de sélection négative : {self.periode_selection}")
+        for y, q in self.q_ultime.items():
+            if not (math.isfinite(q) and 0.0 <= q <= 1.0):
+                raise ValueError(f"q à l'âge {y} hors de [0, 1] : {q}")
+
     @classmethod
     def makeham(cls, A: float, B: float, c: float, **kw) -> "ModeleSurvie":
+        if not all(math.isfinite(v) for v in (A, B, c)):
+            raise ValueError("Makeham : A, B et c doivent être finis")
+        if not (B > 0 and c > 1):
+            raise ValueError(f"Makeham : B > 0 et c > 1 attendus (B = {B}, c = {c})")
+        if A + B < 0:
+            raise ValueError(f"Makeham : force de mortalité négative à l'âge 0 (A + B = {A + B})")
         lc = math.log(c)
         q = {y: 1.0 - math.exp(-A - B * c ** y * (c - 1.0) / lc) for y in range(0, AGE_MAX + 1)}
         return cls(q, description=f"Makeham A={A}, B={B}, c={c}", makeham_params=(A, B, c), **kw)
@@ -50,6 +65,13 @@ class ModeleSurvie:
 
     @classmethod
     def table(cls, qx: dict[int, float], **kw) -> "ModeleSurvie":
+        if not qx:
+            raise ValueError("table de mortalité vide")
+        ages = sorted(qx)
+        if any(a < 0 for a in ages) or ages != list(range(ages[0], ages[-1] + 1)):
+            raise ValueError("table de mortalité : âges entiers positifs et consécutifs attendus (pas de trou)")
+        if ages[-1] > AGE_MAX:
+            raise ValueError(f"table de mortalité : âge maximal {AGE_MAX}")
         return cls(dict(qx), description="table de q_x fournie", **kw)
 
     def q(self, age_selection: int, duree: int) -> float:
@@ -77,6 +99,10 @@ class ModeleSurvie:
 class Base:
     modele: ModeleSurvie
     taux: float
+
+    def __post_init__(self):
+        if not (math.isfinite(self.taux) and self.taux > -1):
+            raise ValueError(f"taux d'intérêt invalide : {self.taux}")
 
     @property
     def v(self) -> float:
@@ -136,6 +162,23 @@ class Contrat:
             raise ValueError("la durée est obligatoire pour un contrat temporaire ou mixte")
         if self.duree_primes is None:
             self.duree_primes = self.duree
+        if not 0 <= self.age <= AGE_MAX:
+            raise ValueError(f"âge hors de [0, {AGE_MAX}] : {self.age}")
+        if not (math.isfinite(self.capital) and self.capital > 0):
+            raise ValueError(f"capital invalide : {self.capital} (montant positif attendu)")
+        if self.duree is not None and self.duree <= 0:
+            raise ValueError(f"durée de couverture invalide : {self.duree}")
+        if self.duree_primes is not None:
+            if self.duree_primes <= 0:
+                raise ValueError(f"durée de paiement des primes invalide : {self.duree_primes}")
+            if self.duree is not None and self.duree_primes > self.duree:
+                raise ValueError("la durée de paiement des primes dépasse la durée de couverture")
+        frais = (self.frais_initiaux_pct, self.frais_initiaux_fixe,
+                 self.frais_renouvellement_pct, self.frais_renouvellement_fixe)
+        if not all(math.isfinite(f) and f >= 0 for f in frais):
+            raise ValueError("les frais doivent être des nombres positifs ou nuls")
+        if self.frais_initiaux_pct >= 1 or self.frais_renouvellement_pct >= 1:
+            raise ValueError("un taux de frais doit être inférieur à 100 % de la prime")
 
 
 def _restant(total: int | None, t: int) -> int | None:
@@ -173,6 +216,9 @@ def tarifer(base: Base, c: Contrat, durees: list[int]) -> dict:
     ip, if_ = c.frais_initiaux_pct, c.frais_initiaux_fixe
     # Frais initiaux à t = 0 à la place des frais de renouvellement, renouvellement aux échéances suivantes
     denom = (1 - rp) * a0 - (ip - rp)
+    if not denom > 1e-9 * a0:
+        raise ValueError("prime commerciale non définie : les frais proportionnels absorbent toute la prime "
+                         f"(dénominateur {denom:.6g})")
     Pg = (B0 + rf * a0 + (if_ - rf)) / denom
     Pe = Pg - Pn
 
