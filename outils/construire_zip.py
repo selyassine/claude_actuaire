@@ -17,7 +17,8 @@ SKILL = RACINE / "skills" / "calcul-actuariel"
 DIST = RACINE / "dist"
 EXCLUS = {"__pycache__", ".pytest_cache", ".DS_Store"}
 # Documents du dépôt copiés dans le skill, pour que Claude puisse les consulter.
-DOCUMENTS = {RACINE / "docs" / "guide-des-methodes.md": "references/guide-des-methodes.md"}
+DOCUMENTS = {RACINE / "docs" / "guide-des-methodes.md": "references/guide-des-methodes.md",
+             RACINE / "docs" / "modele-CLAUDE.md": "references/modele-CLAUDE.md"}
 
 
 def construire() -> Path:

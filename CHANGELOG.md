@@ -1,5 +1,25 @@
 # Historique des versions
 
+## 0.4.1 (2026-11-05) : contrôle qualité des données, modèle de CLAUDE.md
+
+Nouvelle commande `controler` :
+
+- Audit d'un triangle, d'un fichier de sinistres ou d'un fichier de primes, sans calcul. Chaque anomalie a une gravité (bloquant, alerte, info), un lieu et un message ; rien n'est corrigé.
+- Triangle : trous, lignes vides, doublons, textes, infinis, baisses du cumulé, cumulé nul puis positif, facteurs individuels atypiques (médiane et MAD des log-facteurs, avec l'option `--exclure` à utiliser si l'actuaire le décide).
+- Sinistres : négatifs, nuls, textes, montants répétés, maximum isolé. Primes : colonne absente, doublons, valeurs manquantes ou négatives, ratio saisi en pourcentage, origines manquantes ou en trop par rapport au triangle.
+
+Défaut corrigé :
+
+- Une période de développement en double dans l'en-tête d'un triangle était renommée en silence par pandas (« 2 » devenait « 2.1 ») et le calcul passait. Les en-têtes sont désormais lus tels quels : période en double refusée par les méthodes de triangle, colonne en double refusée ailleurs.
+
+Documentation et publication :
+
+- `docs/modele-CLAUDE.md` (inclus dans l'archive du skill) : modèle de CLAUDE.md pour un projet actuariel avec le skill.
+- La publication sur tag accepte une version déjà créée depuis l'interface GitHub : elle y joint l'archive et les notes.
+- Fiches de la tranche XL validées par Yassine.
+
+Tests : 330.
+
 ## 0.4.0 (2026-11-05) : tranche de réassurance XL et validation d'un modèle externe
 
 Deux usages tirés du guide « Claude Code for Actuaries » (Nzati et Schraub, 2026), cas 15 et 30, réalisés selon les règles du moteur : valeurs attendues calculées sans le moteur, refus explicites, sortie traçable.
@@ -11,7 +31,7 @@ Nouvelle commande `tranche-xl` :
 - Franchise et limite annuelles (`--franchise-annuelle`, `--limite-annuelle`).
 - Burning cost historique et rapport prime du modèle / burning cost.
 - Alertes : peu de dépassements, peu de sinistres historiques dans la tranche, écart au burning cost, discrétisation trop grossière, tranche épuisée par la plupart des sinistres. Refus : priorité sous le seuil, années ou pas invalides, paramètres impossibles, fréquence hors de portée de Panjer.
-- Validation : trois fiches calculées indépendamment en R (evir et actuar ; script et sortie dans `tests/references/r/`), en attente de validation. Accord à 1e-9 près à paramètres égaux.
+- Validation : trois fiches calculées indépendamment en R (evir et actuar ; script et sortie dans `tests/references/r/`), validées par Yassine le 2026-11-05. Accord à 1e-9 près à paramètres égaux.
 
 Nouvelle commande `comparer` :
 

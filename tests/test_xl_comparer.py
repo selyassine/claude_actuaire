@@ -320,3 +320,144 @@ def test_demi_unite_publiee():
     assert demi_unite_publiee("1e3") is None
     assert demi_unite_publiee("abc") is None
     assert not math.isnan(demi_unite_publiee("-0.25"))
+
+
+# --- Commande controler (0.4.1) ------------------------------------------------------------------
+
+def controle(tmp_path, texte, *opts, nom="f.csv"):
+    f = tmp_path / nom
+    f.write_text(texte, encoding="utf-8")
+    return calculer(["controler", "--entree", str(f), *opts])["resultats"]
+
+
+def codes(r):
+    return {a["code"]: a["gravite"] for a in r["anomalies"]}
+
+
+def test_controler_raa_signale_la_baisse_et_le_facteur_atypique():
+    r = calculer(["controler", "--entree", RAA, "--nature", "triangle", "--type", "cumule"])["resultats"]
+    assert r["conclusion"] == "a_examiner" and r["decompte"]["bloquant"] == 0
+    assert codes(r) == {"baisse_du_cumule": "alerte", "facteur_atypique": "alerte"}
+    atypique = next(a for a in r["anomalies"] if a["code"] == "facteur_atypique")
+    assert atypique["lieu"] == "origine 1982, facteur 3-4" and "--exclure '1982@3-4'" in atypique["message"]
+
+
+def test_controler_triangle_propre():
+    r = calculer(["controler", "--entree", str(RACINE / "tests/donnees/friedland_us_auto_declares.csv"),
+                  "--nature", "triangle", "--type", "cumule"])["resultats"]
+    assert r["conclusion"] == "pret" and r["anomalies"] == []
+
+
+def test_controler_triangle_toutes_les_anomalies_bloquantes(tmp_path):
+    texte = ("Origine,1,2,3,3\n2020,100,abc,130,1\n2020,110,,inf,\n,120,,,\n2023,,,,\n")
+    r = controle(tmp_path, texte, "--nature", "triangle", "--type", "cumule")
+    c = codes(r)
+    for code in ("origine_en_double", "periode_en_double", "texte_non_numerique", "valeur_infinie",
+                 "origine_sans_libelle", "ligne_vide", "trou"):
+        assert c[code] == "bloquant", code
+    assert r["conclusion"] == "bloquant"
+    assert r["anomalies"][0]["gravite"] == "bloquant"
+
+
+def test_controler_triangle_alertes(tmp_path):
+    texte = "Origine,1,2,3\n2020,0,50,40\n2021,-5,10,\n2022,10,,\n"
+    r = controle(tmp_path, texte, "--nature", "triangle", "--type", "cumule")
+    c = codes(r)
+    assert c["zero_puis_positif"] == "alerte" and c["valeur_negative"] == "alerte"
+    assert c["baisse_du_cumule"] == "alerte"
+
+
+def test_controler_triangle_incremental_cumule_pour_les_facteurs(tmp_path):
+    texte = "Origine,1,2\n2020,0,5\n2021,10,2\n"
+    r = controle(tmp_path, texte, "--nature", "triangle", "--type", "incremental")
+    assert "zero_puis_positif" in codes(r) and "baisse_du_cumule" not in codes(r)
+
+
+def test_controler_triangle_forme_et_une_periode(tmp_path):
+    r = controle(tmp_path, "Origine,1,2\n2020,1,\n2021,1,2\n", "--nature", "triangle")
+    assert codes(r)["forme_inattendue"] == "alerte" and codes(r)["type_devine"] == "info"
+    r = controle(tmp_path, "Origine,1\n2020,1\n", "--nature", "triangle")
+    assert codes(r)["une_seule_periode"] == "bloquant"
+    r = controle(tmp_path, "Origine\n2020\n", "--nature", "triangle")
+    assert codes(r) == {"triangle_vide": "bloquant"}
+
+
+def test_controler_sinistres(tmp_path):
+    texte = "Id,Montant\n1,10\n2,abc\n3,0\n4,-2\n5,10\n6,\n7,500\n8,inf\n"
+    r = controle(tmp_path, texte, "--nature", "sinistres", "--colonne", "Montant")
+    c = codes(r)
+    assert c["montant_negatif"] == "bloquant" and c["valeur_infinie"] == "bloquant"
+    assert c["texte_non_numerique"] == "alerte" and c["montants_nuls"] == "alerte"
+    assert c["montants_repetes"] == "alerte" and c["maximum_isole"] == "info" and c["cellules_vides"] == "info"
+    assert r["resume"]["colonne"] == "Montant"
+
+
+def test_controler_sinistres_colonne_absente_ou_aucune(tmp_path):
+    assert codes(controle(tmp_path, "A\n1\n", "--nature", "sinistres", "--colonne", "X")) == {"colonne_introuvable": "bloquant"}
+    assert codes(controle(tmp_path, "A\nx\ny\n", "--nature", "sinistres")) == {"aucune_colonne_numerique": "bloquant"}
+    assert codes(controle(tmp_path, "A\n", "--nature", "sinistres")) == {"fichier_vide": "bloquant"}
+
+
+def test_controler_sinistres_danois_detecte_la_colonne():
+    r = calculer(["controler", "--entree", DANISH, "--nature", "sinistres"])["resultats"]
+    assert r["resume"]["n_montants"] == 2167 and r["decompte"]["bloquant"] == 0
+
+
+def test_controler_primes(tmp_path):
+    tri = tmp_path / "t.csv"
+    tri.write_text("Origine,1,2\n2020,1,2\n2021,1,\n2022,1,\n", encoding="utf-8")
+    texte = "Origine,Prime,Ratio\n2020,100,0.6\n2020,100,0.6\n2021,0,65\n2023,-1,x\n,5,\n2024,,\n"
+    r = controle(tmp_path, texte, "--nature", "primes", "--triangle", str(tri), nom="p.csv")
+    c = codes(r)
+    for code in ("origine_en_double", "valeur_negative", "texte_non_numerique", "origine_sans_libelle",
+                 "prime_manquante", "origines_manquantes"):
+        assert c[code] == "bloquant", code
+    assert c["prime_nulle"] == "alerte" and c["ratio_eleve"] == "alerte" and c["origines_en_trop"] == "alerte"
+
+
+def test_controler_primes_sans_colonne_ou_vide(tmp_path):
+    assert codes(controle(tmp_path, "Origine,P\n2020,1\n", "--nature", "primes")) == {"colonne_prime_absente": "bloquant"}
+    assert codes(controle(tmp_path, "Origine,Prime\n", "--nature", "primes")) == {"fichier_vide": "bloquant"}
+
+
+def test_controler_primes_friedland_pret():
+    r = calculer(["controler", "--entree", str(RACINE / "tests/donnees/friedland_us_auto_primes.csv"), "--nature",
+                  "primes", "--triangle", str(RACINE / "tests/donnees/friedland_us_auto_declares.csv")])
+    assert r["resultats"]["conclusion"] == "pret" and r["statut"] == "ok"
+    assert len(r["entrees"]) == 2
+
+
+def test_controler_coherent_avec_le_refus_des_methodes(tmp_path, capsys):
+    """Ce que controler classe bloquant, la méthode le refuse."""
+    f = tmp_path / "t.csv"
+    f.write_text("Origine,1,2,3\n2020,100,,130\n2021,110,140,\n2022,120,,\n", encoding="utf-8")
+    r = calculer(["controler", "--entree", str(f), "--nature", "triangle", "--type", "cumule"])["resultats"]
+    assert r["conclusion"] == "bloquant"
+    code, _ = erreur(["chain-ladder", "--entree", str(f), "--type", "cumule"], capsys)
+    assert code == 2
+
+
+def test_periode_en_double_refusee_par_les_methodes(tmp_path, capsys):
+    """Avant 0.4.1 : pandas renommait la seconde période « 2 » en « 2.1 » et le calcul passait."""
+    f = tmp_path / "t.csv"
+    f.write_text("Origine,1,2,2\n2020,1,2,3\n2021,1,2,\n2022,1,,\n", encoding="utf-8")
+    code, e = erreur(["chain-ladder", "--entree", str(f), "--type", "cumule"], capsys)
+    assert code == 2 and "périodes de développement en double" in e["erreur"]
+    r = calculer(["controler", "--entree", str(f), "--nature", "triangle", "--type", "cumule"])["resultats"]
+    assert codes(r)["periode_en_double"] == "bloquant"
+
+
+def test_colonne_en_double_refusee_ailleurs(tmp_path, capsys):
+    f = tmp_path / "s.csv"
+    f.write_text("Montant,Montant\n12,3\n30,4\n", encoding="utf-8")
+    code, e = erreur(["gpd", "--entree", str(f), "--seuil", "1"], capsys)
+    assert code == 2 and "colonne(s) en double" in e["erreur"]
+    r = calculer(["controler", "--entree", str(f), "--nature", "sinistres"])["resultats"]
+    assert codes(r) == {"colonne_en_double": "bloquant"}
+
+
+def test_entetes_excel_numeriques(tmp_path):
+    x = tmp_path / "t.xlsx"
+    pd.DataFrame([[2020, 100, 150], [2021, 110, None]], columns=["Origine", 12, 24]).to_excel(x, index=False)
+    r = calculer(["chain-ladder", "--entree", str(x), "--type", "cumule"])["resultats"]
+    assert list(r["facteurs"]) == ["12-24"]

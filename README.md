@@ -31,9 +31,10 @@ Les erreurs par année d'origine étaient justes dans les deux cas. L'erreur ne 
 | Mack, ODP analytique, bootstrap ODP | disponible (Mack 1993, England et Verrall 2002) |
 | Survie, primes et provisions vie (SSSM d'AMLCR, Zillmer FPT) | disponible (note MLC SN2.3-SN2.4, validée par Yassine) |
 | GPD (valeurs extrêmes) | disponible (McNeil 1997, données danoises, validé par Yassine) |
-| Tranche de réassurance XL sur un an (Poisson × GPD, Panjer, VaR, CTE, burning cost) | testé contre un calcul R indépendant (evir, actuar), en attente de validation |
+| Tranche de réassurance XL sur un an (Poisson × GPD, Panjer, VaR, CTE, burning cost) | disponible (calcul R indépendant avec evir et actuar, validé par Yassine) |
 | Crédibilité (Bühlmann, Bühlmann-Straub, hiérarchique, Hachemeister) | disponible (vignette actuar, données de Hachemeister, validé par Yassine) |
 | Agrégation SCR formule standard | disponible (SFCR CCR 2024 et IPBP 2016, validé par Yassine) |
+| Contrôle qualité des données sans calcul (`controler`) | disponible : triangles, sinistres, primes ; rien n'est corrigé |
 | Comparaison avec un modèle externe (`comparer`) | disponible : rapport d'écarts ligne à ligne, arrondis publiés, facteurs d'unité |
 
 ## Installation
@@ -46,6 +47,8 @@ Les erreurs par année d'origine étaient justes dans les deux cas. L'erreur ne 
 /plugin marketplace add selyassine/claude_actuaire
 /plugin install claude-actuaire@claude-actuaire
 ```
+
+Pour un projet actuariel dans Claude Code, [`docs/modele-CLAUDE.md`](docs/modele-CLAUDE.md) donne un modèle de CLAUDE.md : dictionnaire des données, règles de calcul avec le moteur, registre des choix de jugement, confidentialité.
 
 ## Développement
 

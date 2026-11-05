@@ -1,6 +1,6 @@
 {
   "name": "claude-actuaire",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Moteur de calcul actuariel validé sur des résultats publiés : provisionnement, vie, valeurs extrêmes, crédibilité, SCR.",
   "author": { "name": "Yassine" },
   "repository": "https://github.com/selyassine/claude_actuaire",
