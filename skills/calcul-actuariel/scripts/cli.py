@@ -132,9 +132,13 @@ def main(argv: list[str] | None = None) -> int:
     try:
         res = COMMANDES[args.commande][0](args)
     except (FileNotFoundError, ValueError) as exc:
-        print(json.dumps({"erreur": str(exc), "commande": args.commande}, ensure_ascii=False),
+        print(json.dumps({"statut": "erreur", "erreur": str(exc), "commande": args.commande}, ensure_ascii=False),
               file=sys.stderr)
         return 2
+    except Exception as exc:  # erreur inattendue : jamais de résultat partiel
+        print(json.dumps({"statut": "erreur", "erreur": f"erreur interne ({type(exc).__name__}) : {exc}",
+                          "commande": args.commande}, ensure_ascii=False), file=sys.stderr)
+        return 3
     d = res.en_dict()
     print(afficher_texte(d) if args.format == "texte" else json.dumps(d, ensure_ascii=False, indent=2))
     return 0

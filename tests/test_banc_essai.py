@@ -31,5 +31,6 @@ def test_import_et_notation(tmp_path):
     f.write_text('## C scr-01\n\nTexte\n\n```resultats\n{"diversification": -542418, "bscr": 2738047, "scr": 1}\n```\n\n## A scr-01\n\n')
     sortie = tmp_path / "reponses"
     assert importer(f, sortie) == 1
-    s = noter(sortie, TACHES)
+    s = noter(sortie, TACHES, taches=["scr-01"])
     assert s["C"]["scr"] == {"justes": 2, "total": 3, "taux": 0.6667}
+    assert s["completude"]["essais_manquants"] == []

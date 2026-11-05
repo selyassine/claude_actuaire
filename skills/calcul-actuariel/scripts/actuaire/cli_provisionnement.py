@@ -59,6 +59,7 @@ def args_cape_cod(sp: argparse.ArgumentParser) -> None:
 def _triangle_cumule(args, res: Resultat) -> Triangle:
     tri = lire_triangle(args.entree, args.feuille)
     res.ajouter_entree(args.entree, "triangle")
+    tri.verifier_forme()
     if args.type == "auto":
         cumule = tri.semble_cumule()
         res.hypotheses.append(Hypothese(
@@ -66,10 +67,9 @@ def _triangle_cumule(args, res: Resultat) -> Triangle:
             "Détecté automatiquement : lignes croissantes = cumulé. Préciser --type en cas de doute.",
             "valeur par défaut"))
         part = tri.part_croissante()
-        if 0.0 < part < 1.0:
-            res.avertissements.append(
-                f"Détection automatique incertaine : {part:.0%} des passages sont croissants. "
-                f"Type retenu : {'cumulé' if cumule else 'incrémental'}. Confirmer avec --type.")
+        res.avertissements.append(
+            f"Type de triangle deviné, détection incertaine ({part:.0%} des passages croissants) : "
+            f"retenu {'cumulé' if cumule else 'incrémental'}. Préciser --type cumule ou --type incremental.")
     else:
         cumule = args.type == "cumule"
     res.avertissements.extend(tri.controles())

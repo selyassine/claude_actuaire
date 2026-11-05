@@ -14,6 +14,7 @@ Ce skill contient des scripts Python testés contre des valeurs publiées. Ils r
    Le chiffre que tu donnes comme résultat (tableau final, bloc demandé, conclusion) est toujours celui du moteur, même si une autre méthode te semble meilleure. Une estimation différente (par exemple une erreur type GPD tirée de la hessienne observée au lieu de la formule asymptotique du moteur) peut être citée à côté, marquée « autre méthode, non validée par le moteur », jamais à la place.
 3. **Signale ce qui ne vient pas du moteur.** Si une méthode demandée n'existe pas encore dans le moteur, dis-le clairement, puis calcule en Python explicite et marque ces chiffres « non validés par le moteur ».
 4. **Les choix de jugement restent visibles.** Exclusions de facteurs, facteur de queue, ratio a priori, seuil GPD : passe-les en option et explique pourquoi dans la réponse.
+5. **Un refus du moteur n'est pas contourné.** Si la commande sort en erreur (triangle à trou, facteur non estimable, poids négatif, SCR non fini…) ou si `statut` vaut `incomplet`, ne recalcule pas toi-même pour obtenir un chiffre : explique l'erreur et demande à l'utilisateur la donnée ou le choix manquant (par exemple un facteur imposé et sa justification).
 
 ## Utilisation
 
@@ -39,7 +40,7 @@ python <skill>/scripts/cli.py tarif-vie --modele sssm --taux 0.04 --type vie-ent
     --frais-initiaux-pct 0.5 --frais-initiaux-fixe 250 --frais-renouvellement-pct 0.03 --frais-renouvellement-fixe 25 --durees 0,1,2,10
 ```
 
-Sortie par défaut : JSON avec `methode`, `moteur`, `entrees` (fichier + empreinte SHA-256), `options`, `hypotheses`, `resultats`, `avertissements`.
+Sortie par défaut : JSON avec `statut` (`ok`, `avertissements` ou `incomplet`), `methode`, `moteur`, `entrees` (fichier + empreinte SHA-256), `options`, `hypotheses`, `resultats`, `avertissements`. En cas d'erreur, la commande ne rend aucun résultat : un JSON `{"statut": "erreur", "erreur": ...}` sur la sortie d'erreur.
 
 ## Formats d'entrée
 

@@ -18,8 +18,9 @@ def args_mack(sp: argparse.ArgumentParser) -> None:
 
 def args_odp(sp: argparse.ArgumentParser) -> None:
     args_triangle(sp)
-    sp.add_argument("--dispersion", choices=["pearson", "deviance"], default="pearson",
-                    help="Estimation du paramètre de dispersion phi (défaut : Pearson).")
+    sp.add_argument("--dispersion", choices=["pearson", "deviance"], default=None,
+                    help="Estimation du paramètre de dispersion phi (défaut : Pearson, avec un avertissement : "
+                         "les deux conventions existent dans la littérature, à préciser).")
 
 
 def args_bootstrap(sp: argparse.ArgumentParser) -> None:
@@ -49,13 +50,20 @@ def cmd_mack(args) -> Resultat:
 
 
 def cmd_odp(args) -> Resultat:
+    explicite = args.dispersion is not None
+    args.dispersion = args.dispersion or "pearson"
     res = Resultat("odp", {}, options={"dispersion": args.dispersion})
+    if not explicite:
+        res.avertissements.append(
+            "Dispersion non précisée : Pearson retenu par défaut. La déviance donne un autre phi "
+            "(England et Verrall 2002, tableau 3) ; préciser --dispersion pearson ou deviance selon la consigne.")
     tri = _triangle_cumule(args, res)
     _hyp_commune(res)
     res.hypotheses.append(Hypothese(
         "dispersion", args.dispersion,
         "Paramètre phi estimé par " + ("le khi² de Pearson" if args.dispersion == "pearson" else "la déviance")
-        + " / degrés de liberté (observations - 2n + 1)."))
+        + " / degrés de liberté (observations - 2n + 1).",
+        "option utilisateur" if explicite else "valeur par défaut"))
     res.resultats = odp_analytique(tri, args.dispersion)
     return res
 

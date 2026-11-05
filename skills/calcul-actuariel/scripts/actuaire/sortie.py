@@ -54,8 +54,15 @@ class Resultat:
         )
 
     def en_dict(self) -> dict[str, Any]:
+        non_finis = _non_finis(self.resultats)
+        avert = list(self.avertissements)
+        if non_finis:
+            avert.append("Valeurs non définies (NaN ou infini), rendues null : " + ", ".join(non_finis[:20])
+                         + (" …" if len(non_finis) > 20 else "") + ". Ne pas les reporter comme des résultats.")
+        statut = "incomplet" if non_finis else ("avertissements" if avert else "ok")
         return _nettoyer(
             {
+                "statut": statut,
                 "methode": self.methode,
                 "moteur": {"nom": "claude_actuaire", "version": __version__},
                 "horodatage_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
@@ -63,7 +70,7 @@ class Resultat:
                 "options": self.options,
                 "hypotheses": [h.__dict__ for h in self.hypotheses],
                 "resultats": self.resultats,
-                "avertissements": self.avertissements,
+                "avertissements": avert,
             }
         )
 
@@ -84,3 +91,14 @@ def _nettoyer(obj: Any) -> Any:
     if isinstance(obj, float) and (math.isnan(obj) or math.isinf(obj)):
         return None
     return obj
+
+
+def _non_finis(obj: Any, chemin: str = "") -> list[str]:
+    """Chemins des valeurs NaN ou infinies, sauf les pourcentages d'une provision nulle (0/0 attendu)."""
+    if isinstance(obj, dict):
+        return [c for k, v in obj.items() for c in _non_finis(v, f"{chemin}.{k}" if chemin else str(k))]
+    if isinstance(obj, (list, tuple, np.ndarray)):
+        return [c for i, v in enumerate(list(obj)) for c in _non_finis(v, f"{chemin}[{i}]")]
+    if isinstance(obj, (float, np.floating)) and not math.isfinite(float(obj)):
+        return [] if chemin.endswith("_pct") else [chemin]
+    return []

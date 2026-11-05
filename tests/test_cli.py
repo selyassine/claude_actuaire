@@ -10,7 +10,7 @@ from conftest import RACINE
 
 CLI = RACINE / "skills" / "calcul-actuariel" / "scripts" / "cli.py"
 DONNEES = RACINE / "tests" / "donnees"
-CLES = {"methode", "moteur", "horodatage_utc", "entrees", "options", "hypotheses",
+CLES = {"statut", "methode", "moteur", "horodatage_utc", "entrees", "options", "hypotheses",
         "resultats", "avertissements"}
 
 

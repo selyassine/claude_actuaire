@@ -58,7 +58,13 @@ def _lire_qx(chemin: str) -> dict[int, float]:
     cols = {str(c).strip().lower(): c for c in df.columns}
     if "age" not in cols or "qx" not in cols:
         raise ValueError("la table doit contenir les colonnes Age et qx")
-    return {int(_nombre(a)): float(_nombre(q)) for a, q in zip(df[cols["age"]], df[cols["qx"]])}
+    ages = [_nombre(a) for a in df[cols["age"]]]
+    if any(not float(a).is_integer() for a in ages):
+        raise ValueError("table de mortalité : âges entiers attendus")
+    ages = [int(a) for a in ages]
+    if len(set(ages)) != len(ages):
+        raise ValueError("table de mortalité : âges en double")
+    return dict(zip(ages, (float(_nombre(q)) for q in df[cols["qx"]])))
 
 
 def construire_modele(args, res: Resultat) -> ModeleSurvie:
