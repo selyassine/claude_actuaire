@@ -137,7 +137,7 @@ Commande : `tranche-xl` (nouveau en 0.4.0).
 
 **Limites.** Pas d'indexation (les montants doivent être mis en as-if avant l'appel), fréquence stable sans tendance ni surdispersion, pas de reconstitutions payantes, pas de clause d'indexation du traité.
 
-**Validation.** Calcul indépendant en R (script `tests/references/r/tranche_xl.R`, sortie archivée à côté) : evir 1.7.4 pour l'ajustement GPD des données danoises, actuar 3.3.7 pour `discretize`, `aggregateDist` (méthode récursive), `quantile` et `CTE`. Trois fiches : paramètres d'evir imposés (accord à 1e-9 près), cas exponentiel ξ = 0 (accord à 1e-9 près), chaîne complète avec ajustement par le moteur (accord à 0,5 %, les deux optimiseurs trouvant ξ = 0,4970 et 0,4968). Fiches en attente de validation. Exemple (données danoises, u = 10, 11 ans, tranche 50-200) : prime pure annuelle 25,94, écart type 47,47, VaR à 99,5 % 232,8 ; burning cost 34,23.
+**Validation.** Calcul indépendant en R (script `tests/references/r/tranche_xl.R`, sortie archivée à côté) : evir 1.7.4 pour l'ajustement GPD des données danoises, actuar 3.3.7 pour `discretize`, `aggregateDist` (méthode récursive), `quantile` et `CTE`. Trois fiches : paramètres d'evir imposés (accord à 1e-9 près), cas exponentiel ξ = 0 (accord à 1e-9 près), chaîne complète avec ajustement par le moteur (accord à 0,5 %, les deux optimiseurs trouvant ξ = 0,4970 et 0,4968). Fiches validées par Yassine le 2026-11-05. Exemple (données danoises, u = 10, 11 ans, tranche 50-200) : prime pure annuelle 25,94, écart type 47,47, VaR à 99,5 % 232,8 ; burning cost 34,23.
 
 ## 7. Crédibilité
 

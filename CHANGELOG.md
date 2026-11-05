@@ -31,7 +31,7 @@ Nouvelle commande `tranche-xl` :
 - Franchise et limite annuelles (`--franchise-annuelle`, `--limite-annuelle`).
 - Burning cost historique et rapport prime du modèle / burning cost.
 - Alertes : peu de dépassements, peu de sinistres historiques dans la tranche, écart au burning cost, discrétisation trop grossière, tranche épuisée par la plupart des sinistres. Refus : priorité sous le seuil, années ou pas invalides, paramètres impossibles, fréquence hors de portée de Panjer.
-- Validation : trois fiches calculées indépendamment en R (evir et actuar ; script et sortie dans `tests/references/r/`), en attente de validation. Accord à 1e-9 près à paramètres égaux.
+- Validation : trois fiches calculées indépendamment en R (evir et actuar ; script et sortie dans `tests/references/r/`), validées par Yassine le 2026-11-05. Accord à 1e-9 près à paramètres égaux.
 
 Nouvelle commande `comparer` :
 

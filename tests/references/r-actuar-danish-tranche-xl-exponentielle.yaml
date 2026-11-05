@@ -13,10 +13,11 @@ options:
   franchise-annuelle: 20
   limite-annuelle: 300
   parametres: 0,7
-statut: en_attente
+statut: valide
 saisie_par: Claude, recopié de la sortie du script R
-valide_par: null
-date_validation: null
+valide_par: Yassine
+date_validation: '2026-11-05'
+methode_validation: Yassine a contrôlé les valeurs contre la sortie du script R (tests/references/r/tranche_xl.sortie.txt) le 2026-11-05.
 note: 'Cas limite xi = 0 (excès exponentiels de moyenne 7) imposé : vérifie la branche exponentielle du moteur.'
 valeurs:
 - chemin: resultats.n_depassements
