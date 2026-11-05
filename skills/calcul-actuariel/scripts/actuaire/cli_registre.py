@@ -22,7 +22,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from .sortie import Resultat, empreinte_fichier, empreinte_resultats
+from .sortie import Resultat, empreinte_fichier, empreinte_obligatoire, empreinte_resultats
 
 CATEGORIES = {"option utilisateur": "choix_de_jugement", "valeur par défaut": "valeurs_par_defaut"}
 
@@ -96,7 +96,11 @@ def construire_registre(fichiers: list[Path], verifier_entrees: bool = True) -> 
             incoherences.append(_incoherence("alerte", "calcul_incomplet",
                                              "Calcul au statut incomplet : des valeurs non définies ne doivent pas être "
                                              "reportées.", [nom]))
-        if attendue is None:
+        if not attendue and empreinte_obligatoire(d):
+            incoherences.append(_incoherence("bloquant", "empreinte_retiree",
+                                             "Sortie sans empreinte alors que sa version du moteur en produit une "
+                                             "(0.3.0 ou plus) : résultats non vérifiables.", [nom]))
+        elif not attendue:
             incoherences.append(_incoherence("info", "sans_empreinte",
                                              "Sortie antérieure à la 0.3.0 : résultats non vérifiables par empreinte.", [nom]))
 

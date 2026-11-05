@@ -99,6 +99,7 @@ def construire_modele(args, res: Resultat) -> ModeleSurvie:
             "loi_de_mortalite", nom + (" (demandée sous le nom TM99)" if args.modele == "tm99" else ""),
             "Table réglementaire tunisienne, arrêté du ministre des finances du 27/02/2001, art. 5 (modifié le "
             "5/01/2009) : TD99 pour les contrats en cas de décès, TV99 pour les contrats en cas de survie. "
+            "L'art. 5 a nomme la table décès « TM99 » ; la table imprimée en annexe s'intitule « TD99 » (alias). "
             "Transcription du Code des assurances (Imprimerie Officielle), pages 200 à 207.", "valeur par défaut"
             if args.modele != "tm99" else "option utilisateur"))
         res.hypotheses.append(Hypothese(
@@ -111,9 +112,9 @@ def construire_modele(args, res: Resultat) -> ModeleSurvie:
             "Une vie qui atteint le dernier âge de la table décède dans l'année.", "méthode"))
         if args.taux > 0.04:
             res.avertissements.append(
-                f"Taux technique {args.taux:g} supérieur à 4 % : plafond absolu de l'arrêté du 27/02/2001 "
-                "(art. 5 b) pour les contrats de plus de 10 ans ; le plafond de 70 % du taux moyen des titres "
-                "d'État n'est pas vérifié par le moteur.")
+                f"Taux technique {args.taux:g} supérieur à 4 % : plafond de l'arrêté du 27/02/2001, art. 5 b, "
+                "2e tiret (modifié le 5/01/2009), pour les contrats de plus de 10 ans ; le plafond de 70 % du taux "
+                "moyen des titres d'État (art. 5 b, 1er et 2e tirets) n'est pas vérifié par le moteur.")
     else:
         if not args.table:
             raise ValueError("le modèle table exige --table")

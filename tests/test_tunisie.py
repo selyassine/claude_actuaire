@@ -142,8 +142,46 @@ def test_rejets_provisions(d, message):
 
 def test_cli_cadences_refuse_autre_methode(tmp_path):
     autre = tmp_path / "m.json"
-    autre.write_text(json.dumps({"methode": "mack", "resultats": {}}), encoding="utf-8")
+    from actuaire.sortie import empreinte_resultats
+    autre.write_text(json.dumps({"methode": "mack", "resultats": {}, "moteur": {"version": "0.5.2"},
+                                 "empreinte_resultats": empreinte_resultats({})}), encoding="utf-8")
     entree = tmp_path / "p.json"
     entree.write_text(json.dumps({"rentes": {"provision_mathematique": 1}}), encoding="utf-8")
     with pytest.raises(ValueError, match="chain-ladder"):
         calculer(["provisions-tn", "--entree", str(entree), "--cadences", str(autre)])
+
+
+def _sortie_cl(tmp_path, statut="ok", avert=(), provision=500.0):
+    from actuaire.sortie import empreinte_resultats
+    r = {"total": {"provision": provision, "ultime": 1500.0, "derniere_diagonale": 1000.0}}
+    p = tmp_path / "cl.json"
+    p.write_text(json.dumps({"methode": "chain-ladder", "statut": statut, "avertissements": list(avert),
+                             "moteur": {"version": "0.5.2"}, "resultats": r,
+                             "empreinte_resultats": empreinte_resultats(r)}), encoding="utf-8")
+    return p
+
+
+def _entree_auto(tmp_path, dossier=450.0):
+    p = tmp_path / "p.json"
+    p.write_text(json.dumps({"auto_materiels": {"dossier_par_dossier": dossier,
+                                                "cout_moyen": {"nombre_dossiers": 10, "cout_moyen": 40}}}),
+                 encoding="utf-8")
+    return p
+
+
+def test_cadences_incompletes_refusees_et_avertissements_propages(tmp_path):
+    with pytest.raises(ValueError, match="incomplet"):
+        calculer(["provisions-tn", "--entree", str(_entree_auto(tmp_path)),
+                  "--cadences", str(_sortie_cl(tmp_path, statut="incomplet"))])
+    s = calculer(["provisions-tn", "--entree", str(_entree_auto(tmp_path)),
+                  "--cadences", str(_sortie_cl(tmp_path, statut="avertissements", avert=["queue imposée"]))])
+    assert any("chain-ladder des cadences : queue imposée" in a for a in s["avertissements"])
+
+
+def test_perimetre_auto_materiels_signale(tmp_path):
+    s = calculer(["provisions-tn", "--entree", str(_entree_auto(tmp_path, dossier=100.0)),
+                  "--cadences", str(_sortie_cl(tmp_path))])
+    assert any("même périmètre" in a for a in s["avertissements"])
+    s = calculer(["provisions-tn", "--entree", str(_entree_auto(tmp_path, dossier=450.0)),
+                  "--cadences", str(_sortie_cl(tmp_path))])
+    assert not any("même périmètre" in a for a in s["avertissements"])

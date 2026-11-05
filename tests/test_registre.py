@@ -150,3 +150,21 @@ def test_registre_accepte_toutes_les_methodes(tmp_path, cmd):
     a, _ = sortie(tmp_path, "a.json", cmd)
     r = registre(a)["resultats"]
     assert r["n_calculs"] == 1 and sum(len(v) for v in r["hypotheses"].values()) >= 1
+
+
+def test_empreinte_retiree_d_une_sortie_recente(tmp_path):
+    """Une sortie 0.3.0 ou plus sans empreinte n'est pas « ancienne » : bloquant dans le registre,
+    refusée par rejouer et comparer."""
+    a, d = sortie(tmp_path, "a.json", ["chain-ladder", "--entree", RAA, "--type", "cumule"])
+    d.pop("empreinte_resultats")
+    b = tmp_path / "b.json"
+    b.write_text(json.dumps(d), encoding="utf-8")
+    assert codes(registre(b))["empreinte_retiree"] == "bloquant"
+    with pytest.raises(ValueError, match="pas d'empreinte"):
+        calculer(["rejouer", "--sortie", str(b)])
+    with pytest.raises(ValueError, match="pas d'empreinte"):
+        calculer(["comparer", "--resultats", str(b), "--lister"])
+    for v in (None, "inconnue"):
+        d["moteur"]["version"] = v
+        b.write_text(json.dumps(d), encoding="utf-8")
+        assert codes(registre(b))["empreinte_retiree"] == "bloquant"

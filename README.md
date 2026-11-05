@@ -15,11 +15,11 @@ Les erreurs par année d'origine étaient justes dans les deux cas. L'erreur ne 
 
 ## Principe
 
-- Chaque méthode est validée sur au moins une publication (Mack 1993, England et Verrall 2002, McNeil 1997, AMLCR…). Les valeurs attendues sont recopiées des publications, jamais produites par Claude, puis contrôlées par un actuaire.
+- Chaque méthode est validée sur au moins une publication (Mack 1993, England et Verrall 2002, McNeil 1997, AMLCR…). Les valeurs attendues sont recopiées des publications, jamais produites par Claude, puis contrôlées par l'auteur (Yassine Selmi). Aucune revue par un actuaire externe n'a encore été faite.
 - Chaque calcul rend une sortie traçable : entrées (avec empreinte SHA-256), options, hypothèses, résultats, avertissements, versions des bibliothèques, commande exacte et empreinte des résultats. `cli.py rejouer` refait un calcul archivé et prouve qu'il donne les mêmes chiffres sur les mêmes données.
 - Le moteur sert aussi de deuxième implémentation pour valider un modèle existant : `cli.py comparer` confronte les résultats d'un modèle externe (Excel, logiciel interne) à une sortie du moteur et classe chaque écart.
 - Le moteur refuse de calculer quand les données ou les hypothèses ne le permettent pas (triangle troué, facteur non estimable, table de mortalité incomplète, unité incohérente…) au lieu de rendre un chiffre faux.
-- Le [guide des méthodes](docs/guide-des-methodes.md) donne pour chaque méthode les formules, conventions, domaine de validité, refus, limites et la publication qui la valide.
+- Le [guide des méthodes](skills/calcul-actuariel/references/guide-des-methodes.md) donne pour chaque méthode les formules, conventions, domaine de validité, refus, limites et la publication qui la valide.
 - Un banc d'essai compare Claude sans skill et avec skill ; ses règles sont fixées à l'avance dans [`banc_essai/REGLES.md`](banc_essai/REGLES.md).
 
 ## État
@@ -51,7 +51,7 @@ Les erreurs par année d'origine étaient justes dans les deux cas. L'erreur ne 
 /plugin install claude-actuaire@claude-actuaire
 ```
 
-Pour un projet actuariel dans Claude Code, [`docs/modele-CLAUDE.md`](docs/modele-CLAUDE.md) donne un modèle de CLAUDE.md : dictionnaire des données, règles de calcul avec le moteur, registre des choix de jugement, confidentialité. [`docs/modele-CLAUDE-tunisie.md`](docs/modele-CLAUDE-tunisie.md) en donne la variante pour un inventaire tunisien (Code des assurances, arrêté de 2001, règlement CGA 01/2021).
+Pour un projet actuariel dans Claude Code, [`modele-CLAUDE.md`](skills/calcul-actuariel/references/modele-CLAUDE.md) donne un modèle de CLAUDE.md : dictionnaire des données, règles de calcul avec le moteur, registre des choix de jugement, confidentialité. [`modele-CLAUDE-tunisie.md`](skills/calcul-actuariel/references/modele-CLAUDE-tunisie.md) en donne la variante pour un inventaire tunisien (Code des assurances, arrêté de 2001, règlement CGA 01/2021).
 
 ## Développement
 
@@ -64,7 +64,7 @@ python banc_essai/variantes/essai_a_blanc.py                           # le mote
 
 La CI (GitHub Actions) lance à chaque PR : lint, tests et couverture sous Python 3.10 et 3.12 avec les versions verrouillées, tests sous Python 3.13 avec les dernières versions autorisées, audit des vulnérabilités des dépendances (`pip-audit`), banc d'essai à blanc, construction et installation réelle de l'archive du skill. Un tag `vX.Y.Z` publie la version sur GitHub avec l'archive et les notes du CHANGELOG, après avoir vérifié que le tag correspond à la version du moteur.
 
-Pour ajouter une valeur de référence : copier `tests/references/_modele.yaml`, remplir la source exacte (ouvrage, page, tableau), laisser `statut: en_attente` jusqu'au contrôle par un actuaire.
+Pour ajouter une valeur de référence : copier `tests/references/_modele.yaml`, remplir la source exacte (ouvrage, page, tableau), laisser `statut: en_attente` jusqu'au contrôle par l'auteur.
 
 ## Confidentialité des données
 

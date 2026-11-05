@@ -1,5 +1,26 @@
 # Historique des versions
 
+## 0.5.3 (2026-11-05) : corrections de l'analyse du 2026-11-05 (soir)
+
+Distribution :
+
+- `guide-des-methodes.md`, `modele-CLAUDE.md` et `modele-CLAUDE-tunisie.md` sont déplacés de `docs/` vers `skills/calcul-actuariel/references/`. Ils sont désormais présents aussi quand le skill est installé comme plugin, et plus seulement dans l'archive.
+- Nouveau test : chaque fichier `references/...` cité par SKILL.md existe dans le skill.
+- Formulation corrigée : les valeurs de référence sont contrôlées par l'auteur, et aucune revue par un actuaire externe n'a encore été faite.
+
+Traçabilité :
+
+- Une sortie sans `empreinte_resultats` est refusée par `rejouer` et `comparer`, et classée `bloquant` (`empreinte_retiree`) par `registre`, sauf si elle déclare une version antérieure à 0.3.0. Une empreinte retirée ne fait donc plus passer un fichier retouché pour une sortie ancienne.
+
+Tunisie :
+
+- `provisions-tn` : une sortie chain-ladder au statut `incomplet` est refusée pour les cadences, et ses avertissements sont recopiés. Le périmètre des trois évaluations auto matériels est rendu en hypothèse, avec un avertissement au-delà d'un écart du simple au double. La convention de jours de la PPNA est explicitée.
+- Sources : les modifications de l'arrêté de 2001 sont citées (2005, 2009, 2011, 3 mars 2012, 2016), d'après le texte consolidé du Code (édition IORT 2020). L'arrêté de 2012 ajoute l'al. 2 de l'art. 19 (révision de la PRC autorisée par le CGA), qui n'est pas modélisée.
+- `marge-solvabilite-tn` : les recours déduits sont présentés comme une règle du texte. Les primes nettes d'impôts et d'annulations sont rappelées dans l'aide et dans les hypothèses, et le rapport net / brut supérieur à 1 est documenté comme un choix.
+- Tables : l'art. 5 b (plafond de 4 %) et l'alias TM99 → TD99 (art. 5 a) sont cités précisément.
+
+Tests : 391.
+
 ## 0.5.2 (2026-11-05) : modèle de CLAUDE.md tunisien
 
 - `docs/modele-CLAUDE-tunisie.md` (inclus dans l'archive du skill sous `references/`) : modèle de CLAUDE.md pour un inventaire d'une société d'assurance tunisienne. Il couvre le référentiel (Code, arrêté de 2001, règlement CGA 01/2021, décision CGA 01/2016), le dictionnaire des données relié aux tableaux B du rapport annuel, les commandes `marge-solvabilite-tn`, `provisions-tn` et `--modele td99|tv99`, les interprétations réglementaires à confirmer et la confidentialité des tableaux non publiables.

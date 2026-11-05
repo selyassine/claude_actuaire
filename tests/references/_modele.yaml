@@ -4,7 +4,7 @@
 #
 # Règles :
 # - Toute valeur attendue est recopiée de la publication citée, jamais calculée par Claude.
-# - "statut" passe de "en_attente" à "valide" uniquement quand un actuaire a contrôlé
+# - "statut" passe de "en_attente" à "valide" uniquement quand l'auteur a contrôlé
 #   chaque valeur contre la publication. Les tests "en_attente" sont signalés mais ne bloquent pas.
 # - "tolerance_absolue" reflète l'arrondi publié (0.5 si la source arrondit à l'unité).
 

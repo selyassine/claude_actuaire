@@ -46,6 +46,32 @@ def empreinte_fichier(chemin: str | Path) -> str:
     return h.hexdigest()
 
 
+def _version(v: Any) -> tuple[int, ...] | None:
+    try:
+        return tuple(int(x) for x in str(v).split(".")[:3])
+    except (TypeError, ValueError):
+        return None
+
+
+def empreinte_obligatoire(sortie: dict) -> bool:
+    """Vrai si la sortie devrait porter une empreinte : toute sortie du moteur depuis la 0.3.0.
+    Seule une sortie qui déclare une version antérieure à 0.3.0 peut s'en passer."""
+    v = _version((sortie.get("moteur") or {}).get("version"))
+    return v is None or v >= (0, 3, 0)
+
+
+def verifier_empreinte(sortie: dict, quoi: str = "le fichier") -> None:
+    """Refuse une sortie retouchée, ou dont l'empreinte a été retirée alors que sa version en exige une."""
+    attendue = sortie.get("empreinte_resultats")
+    if not attendue:
+        if empreinte_obligatoire(sortie):
+            raise ValueError(f"{quoi} n'a pas d'empreinte_resultats alors que sa version du moteur en produit une "
+                             "(0.3.0 ou plus) : résultats non vérifiables, refusé")
+        return
+    if attendue != empreinte_resultats(sortie["resultats"]):
+        raise ValueError(f"les résultats de {quoi} ont été modifiés depuis le calcul (empreinte différente)")
+
+
 @dataclass
 class Hypothese:
     """Un choix de calcul qui influence le résultat, avec sa justification."""

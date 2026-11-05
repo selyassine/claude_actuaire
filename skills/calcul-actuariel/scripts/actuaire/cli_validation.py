@@ -16,7 +16,7 @@ from typing import Any
 
 import numpy as np
 
-from .sortie import Resultat, empreinte_resultats
+from .sortie import Resultat, verifier_empreinte
 from .triangle import lire_tableau, nombre_ou_nan
 
 FACTEURS_CONNUS = {1000.0: "milliers", 1e6: "millions", 0.001: "milliers (inverse)", 1e-6: "millions (inverse)",
@@ -78,9 +78,7 @@ def _charger_sortie(chemin: str) -> dict:
         sortie = json.load(f)
     if not isinstance(sortie, dict) or "resultats" not in sortie or "methode" not in sortie:
         raise ValueError("ce fichier n'est pas une sortie JSON du moteur (blocs 'methode' et 'resultats' attendus)")
-    attendue = sortie.get("empreinte_resultats")
-    if attendue and attendue != empreinte_resultats(sortie["resultats"]):
-        raise ValueError("les résultats du fichier du moteur ont été modifiés depuis le calcul (empreinte différente)")
+    verifier_empreinte(sortie, "la sortie du moteur")
     return sortie
 
 
