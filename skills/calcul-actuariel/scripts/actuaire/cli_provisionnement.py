@@ -14,7 +14,7 @@ from .provisionnement import (
     estimer_developpement,
 )
 from .sortie import Hypothese, Resultat
-from .triangle import Triangle, _nombre, lire_tableau, lire_triangle
+from .triangle import Triangle, _nombre, libelle, lire_tableau, lire_triangle
 
 
 def args_triangle(sp: argparse.ArgumentParser) -> None:
@@ -84,16 +84,25 @@ def _indice_facteur(tri: Triangle, nom: str) -> int:
 
 
 def _developpement(tri: Triangle, args, res: Resultat):
+    if tri.n_dev < 2:
+        raise ValueError("une seule période de développement : aucun facteur ne peut être estimé")
     exclusions = []
     for item in filter(None, (s.strip() for s in args.exclure.split(","))):
-        origine, facteur = item.split("@")
+        if item.count("@") != 1:
+            raise ValueError(f"--exclure : '{item}' n'est pas de la forme origine@facteur (ex. 2003@1-2)")
+        origine, facteur = (x.strip() for x in item.split("@"))
         if origine not in tri.origines:
             raise ValueError(f"origine inconnue dans --exclure : '{origine}'")
         exclusions.append((tri.origines.index(origine), _indice_facteur(tri, facteur)))
     imposes = {}
     for item in filter(None, (s.strip() for s in args.facteurs_imposes.split(","))):
+        if item.count("=") != 1:
+            raise ValueError(f"--facteurs-imposes : '{item}' n'est pas de la forme facteur=valeur (ex. 1-2=1.85)")
         nom, val = item.split("=")
-        imposes[_indice_facteur(tri, nom.strip())] = float(val)
+        k = _indice_facteur(tri, nom.strip())
+        if k in imposes:
+            raise ValueError(f"--facteurs-imposes : facteur '{nom.strip()}' imposé deux fois")
+        imposes[k] = _nombre(val)
 
     dev = estimer_developpement(tri, args.moyenne, args.periode, exclusions, args.queue, imposes,
                                 args.arrondi)
@@ -129,19 +138,45 @@ def _developpement(tri: Triangle, args, res: Resultat):
     return dev
 
 
-def _lire_primes(chemin: str, tri: Triangle) -> dict[str, dict[str, float]]:
+def _lire_primes(chemin: str, tri: Triangle, res: Resultat) -> dict[str, dict[str, float]]:
+    """Lit le fichier de primes et le confronte au triangle avant tout calcul.
+
+    Bloquant : colonne Prime absente, origine en double, origine du triangle absente.
+    Signalé : origines du fichier absentes du triangle (ignorées)."""
     df = lire_tableau(chemin)
-    cols = {c.strip().lower(): c for c in df.columns}
+    if df.shape[0] == 0:
+        raise ValueError("fichier de primes vide")
+    cols = {str(c).strip().lower(): c for c in df.columns}
     if "origine" not in cols:
         cols["origine"] = df.columns[0]
-    out = {}
+    if "prime" not in cols:
+        raise ValueError(f"colonne Prime absente du fichier de primes (colonnes lues : {list(df.columns)})")
+    out: dict[str, dict[str, float]] = {}
     for _, ligne in df.iterrows():
-        o = str(ligne[cols["origine"]]).strip()
+        o = libelle(ligne[cols["origine"]])
+        if o in out:
+            raise ValueError(f"origine '{o}' en double dans le fichier de primes")
         out[o] = {k: _nombre(ligne[cols[k]]) for k in ("prime", "ratio", "ultime_a_priori") if k in cols}
     manquantes = [o for o in tri.origines if o not in out]
     if manquantes:
-        raise ValueError(f"origines absentes du fichier de primes : {manquantes}")
+        raise ValueError(f"origines du triangle absentes du fichier de primes : {manquantes} "
+                         f"(origines du fichier : {list(out)})")
+    en_trop = [o for o in out if o not in tri.origines]
+    if en_trop:
+        res.avertissements.append(f"Origines du fichier de primes absentes du triangle, ignorées : {en_trop}.")
     return out
+
+
+def _controle_unites(tri: Triangle, dev, primes: np.ndarray, res: Resultat) -> None:
+    """Alerte si les sinistres projetés et les primes ne semblent pas dans la même unité
+    (ex. triangle en milliers d'euros, primes en euros)."""
+    ult = chain_ladder(tri, dev)["par_origine"]
+    ratios = np.array([ult[o]["ultime"] for o in tri.origines]) / primes
+    ratios = ratios[np.isfinite(ratios) & (ratios > 0)]
+    if ratios.size and not 0.02 <= float(np.median(ratios)) <= 50:
+        res.avertissements.append(
+            f"Ratio médian ultime Chain Ladder / prime de {float(np.median(ratios)):.4g} : vérifier que le "
+            "triangle et les primes sont dans la même unité monétaire et sur les mêmes périodes.")
 
 
 # --- commandes ----------------------------------------------------------------------------
@@ -158,8 +193,11 @@ def cmd_bf(args) -> Resultat:
     res = Resultat("bf", {})
     tri = _triangle_cumule(args, res)
     dev = _developpement(tri, args, res)
-    primes = _lire_primes(args.primes, tri)
+    primes = _lire_primes(args.primes, tri, res)
     res.ajouter_entree(args.primes, "primes")
+    if all("prime" in primes[o] and np.isfinite(primes[o]["prime"]) and primes[o]["prime"] > 0
+           for o in tri.origines):
+        _controle_unites(tri, dev, np.array([primes[o]["prime"] for o in tri.origines]), res)
     a_priori = []
     for o in tri.origines:
         p = primes[o]
@@ -186,9 +224,11 @@ def cmd_cape_cod(args) -> Resultat:
     res = Resultat("cape-cod", {})
     tri = _triangle_cumule(args, res)
     dev = _developpement(tri, args, res)
-    primes = _lire_primes(args.primes, tri)
+    primes = _lire_primes(args.primes, tri, res)
     res.ajouter_entree(args.primes, "primes")
     p = np.array([primes[o]["prime"] for o in tri.origines])
+    if np.all(np.isfinite(p) & (p > 0)):
+        _controle_unites(tri, dev, p, res)
     res.hypotheses.append(Hypothese(
         "primes", "fichier de primes",
         "Le ratio Cape Cod suppose des primes au même niveau tarifaire et de tendance ; "

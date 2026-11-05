@@ -85,7 +85,7 @@ def agreger(valeurs: dict, structure, chemin: str, details: dict) -> float:
     v = np.array([_montant(valeurs.get(n), f"{chemin}.{n}") for n in noms])
     total = float(math.sqrt(max(v @ np.array(matrice, dtype=float) @ v, 0.0)))
     details[chemin] = {"somme": float(v.sum()), "diversification": total - float(v.sum()), "scr": total,
-                       "sous_modules": {n: float(x) for n, x in zip(noms, v)}}
+                       "sous_modules": {n: float(x) for n, x in zip(noms, v, strict=True)}}
     return total
 
 

@@ -8,6 +8,7 @@ l'année d'origine. Les cellules futures sont vides.
 from __future__ import annotations
 
 import csv
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -123,7 +124,19 @@ def _nombre(x) -> float:
             s = s.replace(",", "")
     elif "," in s:
         s = s.replace(",", ".")
-    return float(s)
+    try:
+        return float(s)
+    except ValueError:
+        raise ValueError(f"valeur non numérique : '{x}'") from None
+
+
+def nombre_ou_nan(x) -> float:
+    """Comme _nombre, mais rend NaN pour un texte non numérique (lectures tolérantes qui comptent
+    et signalent les valeurs ignorées)."""
+    try:
+        return _nombre(x)
+    except ValueError:
+        return np.nan
 
 
 def lire_tableau(chemin: str | Path, feuille: str | int | None = None) -> pd.DataFrame:
@@ -141,10 +154,22 @@ def lire_tableau(chemin: str | Path, feuille: str | int | None = None) -> pd.Dat
                        encoding="utf-8-sig")
 
 
+def libelle(v) -> str:
+    """Libellé d'origine ou de période normalisé : Excel lit souvent 2020 comme 2020.0."""
+    s = str(v).strip()
+    if re.fullmatch(r"-?\d+\.0+", s):
+        s = s.split(".")[0]
+    return s
+
+
 def lire_triangle(chemin: str | Path, feuille: str | int | None = None) -> Triangle:
     df = lire_tableau(chemin, feuille)
-    origines = [str(v).strip() for v in df.iloc[:, 0].tolist()]
-    devs = [str(c).strip() for c in df.columns[1:]]
+    if df.shape[1] < 2 or df.shape[0] < 1:
+        raise ValueError("triangle vide : une colonne de libellés et au moins une période sont attendues")
+    origines = [libelle(v) for v in df.iloc[:, 0].tolist()]
+    if any(o in ("", "nan", "None") for o in origines):
+        raise ValueError("une année d'origine du triangle n'a pas de libellé")
+    devs = [libelle(c) for c in df.columns[1:]]
     valeurs = np.array([[_nombre(v) for v in ligne] for ligne in df.iloc[:, 1:].values],
                        dtype=float)
     return Triangle(origines, devs, valeurs)

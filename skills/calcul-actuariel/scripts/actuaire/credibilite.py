@@ -131,7 +131,7 @@ def hierarchique(X, W, cohortes, estimateur: str = "iteratif") -> dict:
         iterations = None
     elif estimateur == "iteratif":
         a = b = float(np.var(Xij, ddof=1))
-        for iterations in range(1, MAX_ITER + 1):
+        for iterations in range(1, MAX_ITER + 1):  # noqa: B007 (compteur rendu après la boucle)
             z, zS, Xz, zi = niveau(a, b)
             a_n = float(sum((z[ix] * (Xij[ix] - Xz[k]) ** 2).sum() for k, ix in enumerate(idx))
                         / sum(len(ix) - 1 for ix in idx))
@@ -229,7 +229,7 @@ def hachemeister(X, W, temps, futur: float, barycentre: bool = False, estimateur
 
     coefs, mats, s2 = _ajuster_individuels(X, W, present, Y)
     A = np.cov(coefs.T)
-    for it in range(1, MAX_ITER + 1):
+    for it in range(1, MAX_ITER + 1):  # noqa: B007 (compteur rendu après la boucle)
         Z = [A @ np.linalg.inv(A + s2 * np.linalg.inv(M)) for M in mats]
         bc = np.linalg.solve(sum(Z), sum(Z[i] @ coefs[i] for i in range(I)))
         An = sum(Z[i] @ np.outer(coefs[i] - bc, coefs[i] - bc) for i in range(I)) / (I - 1)

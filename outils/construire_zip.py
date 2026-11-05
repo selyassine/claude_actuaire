@@ -16,6 +16,8 @@ RACINE = Path(__file__).resolve().parents[1]
 SKILL = RACINE / "skills" / "calcul-actuariel"
 DIST = RACINE / "dist"
 EXCLUS = {"__pycache__", ".pytest_cache", ".DS_Store"}
+# Documents du dépôt copiés dans le skill, pour que Claude puisse les consulter.
+DOCUMENTS = {RACINE / "docs" / "guide-des-methodes.md": "references/guide-des-methodes.md"}
 
 
 def construire() -> Path:
@@ -27,6 +29,8 @@ def construire() -> Path:
         for f in sorted(SKILL.rglob("*")):
             if f.is_file() and not (EXCLUS & set(f.parts)) and f.suffix != ".pyc":
                 z.write(f, Path("calcul-actuariel") / f.relative_to(SKILL))
+        for source, cible_zip in DOCUMENTS.items():
+            z.write(source, Path("calcul-actuariel") / cible_zip)
     return cible
 
 

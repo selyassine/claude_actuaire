@@ -17,6 +17,14 @@ from .provisionnement import estimer_developpement, facteurs_individuels
 from .triangle import Triangle
 
 
+def _ratio(erreur: float, provision: float) -> float | None:
+    """Erreur relative ; None (« non défini ») quand la provision est nulle ou négative.
+
+    C'est le seul cas où une valeur non définie est attendue : il est rendu explicitement
+    par None, de sorte que tout NaN restant signale un vrai problème numérique."""
+    return erreur / provision if provision > 0 else None
+
+
 def _verifier_carre(tri: Triangle) -> int:
     n_i, n_k = tri.valeurs.shape
     if n_i != n_k:
@@ -101,14 +109,14 @@ def mack(tri: Triangle, sigma_dernier: str = "mack") -> dict:
             o: {
                 "derniere_diagonale": float(d), "ultime": float(u), "provision": float(r),
                 "erreur_prediction": float(s),
-                "erreur_prediction_pct": float(s / r) if r > 0 else None,
+                "erreur_prediction_pct": _ratio(float(s), float(r)),
             }
-            for o, d, u, r, s in zip(tri.origines, diag, ult, reserve, se)
+            for o, d, u, r, s in zip(tri.origines, diag, ult, reserve, se, strict=True)
         },
         "total": {
             "derniere_diagonale": float(diag.sum()), "ultime": float(ult.sum()),
             "provision": float(reserve.sum()), "erreur_prediction": se_total,
-            "erreur_prediction_pct": se_total / float(reserve.sum()),
+            "erreur_prediction_pct": _ratio(se_total, float(reserve.sum())),
         },
     }
 
@@ -212,7 +220,7 @@ def odp_analytique(tri: Triangle, dispersion: str = "pearson") -> dict:
         se = float(np.sqrt(msep))
         par_origine[tri.origines[i]] = {
             "derniere_diagonale": float(diag[i]), "provision": float(r), "ultime": float(diag[i] + r),
-            "erreur_prediction": se, "erreur_prediction_pct": se / r if r > 0 else None,
+            "erreur_prediction": se, "erreur_prediction_pct": _ratio(se, float(r)),
         }
     r_tot = mf.sum()
     se_tot = float(np.sqrt(phi * r_tot + mf @ V @ mf))
@@ -222,7 +230,7 @@ def odp_analytique(tri: Triangle, dispersion: str = "pearson") -> dict:
         "degres_de_liberte": int(ddl),
         "par_origine": par_origine,
         "total": {"provision": float(r_tot), "ultime": float(diag.sum() + r_tot),
-                  "erreur_prediction": se_tot, "erreur_prediction_pct": se_tot / r_tot},
+                  "erreur_prediction": se_tot, "erreur_prediction_pct": _ratio(se_tot, float(r_tot))},
     }
 
 
@@ -301,7 +309,7 @@ def bootstrap_odp(tri: Triangle, simulations: int = 10000, graine: int | None = 
         "total": {
             "moyenne": float(total.mean()),
             "erreur_prediction": float(total.std(ddof=1)),
-            "erreur_prediction_pct": float(total.std(ddof=1) / total.mean()),
+            "erreur_prediction_pct": _ratio(float(total.std(ddof=1)), float(total.mean())),
             "quantiles": {f"{q:g}": float(np.quantile(total, q)) for q in quantiles},
         },
         "cellules_moyenne_negative": negatifs,

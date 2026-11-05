@@ -8,7 +8,7 @@ import numpy as np
 
 from .credibilite import buhlmann_straub, hachemeister, hierarchique
 from .sortie import Hypothese, Resultat
-from .triangle import _nombre, lire_tableau
+from .triangle import _nombre, libelle, lire_tableau
 
 
 def args_credibilite(sp: argparse.ArgumentParser) -> None:
@@ -40,21 +40,32 @@ def _lire(args, res: Resultat, avec_poids: bool):
     ce, cp, cr = _colonne(df, "Entite"), _colonne(df, "Periode"), _colonne(df, "Ratio")
     cw = _colonne(df, "Poids", obligatoire=avec_poids)
     cc = _colonne(df, "Cohorte", obligatoire=args.modele == "hierarchique")
-    entites = list(dict.fromkeys(str(v).strip() for v in df[ce]))
-    periodes = sorted({_nombre(v) for v in df[cp]})
+    if df.shape[0] == 0:
+        raise ValueError("fichier d'expérience vide")
+    entites = list(dict.fromkeys(libelle(v) for v in df[ce]))
+    if any(e in ("", "nan", "None") for e in entites):
+        raise ValueError("une ligne n'a pas d'entité")
+    valeurs_periodes = [_nombre(v) for v in df[cp]]
+    if any(not np.isfinite(v) for v in valeurs_periodes):
+        raise ValueError("une ligne a une période vide ou non numérique")
+    periodes = sorted(set(valeurs_periodes))
     ie, ip = {e: k for k, e in enumerate(entites)}, {p: k for k, p in enumerate(periodes)}
     X = np.full((len(entites), len(periodes)), np.nan)
     W = np.full_like(X, np.nan) if cw is not None else None
     cohorte = {}
     for _, ligne in df.iterrows():
-        i, t = ie[str(ligne[ce]).strip()], ip[_nombre(ligne[cp])]
+        i, t = ie[libelle(ligne[ce])], ip[_nombre(ligne[cp])]
         if not np.isnan(X[i, t]):
             raise ValueError(f"doublon : entité {entites[i]}, période {periodes[t]:g}")
         X[i, t] = _nombre(ligne[cr])
         if W is not None:
             W[i, t] = _nombre(ligne[cw])
         if cc is not None:
-            cohorte[i] = str(ligne[cc]).strip()
+            c = libelle(ligne[cc])
+            if c in ("", "nan", "None"):
+                raise ValueError(f"entité {entites[i]} : cohorte vide")
+            if cohorte.setdefault(i, c) != c:
+                raise ValueError(f"entité {entites[i]} rattachée à deux cohortes ({cohorte[i]} et {c})")
     res.ajouter_entree(args.entree)
     manquants = int(np.isnan(X).sum())
     if manquants:
@@ -73,14 +84,14 @@ def cmd_credibilite(args) -> Resultat:
         W = None
     if args.modele in ("buhlmann", "buhlmann-straub"):
         r = buhlmann_straub(X, W, est)
-        for e, d in zip(entites, r["entites"]):
+        for e, d in zip(entites, r["entites"], strict=True):
             d["entite"] = e
         res.hypotheses.append(Hypothese(
             "modele", "Bühlmann" if W is None else "Bühlmann-Straub",
             "Prime = z_i × moyenne de l'entité + (1 - z_i) × prime collective, z_i = w_i / (w_i + s²/a).", "méthode"))
     elif args.modele == "hierarchique":
         r = hierarchique(X, W, coh, est)
-        for e, d in zip(entites, r["entites"]):
+        for e, d in zip(entites, r["entites"], strict=True):
             d["entite"] = e
         res.hypotheses.append(Hypothese(
             "modele", "hiérarchique à deux niveaux (Jewell)",
@@ -88,7 +99,7 @@ def cmd_credibilite(args) -> Resultat:
     else:
         futur = args.periode_future if args.periode_future is not None else float(periodes.max() + 1)
         r = hachemeister(X, W, periodes, futur, args.barycentre, est)
-        for e, d in zip(entites, r["entites"]):
+        for e, d in zip(entites, r["entites"], strict=True):
             d["entite"] = e
         r["periode_future"] = futur
         res.hypotheses.append(Hypothese(

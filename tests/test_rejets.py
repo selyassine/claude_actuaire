@@ -15,7 +15,11 @@ import yaml
 from actuaire import vie
 from actuaire.credibilite import buhlmann_straub
 from actuaire.extremes import ajuster_gpd, gpd_seuil
-from actuaire.provisionnement import bornhuetter_ferguson, cape_cod, estimer_developpement
+from actuaire.provisionnement import (
+    bornhuetter_ferguson,
+    cape_cod,
+    estimer_developpement,
+)
 from actuaire.scr import calculer_scr
 from actuaire.sortie import Resultat
 from actuaire.stochastique import bootstrap_odp, mack, odp_analytique
@@ -276,11 +280,20 @@ def test_gpd_diagnostic_multi_departs():
 # --- Sortie ------------------------------------------------------------------------------------
 
 def test_resultat_non_fini_signale():
-    d = Resultat("test", {"a": 1.0, "b": {"c": math.nan}, "x_pct": math.nan}).en_dict()
+    d = Resultat("test", {"a": 1.0, "b": {"c": math.nan}, "x_pct": math.inf}).en_dict()
     assert d["statut"] == "incomplet"
     assert d["resultats"]["b"]["c"] is None
-    assert any("b.c" in a and "x_pct" not in a for a in d["avertissements"])
+    # aucun champ n'est exempté, pas même un pourcentage
+    assert any("b.c" in a and "x_pct" in a for a in d["avertissements"])
     assert Resultat("test", {"a": 1.0}).en_dict()["statut"] == "ok"
+    # un ratio non défini attendu est rendu None explicitement, sans déclencher « incomplet »
+    assert Resultat("test", {"x_pct": None}).en_dict()["statut"] == "ok"
+
+
+def test_erreur_relative_provision_nulle_none():
+    from actuaire.stochastique import _ratio
+    assert _ratio(5.0, 0.0) is None and _ratio(5.0, -1.0) is None
+    assert _ratio(5.0, 10.0) == 0.5
 
 
 # --- Notation du banc d'essai ------------------------------------------------------------------

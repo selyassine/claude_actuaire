@@ -10,6 +10,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import platform
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
@@ -18,6 +19,22 @@ from typing import Any
 import numpy as np
 
 from . import __version__
+
+
+def environnement() -> dict[str, str]:
+    """Versions qui conditionnent le résultat numérique, pour pouvoir le reproduire."""
+    import pandas
+    import scipy
+
+    return {"python": platform.python_version(), "numpy": np.__version__,
+            "scipy": scipy.__version__, "pandas": pandas.__version__}
+
+
+def empreinte_resultats(resultats: Any) -> str:
+    """SHA-256 du bloc résultats sérialisé de façon canonique : prouve qu'un rapport
+    cite les chiffres tels que le moteur les a rendus."""
+    texte = json.dumps(resultats, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(texte.encode("utf-8")).hexdigest()
 
 
 def empreinte_fichier(chemin: str | Path) -> str:
@@ -64,7 +81,8 @@ class Resultat:
             {
                 "statut": statut,
                 "methode": self.methode,
-                "moteur": {"nom": "claude_actuaire", "version": __version__},
+                "moteur": {"nom": "claude_actuaire", "version": __version__,
+                           "environnement": environnement()},
                 "horodatage_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                 "entrees": self.entrees,
                 "options": self.options,
@@ -94,11 +112,14 @@ def _nettoyer(obj: Any) -> Any:
 
 
 def _non_finis(obj: Any, chemin: str = "") -> list[str]:
-    """Chemins des valeurs NaN ou infinies, sauf les pourcentages d'une provision nulle (0/0 attendu)."""
+    """Chemins de toutes les valeurs NaN ou infinies, sans exception.
+
+    Les ratios non définis attendus (erreur relative d'une provision nulle) sont rendus None
+    par les méthodes elles-mêmes ; un NaN ici signale donc toujours un problème numérique."""
     if isinstance(obj, dict):
         return [c for k, v in obj.items() for c in _non_finis(v, f"{chemin}.{k}" if chemin else str(k))]
     if isinstance(obj, (list, tuple, np.ndarray)):
         return [c for i, v in enumerate(list(obj)) for c in _non_finis(v, f"{chemin}[{i}]")]
     if isinstance(obj, (float, np.floating)) and not math.isfinite(float(obj)):
-        return [] if chemin.endswith("_pct") else [chemin]
+        return [chemin]
     return []

@@ -11,7 +11,7 @@ from conftest import RACINE
 CLI = RACINE / "skills" / "calcul-actuariel" / "scripts" / "cli.py"
 DONNEES = RACINE / "tests" / "donnees"
 CLES = {"statut", "methode", "moteur", "horodatage_utc", "entrees", "options", "hypotheses",
-        "resultats", "avertissements"}
+        "resultats", "avertissements", "reproduction", "empreinte_resultats"}
 
 
 def test_environnement():
