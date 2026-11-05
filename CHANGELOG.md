@@ -1,5 +1,21 @@
 # Historique des versions
 
+## 0.5.0 (2026-11-05) : réglementation tunisienne, marge de solvabilité et tables TD99 / TV99
+
+Nouvelle commande `marge-solvabilite-tn` :
+
+- Montant minimum réglementaire de la marge de solvabilité (Code des assurances, art. 58 bis) : non-vie (max des bases primes et sinistres, planchers de rétention de 50 %), vie (4 % des PM, plancher 85 % ; 3 ‰ des capitaux sous risque, plancher 50 %), société mixte (somme), assurance crédit sur 7 exercices.
+- Marge constituée (art. 58), excédent et taux de couverture.
+- Interprétations rendues en hypothèses : recours encaissés déduits de la charge, rapport de rétention sinistres sur la charge de la période.
+
+Tables de mortalité tunisiennes :
+
+- `survie` et `tarif-vie` acceptent `--modele td99` (alias `tm99`) et `--modele tv99`, transcrites du Code des assurances (arrêté du 27/02/2001, art. 5).
+- `--qx-source publie` utilise la colonne q_x imprimée au lieu des l_x.
+- Un taux technique au-dessus de 4 % est signalé.
+
+Tests : 371. Fiches de référence calculées en R (`tests/references/r/marge_tunisie.R`), en attente de validation.
+
 ## 0.4.2 (2026-11-05) : registre des hypothèses d'un dossier
 
 Nouvelle commande `registre` :

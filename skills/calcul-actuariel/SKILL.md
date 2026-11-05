@@ -1,6 +1,6 @@
 ---
 name: calcul-actuariel
-description: Moteur de calcul actuariel testé sur des résultats publiés. À utiliser pour tout chiffre actuariel (provisions, IBNR, triangles, Chain Ladder, Mack, bootstrap, Bornhuetter-Ferguson, tables de mortalité, annuités, provisions vie, GPD, tarification de tranche de réassurance XL, crédibilité, SCR, comparaison avec un modèle externe) au lieu de calculer de tête. Use for any actuarial calculation (reserving, life contingencies, EVT, XL reinsurance layer pricing, credibility, SCR, model validation).
+description: Moteur de calcul actuariel testé sur des résultats publiés. À utiliser pour tout chiffre actuariel (provisions, IBNR, triangles, Chain Ladder, Mack, bootstrap, Bornhuetter-Ferguson, tables de mortalité, annuités, provisions vie, GPD, tarification de tranche de réassurance XL, crédibilité, SCR, marge de solvabilité tunisienne, tables TD99/TV99, comparaison avec un modèle externe) au lieu de calculer de tête. Use for any actuarial calculation (reserving, life contingencies, EVT, XL reinsurance layer pricing, credibility, SCR, model validation).
 ---
 
 # Calcul actuariel
@@ -37,6 +37,8 @@ python <skill>/scripts/cli.py tranche-xl --entree sinistres.csv --seuil 10 --ann
 python <skill>/scripts/cli.py credibilite --entree experience.csv --modele buhlmann-straub
 python <skill>/scripts/cli.py credibilite --entree experience.csv --modele regression --barycentre --periode-future 13
 python <skill>/scripts/cli.py scr --entree scr.json
+python <skill>/scripts/cli.py marge-solvabilite-tn --entree marge.json          # marge de solvabilité tunisienne (art. 58 bis)
+python <skill>/scripts/cli.py survie --modele td99 --taux 0.03 --age 60           # tables tunisiennes TD99 / TV99
 python <skill>/scripts/cli.py survie --modele sssm --taux 0.04 --age 50 --n 20
 python <skill>/scripts/cli.py tarif-vie --modele sssm --taux 0.04 --type vie-entiere --age 50 --capital 100000 \
     --frais-initiaux-pct 0.5 --frais-initiaux-fixe 250 --frais-renouvellement-pct 0.03 --frais-renouvellement-fixe 25 --durees 0,1,2,10
@@ -105,8 +107,11 @@ Pour `tranche-xl`, même fichier de sinistres que `gpd`. `--annees` (nombre d'an
 
 | Commande | Rôle | Statut |
 | --- | --- | --- |
+| `marge-solvabilite-tn` | Marge de solvabilité minimale du Code des assurances tunisien (art. 58 bis : non-vie, vie, mixte) et taux de couverture (art. 58) | testé : cas construits recalculés en R, fiches en attente de validation |
 | `registre` | Registre des hypothèses d'un dossier : consolide les sorties archivées, classe les hypothèses (choix de jugement, valeurs par défaut, méthode), détecte les incohérences, écrit la note d'hypothèses | disponible |
 | `comparer` | Rapport d'écarts ligne à ligne entre les résultats d'un modèle externe et une sortie archivée du moteur | testé (propriétés et refus) |
+
+Pour `marge-solvabilite-tn`, le fichier JSON donne les primes, les règlements de chaque exercice (3, ou 7 pour l'assurance crédit), les PSAP de début et de fin, les recours encaissés, la charge nette, et pour la vie les PM et capitaux brut et net (voir le guide des méthodes, § 8 bis). Ne complète pas un montant manquant : demande-le. Rapporte les deux interprétations rendues en hypothèses (recours déduits, rapport sinistres sur la charge de la période). Pour la vie tunisienne, utilise `--modele td99` (contrats en cas de décès) ou `--modele tv99` (contrats en cas de survie).
 
 Pour un dossier de plusieurs calculs, enregistre chaque sortie JSON dans un même dossier (par exemple `sorties/`), puis lance `registre --sorties sorties/ --note hypotheses.md` avant de rédiger la synthèse. Présente d'abord les incohérences, puis les valeurs par défaut à faire confirmer par l'utilisateur. Ne présente pas une note dont la conclusion est `bloquant`.
 

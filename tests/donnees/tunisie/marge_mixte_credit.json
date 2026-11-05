@@ -1,0 +1,36 @@
+{
+  "unite": "milliers de dinars",
+  "commentaire": "Cas construit : société mixte, assurance crédit à titre principal (7 exercices), base sinistres dominante.",
+  "non_vie": {
+    "assurance_credit": true,
+    "primes_emises_acceptees": 10000,
+    "primes_retenues": 9000,
+    "sinistres": {
+      "reglements": [
+        9000,
+        12000,
+        15000,
+        30000,
+        11000,
+        10000,
+        13000
+      ],
+      "psap_debut": 25000,
+      "psap_fin": 32000,
+      "recours_encaisses": 4000,
+      "charge_nette": 70000
+    }
+  },
+  "vie": {
+    "provisions_mathematiques_brutes": 80000,
+    "provisions_mathematiques_nettes": 76000,
+    "capitaux_sous_risque_bruts": 300000,
+    "capitaux_sous_risque_nets": 90000
+  },
+  "marge_constituee": {
+    "capital_libere": 6000,
+    "capital_non_libere": 2000,
+    "reserves": 1500,
+    "plus_values_agreees": 500
+  }
+}

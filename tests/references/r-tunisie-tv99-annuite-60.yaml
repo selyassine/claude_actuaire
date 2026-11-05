@@ -1,0 +1,23 @@
+id: r-tunisie-tv99-annuite-60
+methode: survie
+source:
+  reference: Calcul indépendant du moteur avec R 4.5.3 sur les l_x de la table TV99 (arrêté du ministre des finances
+    du 27/02/2001, art. 5, Code des assurances tunisien pages 200 à 207).
+  url: https://www.cga.gov.tn
+  emplacement: script tests/references/r/marge_tunisie.R, sortie tests/references/r/marge_tunisie.sortie.txt (bloc
+    « TV99 age 60 taux 0.03 »)
+donnees: null
+options:
+  modele: tv99
+  taux: 0.03
+  age: 60
+statut: en_attente
+saisie_par: Claude, recopié de la sortie du script R
+valide_par: null
+date_validation: null
+note: Vérifie le branchement de la table dans le moteur ; la transcription des l_x est contrôlée à part (tests/test_tunisie.py
+  et relecture contre le PDF).
+valeurs:
+- chemin: resultats.annuite_due_vie_entiere
+  attendu: 14.7551743042141
+  tolerance_relative: 1.0e-12

@@ -1,0 +1,34 @@
+== marge_non_vie ==
+non_vie_base_primes = 12000
+non_vie_charge_periode = 140000
+non_vie_base_sinistres = 5833.33333333333
+non_vie_minimum = 12000
+minimum_reglementaire = 12000
+marge_constituee = 13500
+taux_couverture = 1.125
+== marge_vie ==
+vie_pm = 17000
+vie_capitaux_sous_risque = 3600
+vie_minimum = 20600
+minimum_reglementaire = 20600
+marge_constituee = 18000
+taux_couverture = 0.87378640776699
+== marge_mixte_credit ==
+non_vie_base_primes = 1800
+non_vie_charge_periode = 103000
+non_vie_base_sinistres = 2500
+non_vie_minimum = 2500
+vie_pm = 3040
+vie_capitaux_sous_risque = 450
+vie_minimum = 3490
+minimum_reglementaire = 5990
+marge_constituee = 9000
+taux_couverture = 1.5025041736227
+== TD99 age 30 taux 0.03 ==
+annuite_due_vie_entiere = 24.36399519095
+== TD99 age 60 taux 0.03 ==
+annuite_due_vie_entiere = 13.5335175324444
+== TV99 age 30 taux 0.03 ==
+annuite_due_vie_entiere = 25.3292844715104
+== TV99 age 60 taux 0.03 ==
+annuite_due_vie_entiere = 14.7551743042141
