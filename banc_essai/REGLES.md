@@ -64,3 +64,17 @@ Ce qui change par rapport aux règles ci-dessus :
 Pourquoi : obtenir une première mesure rapide sans nouveau corrigé externe. R n'est pas accessible depuis l'environnement de développement, et les 20 variantes demandaient des corrigés indépendants. Le protocole complet reste l'objectif : le rapport présentera ces résultats comme une **première mesure**, pas comme la validation finale.
 
 Les seuils de réussite (95 % en C, au moins 90 % par famille, écart C − B d'au moins 30 points) restent inchangés.
+
+## Amendement du 2026-11-05 : passage sur les 16 variantes
+
+Décidé par Yassine le 2026-11-05, **avant toute session** de ce passage.
+
+1. **Tâches** : les 16 variantes de `banc_essai/variantes/taches/` (2 par famille), sur données perturbées ou simulées, dont les corrigés ont été validés par Yassine le 2026-11-05. Les réponses ne figurent dans aucune publication.
+2. **Un passage par tâche et par condition**, soit 48 sessions, comme au premier passage.
+3. **Conditions** identiques au premier passage. A : conversation incognito, skills désactivés, exécution de code désactivée. B : conversation normale, exécution de code active, skills `calcul-actuariel` désactivé. C : conversation normale, seul `calcul-actuariel` activé, en **version 0.2.0** (moteur avec contrôles de l'audit du 2026-11-05). Même modèle et même effort pour les 48 sessions, notés dans le rapport.
+4. **Consigne** : le texte de `consigne.md` et les fichiers de données de la tâche, sans aucune autre indication. Aucune intervention pendant la réponse.
+5. **Tolérances** : celles des corrigés des variantes (0,05 % relatif sur les montants exacts, au centime en vie, 1,5 % sur les quantiles GPD, 5 % sur le bootstrap).
+6. **Notation** : `python banc_essai/noter.py --reponses banc_essai/variantes/reponses --taches banc_essai/variantes/taches --conditions A,B,C`. Un essai manquant compte comme faux.
+7. **Rapport séparé** : `banc_essai/variantes/RAPPORT.md`, sans mélanger avec le premier passage.
+
+Les seuils de réussite restent inchangés : 95 % en C, au moins 90 % par famille, écart C − B d'au moins 30 points.
