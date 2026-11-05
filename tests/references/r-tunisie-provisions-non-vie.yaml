@@ -1,0 +1,72 @@
+id: r-tunisie-provisions-non-vie
+methode: provisions-tn
+source:
+  reference: Calcul indépendant du moteur avec R 4.5.3 (jsonlite, Chain Ladder écrit en R de base), à partir de
+    l'arrêté du ministre des finances tunisien du 27 février 2001, art. 17, 19, 21, 22, 24, 25 et 27.
+  url: https://www.cga.gov.tn
+  emplacement: script tests/references/r/provisions_tunisie.R, sortie tests/references/r/provisions_tunisie.sortie.txt
+donnees: donnees/tunisie/provisions.json
+options:
+  cadences: donnees/tunisie/cadences_chain_ladder.json
+statut: en_attente
+saisie_par: Claude, recopié de la sortie du script R
+valide_par: null
+date_validation: null
+note: 'Cas construit : PPNA en jours exacts avec un contrat à effet futur et un contrat échu, PRC sur deux catégories,
+  minimum de 5 % des frais (PSAP frais compris), auto matériels retenu par les cadences, dotation plafonnée (équilibrage),
+  reprise (grêle).'
+valeurs:
+- chemin: resultats.ppna.par_categorie.automobile
+  attendu: 944.510010537408
+  tolerance_relative: 1.0e-12
+- chemin: resultats.ppna.par_categorie.incendie
+  attendu: 1500
+  tolerance_relative: 1.0e-12
+- chemin: resultats.ppna.total
+  attendu: 2444.51001053741
+  tolerance_relative: 1.0e-12
+- chemin: resultats.prc.par_categorie.automobile.ratio
+  attendu: 1.07407407407407
+  tolerance_relative: 1.0e-12
+- chemin: resultats.prc.par_categorie.automobile.prc
+  attendu: 311.111111111112
+  tolerance_relative: 1.0e-12
+- chemin: resultats.prc.par_categorie.incendie.prc
+  attendu: 0
+  tolerance_absolue: 1.0e-12
+- chemin: resultats.prc.total
+  attendu: 311.111111111112
+  tolerance_relative: 1.0e-12
+- chemin: resultats.frais_gestion_sinistres.minimum
+  attendu: 1052.63157894737
+  tolerance_relative: 1.0e-12
+- chemin: resultats.frais_gestion_sinistres.frais_retenus
+  attendu: 1052.63157894737
+  tolerance_relative: 1.0e-12
+- chemin: resultats.auto_materiels.evaluations.cadences
+  attendu: 4589.25183021105
+  tolerance_relative: 1.0e-12
+- chemin: resultats.auto_materiels.evaluations.cout_moyen
+  attendu: 3150
+  tolerance_relative: 1.0e-12
+- chemin: resultats.auto_materiels.provision
+  attendu: 4589.25183021105
+  tolerance_relative: 1.0e-12
+- chemin: resultats.equilibrage.plafond
+  attendu: 2850
+  tolerance_relative: 1.0e-12
+- chemin: resultats.equilibrage.dotation
+  attendu: 1800
+  tolerance_relative: 1.0e-12
+- chemin: resultats.egalisation_grele.plafond
+  attendu: 800
+  tolerance_relative: 1.0e-12
+- chemin: resultats.egalisation_grele.reprise
+  attendu: 120
+  tolerance_relative: 1.0e-12
+- chemin: resultats.egalisation_grele.provision_fin
+  attendu: 180
+  tolerance_relative: 1.0e-12
+- chemin: resultats.rentes.provision_chargee
+  attendu: 8400
+  tolerance_relative: 1.0e-12
