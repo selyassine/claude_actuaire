@@ -89,7 +89,7 @@ def test_incremental_et_cumule_donnent_le_meme_resultat(tmp_path):
     chemin = tmp_path / "inc.csv"
     with open(chemin, "w") as f:
         f.write("Origine," + ",".join(TA.developpements) + "\n")
-        for o, ligne in zip(TA.origines, inc.valeurs):
+        for o, ligne in zip(TA.origines, inc.valeurs, strict=True):
             f.write(o + "," + ",".join("" if np.isnan(v) else repr(float(v)) for v in ligne) + "\n")
     a = calculer(["chain-ladder", "--entree", str(chemin), "--type", "incremental"])
     b = calculer(["chain-ladder", "--entree", str(DONNEES / "taylor_ashe_cumule.csv"), "--type", "cumule"])

@@ -64,7 +64,7 @@ def _lire_qx(chemin: str) -> dict[int, float]:
     ages = [int(a) for a in ages]
     if len(set(ages)) != len(ages):
         raise ValueError("table de mortalité : âges en double")
-    return dict(zip(ages, (float(_nombre(q)) for q in df[cols["qx"]])))
+    return dict(zip(ages, (float(_nombre(q)) for q in df[cols["qx"]]), strict=True))
 
 
 def construire_modele(args, res: Resultat) -> ModeleSurvie:
@@ -115,6 +115,12 @@ def cmd_survie(args) -> Resultat:
                                           "depuis": args.depuis, "n": args.n})
     b = Base(construire_modele(args, res), args.taux)
     x, s, n = args.age, args.depuis, args.n
+    if x < 0 or s < 0:
+        raise ValueError("--age et --depuis doivent être positifs ou nuls")
+    if n is not None and n < 1:
+        raise ValueError("--n doit être un entier au moins égal à 1")
+    if x + s > max(b.modele.q_ultime):
+        raise ValueError(f"âge atteint {x + s} au-delà du dernier âge du modèle ({max(b.modele.q_ultime)})")
     r = {
         "q": b.modele.q(x, s),
         "esperance_vie_entiere": b.esperance_vie_entiere(x, s),
@@ -134,7 +140,12 @@ def cmd_survie(args) -> Resultat:
 
 
 def cmd_tarif(args) -> Resultat:
-    durees = sorted({int(t) for t in str(args.durees).split(",") if t.strip()})
+    try:
+        durees = sorted({int(t) for t in str(args.durees).split(",") if t.strip()})
+    except ValueError:
+        raise ValueError(f"--durees : liste d'entiers séparés par des virgules attendue, reçu '{args.durees}'") from None
+    if any(t < 0 for t in durees):
+        raise ValueError("--durees : durées positives ou nulles attendues")
     res = Resultat("tarif-vie", {}, options={
         "modele": args.modele, "taux": args.taux, "type": args.type, "age": args.age,
         "capital": args.capital, "duree": args.duree, "duree_primes": args.duree_primes, "durees": durees})

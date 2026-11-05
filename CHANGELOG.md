@@ -1,5 +1,48 @@
 # Historique des versions
 
+## 0.3.0 (2026-11-05) : contrôles métier, reproductibilité, industrialisation
+
+Réponse à l'analyse du 2026-11-05 au soir. Les résultats publiés et les 16 variantes restent reproduits à l'identique (59/59).
+
+Défauts corrigés :
+
+- `triangle` : applique désormais les mêmes contrôles bloquants que les méthodes (trou, ligne vide, valeur infinie, doublon) au lieu de résumer un triangle invalide.
+- Sortie : plus aucun champ n'échappe au contrôle des valeurs non finies (les champs `_pct` étaient exemptés). Les erreurs relatives d'une provision nulle sont rendues `null` explicitement par la méthode.
+- Vie : une sélection qui rendait q > 1 sur une table donnait q = 1,8 et une espérance de vie négative avec le statut `ok` ; elle est refusée. Un âge avant le début d'une table supposait un décès immédiat ; il est refusé. Un âge de départ au-delà de la table, `--n 0`, `--depuis` négatif et une liste `--durees` mal formée sont refusés.
+- GPD : un texte dans le fichier de sinistres faisait échouer la lecture ; il est ignoré et compté dans un avertissement, comme annoncé.
+- Versions synchronisées (moteur, plugin, CHANGELOG), avec un test qui l'impose.
+
+Contrôles métier :
+
+- Fichier de primes : colonne `Prime` obligatoire, origine en double refusée, origine du triangle absente refusée, origines en trop signalées.
+- Alerte d'unité si le ratio médian ultime Chain Ladder / prime sort de [0,02 ; 50] (triangle et primes dans des unités différentes).
+- Libellés lus dans Excel (`2020.0`) ramenés à `2020`. Origine ou entité sans libellé refusée.
+- Options `--exclure` et `--facteurs-imposes` mal formées, ou facteur imposé deux fois : message explicite. Valeur non numérique : message explicite.
+- Crédibilité : période vide refusée, entité rattachée à deux cohortes refusée.
+- Triangle d'une seule période refusé.
+- Tous les `zip()` du moteur sont stricts : deux listes de longueurs différentes arrêtent le calcul au lieu d'être tronquées.
+
+Valeurs extrêmes :
+
+- Intervalles de confiance à 95 % de ξ et σ (Wald) et de ξ par vraisemblance profilée (Coles 2001).
+- Statistiques de Kolmogorov-Smirnov et d'Anderson-Darling ; p-valeur d'Anderson-Darling par bootstrap paramétrique (`--test-ajustement N`, `--graine`).
+
+Reproductibilité et audit :
+
+- Chaque sortie contient les versions de Python, numpy, scipy et pandas, la commande exacte (`reproduction`) et l'empreinte SHA-256 des résultats.
+- Nouvelle commande `rejouer` : vérifie que les résultats archivés n'ont pas été retouchés et que les fichiers d'entrée n'ont pas changé, refait le calcul et liste les écarts.
+
+Industrialisation :
+
+- `requirements.txt` (bornes des versions supportées), `requirements-dev.txt`, `requirements-lock.txt` (versions exactes de la CI).
+- CI : ruff, couverture avec seuil de 90 % (91 % atteint), tests sous Python 3.10 et 3.12 (versions verrouillées) et 3.13 (dernières versions autorisées), `pip-audit`, banc d'essai à blanc, test d'installation réelle de l'archive, publication automatique d'une version GitHub sur tag `vX.Y.Z`.
+- 259 tests (195 en 0.2.0).
+
+Documentation :
+
+- `docs/guide-des-methodes.md` : formules, conventions, domaine de validité, refus, limites et validation de chaque méthode ; inclus dans l'archive du skill.
+- README : exemple réel avant/après tiré du banc d'essai, confidentialité des données, limites.
+
 ## 0.2.0 (2026-11-05) : fiabilité numérique
 
 Le moteur refuse désormais les entrées invalides et les cas dégénérés au lieu de rendre un chiffre faux. Les résultats publiés et les 16 variantes sont reproduits à l'identique (59/59).

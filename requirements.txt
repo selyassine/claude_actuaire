@@ -1,0 +1,7 @@
+# Dépendances d'exécution du moteur, avec les bornes des versions testées.
+# Bornes basses : versions les plus anciennes compatibles avec le code (API utilisées).
+# Bornes hautes : prochaine version majeure, non testée ; la CI la détecte via le job « versions récentes ».
+numpy>=1.24,<3
+scipy>=1.10,<2
+pandas>=2.0,<4
+openpyxl>=3.1,<4

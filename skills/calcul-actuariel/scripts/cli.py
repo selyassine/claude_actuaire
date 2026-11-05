@@ -20,15 +20,20 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from actuaire import __version__  # noqa: E402
-from actuaire.sortie import Hypothese, Resultat  # noqa: E402
-from actuaire.cli_provisionnement import COMMANDES as COMMANDES_PROVISIONNEMENT  # noqa: E402
-from actuaire.cli_provisionnement import args_triangle  # noqa: E402
-from actuaire.cli_stochastique import COMMANDES as COMMANDES_STOCHASTIQUE  # noqa: E402
 from actuaire.cli_credibilite import COMMANDES as COMMANDES_CREDIBILITE  # noqa: E402
-from actuaire.cli_scr import COMMANDES as COMMANDES_SCR  # noqa: E402
 from actuaire.cli_extremes import COMMANDES as COMMANDES_EXTREMES  # noqa: E402
+from actuaire.cli_provisionnement import (
+    COMMANDES as COMMANDES_PROVISIONNEMENT,  # noqa: E402
+)
+from actuaire.cli_provisionnement import _triangle_cumule, args_triangle  # noqa: E402
+from actuaire.cli_scr import COMMANDES as COMMANDES_SCR  # noqa: E402
+from actuaire.cli_stochastique import COMMANDES as COMMANDES_STOCHASTIQUE  # noqa: E402
 from actuaire.cli_vie import COMMANDES as COMMANDES_VIE  # noqa: E402
-from actuaire.triangle import lire_triangle  # noqa: E402
+from actuaire.sortie import (  # noqa: E402
+    Resultat,
+    empreinte_fichier,
+    empreinte_resultats,
+)
 
 
 def cmd_environnement(args: argparse.Namespace) -> Resultat:
@@ -50,33 +55,77 @@ def cmd_environnement(args: argparse.Namespace) -> Resultat:
 
 
 def cmd_triangle(args: argparse.Namespace) -> Resultat:
-    tri = lire_triangle(args.entree, args.feuille)
-    cumule = tri.semble_cumule() if args.type == "auto" else args.type == "cumule"
-    res = Resultat(
-        methode="triangle",
-        options={"type": args.type, "feuille": args.feuille},
-        resultats={
-            "n_origines": tri.n_origines,
-            "n_developpements": tri.n_dev,
-            "origines": tri.origines,
-            "developpements": tri.developpements,
-            "type_retenu": "cumule" if cumule else "incremental",
-            "derniere_diagonale_cumulee": dict(
-                zip(tri.origines, (tri if cumule else tri.en_cumule()).derniere_diagonale())
-            ),
-        },
-    )
-    res.ajouter_entree(args.entree)
-    if args.type == "auto":
-        res.hypotheses.append(
-            Hypothese(
-                nom="type_de_triangle",
-                valeur=res.resultats["type_retenu"],
-                justification="Détecté automatiquement : lignes croissantes = cumulé.",
-                source="valeur par défaut",
-            )
-        )
-    res.avertissements.extend(tri.controles())
+    """Même lecture et mêmes contrôles bloquants que les méthodes de provisionnement :
+    un triangle troué, infini ou avec des doublons est refusé, jamais résumé."""
+    res = Resultat(methode="triangle", resultats={}, options={"type": args.type, "feuille": args.feuille})
+    cumule = _triangle_cumule(args, res)
+    res.resultats = {
+        "n_origines": cumule.n_origines,
+        "n_developpements": cumule.n_dev,
+        "origines": cumule.origines,
+        "developpements": cumule.developpements,
+        "type_retenu": "cumule" if args.type == "cumule" or (
+            args.type == "auto" and res.hypotheses and res.hypotheses[0].valeur == "cumule") else "incremental",
+        "derniere_diagonale_cumulee": dict(zip(cumule.origines, cumule.derniere_diagonale(), strict=True)),
+    }
+    return res
+
+
+def args_rejouer(sp: argparse.ArgumentParser) -> None:
+    sp.add_argument("--sortie", required=True,
+                    help="Fichier JSON rendu par une commande précédente du moteur.")
+    sp.add_argument("--tolerance", type=float, default=1e-9,
+                    help="Écart relatif toléré entre les deux calculs (défaut 1e-9).")
+
+
+def _ecarts(a, b, tol: float, chemin: str = "") -> list[str]:
+    if isinstance(a, dict) and isinstance(b, dict):
+        out = [f"{chemin}.{k} : présent d'un seul côté" for k in sorted(set(a) ^ set(b))]
+        for k in sorted(set(a) & set(b)):
+            out += _ecarts(a[k], b[k], tol, f"{chemin}.{k}" if chemin else k)
+        return out
+    if isinstance(a, list) and isinstance(b, list):
+        if len(a) != len(b):
+            return [f"{chemin} : longueurs {len(a)} et {len(b)}"]
+        return [e for i, (x, y) in enumerate(zip(a, b, strict=True)) for e in _ecarts(x, y, tol, f"{chemin}[{i}]")]
+    if isinstance(a, (int, float)) and isinstance(b, (int, float)) and not isinstance(a, bool):
+        if abs(a - b) <= tol * max(1.0, abs(a), abs(b)):
+            return []
+        return [f"{chemin} : {a} puis {b}"]
+    return [] if a == b else [f"{chemin} : {a!r} puis {b!r}"]
+
+
+def cmd_rejouer(args: argparse.Namespace) -> Resultat:
+    """Refait un calcul archivé et vérifie qu'il donne les mêmes chiffres sur les mêmes données."""
+    with open(args.sortie, encoding="utf-8") as f:
+        ancien = json.load(f)
+    if not isinstance(ancien, dict) or "reproduction" not in ancien or "resultats" not in ancien:
+        raise ValueError("ce fichier n'est pas une sortie du moteur avec bloc 'reproduction' (version 0.3.0 ou plus)")
+    attendue = ancien.get("empreinte_resultats")
+    if attendue and attendue != empreinte_resultats(ancien["resultats"]):
+        raise ValueError("les résultats du fichier archivé ont été modifiés depuis le calcul (empreinte différente)")
+    for e in ancien.get("entrees", []):
+        if empreinte_fichier(e["fichier"]) != e["sha256"]:
+            raise ValueError(f"le fichier d'entrée {e['fichier']} a changé depuis le calcul archivé")
+    arguments = ancien["reproduction"]["arguments"]
+    if arguments and arguments[0] == "rejouer":
+        raise ValueError("une sortie de 'rejouer' ne se rejoue pas")
+    nouveau = calculer(arguments)
+    ecarts = _ecarts(ancien["resultats"], nouveau["resultats"], args.tolerance)
+    res = Resultat(methode="rejouer", options={"sortie": args.sortie, "tolerance": args.tolerance}, resultats={
+        "commande": arguments,
+        "identique": not ecarts,
+        "ecarts": ecarts[:50],
+        "version_archivee": ancien.get("moteur", {}).get("version"),
+        "version_actuelle": __version__,
+    })
+    res.ajouter_entree(args.sortie, "sortie_archivee")
+    if ancien.get("moteur", {}).get("version") != __version__:
+        res.avertissements.append("Le calcul archivé a été fait avec une autre version du moteur.")
+    if ancien.get("moteur", {}).get("environnement") != nouveau["moteur"]["environnement"]:
+        res.avertissements.append("Versions de Python ou des bibliothèques différentes de celles du calcul archivé.")
+    if ecarts:
+        res.avertissements.append(f"{len(ecarts)} écart(s) entre le calcul archivé et le nouveau calcul.")
     return res
 
 
@@ -91,6 +140,8 @@ COMMANDES = {
     **COMMANDES_EXTREMES,
     **COMMANDES_CREDIBILITE,
     **COMMANDES_SCR,
+    "rejouer": (cmd_rejouer, "Refait un calcul archivé (sortie JSON) et vérifie qu'il donne les mêmes chiffres.",
+                args_rejouer),
 }
 
 
@@ -121,17 +172,40 @@ def afficher_texte(d: dict) -> str:
     return "\n".join(lignes)
 
 
+def _arguments_de_calcul(argv: list[str]) -> list[str]:
+    """Arguments qui déterminent le calcul (sans --format, qui ne change que l'affichage)."""
+    out, i = [], 0
+    while i < len(argv):
+        if argv[i] == "--format":
+            i += 2
+            continue
+        if argv[i].startswith("--format="):
+            i += 1
+            continue
+        out.append(argv[i])
+        i += 1
+    return out
+
+
+def _finaliser(d: dict, argv: list[str]) -> dict:
+    d["reproduction"] = {"arguments": _arguments_de_calcul(argv),
+                         "commande": "python cli.py " + " ".join(_arguments_de_calcul(argv))}
+    d["empreinte_resultats"] = empreinte_resultats(d["resultats"])
+    return d
+
+
 def calculer(argv: list[str]) -> dict:
     """Exécute une commande et rend la sortie sous forme de dictionnaire (utilisé par les tests)."""
     args = construire_parser().parse_args(argv)
-    return COMMANDES[args.commande][0](args).en_dict()
+    return _finaliser(COMMANDES[args.commande][0](args).en_dict(), list(argv))
 
 
 def main(argv: list[str] | None = None) -> int:
+    argv = list(sys.argv[1:] if argv is None else argv)
     args = construire_parser().parse_args(argv)
     try:
         res = COMMANDES[args.commande][0](args)
-    except (FileNotFoundError, ValueError) as exc:
+    except (FileNotFoundError, ValueError, json.JSONDecodeError) as exc:
         print(json.dumps({"statut": "erreur", "erreur": str(exc), "commande": args.commande}, ensure_ascii=False),
               file=sys.stderr)
         return 2
@@ -139,7 +213,7 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps({"statut": "erreur", "erreur": f"erreur interne ({type(exc).__name__}) : {exc}",
                           "commande": args.commande}, ensure_ascii=False), file=sys.stderr)
         return 3
-    d = res.en_dict()
+    d = _finaliser(res.en_dict(), argv)
     print(afficher_texte(d) if args.format == "texte" else json.dumps(d, ensure_ascii=False, indent=2))
     return 0
 

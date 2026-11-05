@@ -1,6 +1,6 @@
-numpy
-scipy
-pandas
-openpyxl
-pyyaml
-pytest
+# Outils de développement et de test, en plus des dépendances d'exécution.
+-r requirements.txt
+pyyaml>=6,<7
+pytest>=7.4,<10
+coverage>=7.4,<8
+ruff>=0.14,<1

@@ -132,7 +132,7 @@ def bornhuetter_ferguson(tri: Triangle, dev: Developpement, ultimes_a_priori: np
     non_dev = 1.0 - 1.0 / cdf
     ult = diag + ultimes_a_priori * non_dev
     res = _par_origine(tri, diag, cdf, ult)
-    for o, a, p in zip(tri.origines, ultimes_a_priori, non_dev):
+    for o, a, p in zip(tri.origines, ultimes_a_priori, non_dev, strict=True):
         res["par_origine"][o]["ultime_a_priori"] = float(a)
         res["par_origine"][o]["part_non_developpee"] = float(p)
     return res
@@ -156,7 +156,7 @@ def cape_cod(tri: Triangle, dev: Developpement, primes: np.ndarray) -> dict:
     elr = diag.sum() / primes_utilisees.sum()
     res = bornhuetter_ferguson(tri, dev, elr * primes)
     res["ratio_cape_cod"] = float(elr)
-    for o, p, pu in zip(tri.origines, primes, primes_utilisees):
+    for o, p, pu in zip(tri.origines, primes, primes_utilisees, strict=True):
         res["par_origine"][o]["prime"] = float(p)
         res["par_origine"][o]["prime_utilisee"] = float(pu)
     return res
@@ -172,7 +172,7 @@ def _par_origine(tri: Triangle, diag, cdf, ult) -> dict:
                 "ultime": float(u),
                 "provision": float(p),
             }
-            for o, d, c, u, p in zip(tri.origines, diag, cdf, ult, prov)
+            for o, d, c, u, p in zip(tri.origines, diag, cdf, ult, prov, strict=True)
         },
         "total": {
             "derniere_diagonale": float(diag.sum()),
@@ -185,7 +185,7 @@ def _par_origine(tri: Triangle, diag, cdf, ult) -> dict:
 def description_developpement(tri: Triangle, dev: Developpement) -> dict:
     noms = [f"{tri.developpements[k]}-{tri.developpements[k + 1]}" for k in range(tri.n_dev - 1)]
     return {
-        "facteurs": dict(zip(noms, dev.facteurs.tolist())),
-        "cdf_par_age": dict(zip(tri.developpements, dev.cdf.tolist())),
+        "facteurs": dict(zip(noms, dev.facteurs.tolist(), strict=True)),
+        "cdf_par_age": dict(zip(tri.developpements, dev.cdf.tolist(), strict=True)),
         "queue": dev.queue,
     }

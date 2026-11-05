@@ -12,7 +12,7 @@ Conventions (AMLCR, Dickson, Hardy et Waters) :
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 import numpy as np
 
@@ -78,12 +78,19 @@ class ModeleSurvie:
         """q_[x]+s : probabilité de décès dans l'année pour une vie sélectionnée à x, après s années."""
         y = age_selection + duree
         if y not in self.q_ultime:
+            if y < min(self.q_ultime):
+                raise ValueError(f"âge {y} avant le premier âge de la table ({min(self.q_ultime)}) : "
+                                 "aucune mortalité définie")
             return 1.0
         base = self.q_ultime[y]
         if duree < self.periode_selection and self.makeham_params is not None:
             return self._q_select_makeham(age_selection, duree)
         if duree < self.periode_selection:
-            return base * self.facteur_selection ** (self.periode_selection - duree)
+            q = base * self.facteur_selection ** (self.periode_selection - duree)
+            if q > 1.0:
+                raise ValueError(f"q sélectionné à l'âge {age_selection}, durée {duree} vaut {q:.4g} > 1 : "
+                                 "facteur de sélection incompatible avec la table")
+            return q
         return base
 
     def vecteur_q(self, age_selection: int, duree: int, n: int | None = None) -> np.ndarray:

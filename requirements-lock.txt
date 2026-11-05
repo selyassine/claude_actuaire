@@ -1,0 +1,11 @@
+# Versions exactes utilisées par la CI (Python 3.10 et 3.12), pour des résultats reproductibles.
+# Mise à jour : modifier une version, lancer la CI, ne fusionner que si tous les tests passent
+# (y compris tests/test_publications.py et le banc d'essai à blanc).
+numpy==2.2.6
+scipy==1.15.3
+pandas==2.3.3
+openpyxl==3.1.5
+pyyaml==6.0.2
+pytest==9.0.3
+coverage==7.10.7
+ruff==0.14.0

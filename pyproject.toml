@@ -1,0 +1,35 @@
+# Configuration des outils de qualité (le moteur lui-même n'a pas de paquet à installer :
+# il est distribué comme skill, voir outils/construire_zip.py).
+
+[tool.ruff]
+line-length = 140
+target-version = "py310"
+src = ["skills/calcul-actuariel/scripts", "tests", "outils", "banc_essai"]
+
+[tool.ruff.lint]
+# E/W : style de base ; F : erreurs (noms non définis, imports inutiles) ; B : pièges courants
+# (zip sans strict, valeurs par défaut mutables) ; I : ordre des imports.
+select = ["E", "F", "W", "B", "I"]
+# Notation mathématique : I (matrice identité), l (indice) sont voulus.
+ignore = ["E741"]
+
+[tool.ruff.lint.per-file-ignores]
+# Consignes du banc d'essai : textes longs gardés sur une ligne pour rester identiques aux fichiers publiés.
+"banc_essai/variantes/construire_taches.py" = ["E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["actuaire", "cli", "conftest", "noter", "outils_reference", "construire_zip"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.coverage.run]
+source = ["skills/calcul-actuariel/scripts"]
+branch = true
+
+[tool.coverage.report]
+# Seuil minimal : la CI échoue si la couverture du moteur descend en dessous.
+fail_under = 90
+show_missing = true
+skip_covered = true

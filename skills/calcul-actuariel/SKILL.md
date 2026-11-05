@@ -31,21 +31,22 @@ python <skill>/scripts/cli.py cape-cod --entree declares.csv --primes primes.csv
 python <skill>/scripts/cli.py mack --entree payes.csv --type cumule
 python <skill>/scripts/cli.py odp --entree payes.csv --type cumule
 python <skill>/scripts/cli.py bootstrap --entree payes.csv --type cumule --simulations 10000 --graine 2026
-python <skill>/scripts/cli.py gpd --entree sinistres.csv --seuil 10 --quantiles 0.995,0.999 --tranche 50,200 --diagnostic-seuils 3,5,10,20
+python <skill>/scripts/cli.py gpd --entree sinistres.csv --seuil 10 --quantiles 0.995,0.999 --tranche 50,200 --diagnostic-seuils 3,5,10,20 --test-ajustement 999
 python <skill>/scripts/cli.py credibilite --entree experience.csv --modele buhlmann-straub
 python <skill>/scripts/cli.py credibilite --entree experience.csv --modele regression --barycentre --periode-future 13
 python <skill>/scripts/cli.py scr --entree scr.json
 python <skill>/scripts/cli.py survie --modele sssm --taux 0.04 --age 50 --n 20
 python <skill>/scripts/cli.py tarif-vie --modele sssm --taux 0.04 --type vie-entiere --age 50 --capital 100000 \
     --frais-initiaux-pct 0.5 --frais-initiaux-fixe 250 --frais-renouvellement-pct 0.03 --frais-renouvellement-fixe 25 --durees 0,1,2,10
+python <skill>/scripts/cli.py rejouer --sortie calcul.json     # refait un calcul archivé et compare
 ```
 
-Sortie par défaut : JSON avec `statut` (`ok`, `avertissements` ou `incomplet`), `methode`, `moteur`, `entrees` (fichier + empreinte SHA-256), `options`, `hypotheses`, `resultats`, `avertissements`. En cas d'erreur, la commande ne rend aucun résultat : un JSON `{"statut": "erreur", "erreur": ...}` sur la sortie d'erreur.
+Sortie par défaut : JSON avec `statut` (`ok`, `avertissements` ou `incomplet`), `methode`, `moteur` (version et versions des bibliothèques), `entrees` (fichier + empreinte SHA-256), `options`, `hypotheses`, `resultats`, `avertissements`, `reproduction` (commande exacte) et `empreinte_resultats`. Une valeur `null` dans les résultats est une valeur non définie (par exemple l'erreur relative d'une provision nulle) : ne la remplace pas par un chiffre. En cas d'erreur, la commande ne rend aucun résultat : un JSON `{"statut": "erreur", "erreur": ...}` sur la sortie d'erreur.
 
 ## Formats d'entrée
 
 - **Triangle** : CSV (séparateur `,` `;` ou tabulation, détecté) ou Excel. Première colonne = année d'origine, en-têtes = périodes de développement, cellules futures vides. Avec `;` comme séparateur, la virgule décimale est acceptée. Précise toujours `--type cumule` ou `--type incremental` quand tu le sais : la détection automatique n'est qu'un indice.
-- **Primes** (BF, Cape Cod) : colonnes `Origine`, `Prime`, et pour BF `Ratio` ou `Ultime_a_priori` (ou l'option `--ratio`).
+- **Primes** (BF, Cape Cod) : colonnes `Origine`, `Prime`, et pour BF `Ratio` ou `Ultime_a_priori` (ou l'option `--ratio`). Une origine par ligne, les mêmes libellés que le triangle, la même unité monétaire (le moteur alerte si le ratio ultime / prime semble indiquer une unité différente).
 
 Si les données de l'utilisateur sont dans un autre format, convertis-les d'abord dans ce format en fichier, puis appelle le script.
 
@@ -86,7 +87,7 @@ Modèle de survie : `--modele sssm` (défaut, Standard Select Survival Model d'A
 | --- | --- | --- |
 | `gpd` | Loi de Pareto généralisée au-delà d'un seuil : xi, sigma, erreurs types, quantiles, primes pures de tranches | testé : McNeil (1997) tableau 1, données danoises |
 
-Pour `gpd`, le fichier contient une ligne par sinistre (colonne choisie avec `--colonne`, sinon la première colonne numérique). Le seuil est un choix de jugement : utilise `--diagnostic-seuils` (excès moyen empirique) et compare plusieurs seuils avant de conclure, comme McNeil. Les quantiles et les primes de tranche portent sur la distribution des sinistres du fichier (au-delà de son seuil de collecte). Une tranche s'écrit `priorité,limite` et sa priorité doit dépasser le seuil. Les erreurs types rendues sont les erreurs asymptotiques de McNeil, (1 + ξ)/√N_u pour ξ : ce sont elles qu'il faut reporter.
+Pour `gpd`, le fichier contient une ligne par sinistre (colonne choisie avec `--colonne`, sinon la première colonne numérique). Le seuil est un choix de jugement : utilise `--diagnostic-seuils` (excès moyen empirique) et compare plusieurs seuils avant de conclure, comme McNeil. Les quantiles et les primes de tranche portent sur la distribution des sinistres du fichier (au-delà de son seuil de collecte). Une tranche s'écrit `priorité,limite` et sa priorité doit dépasser le seuil. Les erreurs types rendues sont les erreurs asymptotiques de McNeil, (1 + ξ)/√N_u pour ξ : ce sont elles qu'il faut reporter. Pour l'incertitude sur ξ, cite aussi `intervalle_95_xi_profil` (vraisemblance profilée), plus fiable que l'intervalle de Wald sur de petits échantillons. Pour juger l'ajustement, lance `--test-ajustement 999` et cite la p-valeur d'Anderson-Darling ; si elle est sous 5 %, dis que la GPD s'ajuste mal à ce seuil.
 
 | Commande | Rôle | Statut |
 | --- | --- | --- |
@@ -111,4 +112,4 @@ Pour `credibilite`, le fichier est au format long : une ligne par entité et pé
  "ajustements": {"provisions_techniques": -4.2, "impots_differes": -11.2, "fonds_cantonnes": 0}}
 ```
 
-`scenario_taux` (`hausse` ou `baisse`) fixe le paramètre A de l'article 164 : demande-le à l'utilisateur s'il manque, ne le devine pas. Les capacités d'absorption se saisissent en négatif. `operationnel` peut aussi être un montant déjà calculé. Le fichier `references/methodes.md` indique pour chacune la publication qui la valide.
+`scenario_taux` (`hausse` ou `baisse`) fixe le paramètre A de l'article 164 : demande-le à l'utilisateur s'il manque, ne le devine pas. Les capacités d'absorption se saisissent en négatif. `operationnel` peut aussi être un montant déjà calculé. Le fichier `references/methodes.md` indique pour chaque méthode la publication qui la valide ; `references/guide-des-methodes.md` donne les formules, conventions, domaines de validité, refus et limites. Consulte-le quand l'utilisateur demande comment un chiffre est calculé ou si une méthode s'applique à son cas.
