@@ -1,0 +1,14 @@
+famille: bf_cape_cod
+fiche_source: variante-bf-01
+source_r: facteurs R ChainLadder::chainladder, formule BF explicite en R (à vérifier)
+statut: en_attente_validation
+valeurs:
+- nom: ultime_total
+  attendu: 33731765.459596
+  tolerance_relative: 0.0005
+- nom: ibnr_total
+  attendu: 12567497.459596
+  tolerance_relative: 0.0005
+- nom: ultime_2022
+  attendu: 3170016.102626
+  tolerance_relative: 0.0005

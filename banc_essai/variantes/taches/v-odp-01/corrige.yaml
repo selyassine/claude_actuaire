@@ -1,0 +1,17 @@
+famille: bootstrap_odp
+fiche_source: variante-odp-01
+source_r: R ChainLadder::glmReserve(var.power = 1, mse.method = "formula")
+statut: en_attente_validation
+valeurs:
+- nom: dispersion
+  attendu: 201.884732
+  tolerance_relative: 0.0005
+- nom: provision_totale
+  attendu: 18827.0
+  tolerance_absolue: 1
+- nom: erreur_prediction_totale
+  attendu: 2928.716292
+  tolerance_relative: 0.0005
+- nom: erreur_prediction_2022
+  attendu: 1623.60399
+  tolerance_relative: 0.0005

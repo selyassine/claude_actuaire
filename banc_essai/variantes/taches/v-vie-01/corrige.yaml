@@ -1,0 +1,18 @@
+famille: vie
+fiche_source: variante-vie-01
+source_r: R lifecontingencies (axn, Axn, Exn) sur une table Makeham exacte ; équation
+  des primes explicite
+statut: en_attente_validation
+valeurs:
+- nom: prime_commerciale
+  attendu: 2218.565975
+  tolerance_absolue: 0.005
+- nom: prime_pure
+  attendu: 2075.159016
+  tolerance_absolue: 0.005
+- nom: provision_nette_10
+  attendu: 21193.985751
+  tolerance_absolue: 0.005
+- nom: provision_brute_10
+  attendu: 20639.779791
+  tolerance_absolue: 0.005

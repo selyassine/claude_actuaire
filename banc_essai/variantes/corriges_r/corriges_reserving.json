@@ -1,0 +1,43 @@
+{
+  "v-cl-01": {
+    "provision_totale": 71638.9234809241,
+    "ultime_2020": 23448.2589414122,
+    "facteur_1_2": 3.12074526489157
+  },
+  "v-cl-02": {
+    "provision_totale": 25018.2917826705,
+    "cdf_1": 3.19676250444815,
+    "facteur_1_2": 1.90977184674989
+  },
+  "v-bf-01": {
+    "ultime_total": 33731765.4595956,
+    "ibnr_total": 12567497.4595956,
+    "ultime_derniere": 3170016.10262561
+  },
+  "v-bf-02": {
+    "ratio_cape_cod": 0.643766425862012,
+    "ultime_total": 33422650.7123257,
+    "ibnr_total": 12258382.7123257
+  },
+  "v-mack-01": {
+    "provision_totale": 10941.1189926602,
+    "erreur_prediction_totale": 430.590578425414,
+    "erreur_prediction_derniere": 333.577107170775
+  },
+  "v-mack-02": {
+    "erreur_relative_totale": 0.0953069957390236,
+    "erreur_relative_derniere": 0.132149564048854,
+    "sigma2_1_2": 22508.4783991361
+  },
+  "v-odp-01": {
+    "dispersion": 201.884732413883,
+    "provision_totale": 18827,
+    "erreur_prediction_totale": 2928.71629155776,
+    "erreur_prediction_derniere": 1623.60399033512
+  },
+  "v-boot-01": {
+    "provision_moyenne": 22181.0221,
+    "erreur_prediction": 3537.57930905867,
+    "quantile_95": 28336
+  }
+}

@@ -1,0 +1,14 @@
+famille: bootstrap_odp
+fiche_source: variante-boot-01
+source_r: R ChainLadder::BootChainLadder(R = 20000, process.distr = "od.pois"), set.seed(42)
+statut: en_attente_validation
+valeurs:
+- nom: provision_moyenne
+  attendu: 22181.0221
+  tolerance_relative: 0.05
+- nom: erreur_prediction
+  attendu: 3537.579309
+  tolerance_relative: 0.05
+- nom: quantile_95
+  attendu: 28336.0
+  tolerance_relative: 0.05

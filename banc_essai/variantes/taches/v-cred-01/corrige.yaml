@@ -1,0 +1,20 @@
+famille: credibilite
+fiche_source: variante-cred-01
+source_r: R actuar::cm(~entite), estimateurs sans biais par défaut
+statut: en_attente_validation
+valeurs:
+- nom: prime_collective
+  attendu: 2022.28644
+  tolerance_absolue: 0.5
+- nom: variance_entre
+  attendu: 41991.291487
+  tolerance_relative: 0.0005
+- nom: variance_intra
+  attendu: 64742018.104876
+  tolerance_relative: 0.0005
+- nom: credibilite_3
+  attendu: 0.9249
+  tolerance_absolue: 0.0005
+- nom: prime_portefeuille_3
+  attendu: 2208.021945
+  tolerance_absolue: 0.5

@@ -1,0 +1,18 @@
+famille: scr
+fiche_source: variante-scr-02
+source_r: 'agrégation formule standard écrite en R (generer_scr.R) : à recalculer
+  par l''actuaire'
+statut: en_attente_validation
+valeurs:
+- nom: scr_catastrophe_non_vie
+  attendu: 27231.232069
+  tolerance_absolue: 1
+- nom: scr_non_vie
+  attendu: 61506.670377
+  tolerance_absolue: 1
+- nom: bscr
+  attendu: 97258.303563
+  tolerance_absolue: 1
+- nom: scr
+  attendu: 86558.303563
+  tolerance_absolue: 1

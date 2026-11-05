@@ -1,0 +1,18 @@
+famille: gpd
+fiche_source: variante-gpd-01
+source_r: R evir::gpd et riskmeasures ; prime de tranche par integrate() sur la queue
+  estimée
+statut: en_attente_validation
+valeurs:
+- nom: n_depassements
+  attendu: 186.0
+  tolerance_absolue: 0
+- nom: xi
+  attendu: 0.535209
+  tolerance_absolue: 0.005
+- nom: quantile_999
+  attendu: 85.319018
+  tolerance_relative: 0.015
+- nom: prime_tranche
+  attendu: 0.19305
+  tolerance_relative: 0.015
