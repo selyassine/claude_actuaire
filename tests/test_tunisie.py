@@ -86,3 +86,64 @@ def test_cli_tables_tunisiennes():
     publie = calculer(["survie", "--modele", "tv99", "--qx-source", "publie", "--taux", "0.03", "--age", "60"])
     lx = calculer(["survie", "--modele", "tv99", "--taux", "0.03", "--age", "60"])
     assert publie["resultats"]["annuite_due_vie_entiere"] != lx["resultats"]["annuite_due_vie_entiere"]
+
+
+# --- provisions-tn (arrêté du 27/02/2001) ---
+
+from actuaire.tunisie import calculer_provisions  # noqa: E402
+
+CADENCES = {"provision": 500.0, "ultime": 1500.0, "derniere_diagonale": 1000.0}
+
+
+def test_ppna_bornes():
+    d = {"ppna": {"date_inventaire": "2025-12-31", "contrats": [
+        {"date_effet": "2025-12-31", "date_echeance": "2026-12-31", "prime_commerciale": 365},
+        {"date_effet": "2025-01-01", "date_echeance": "2025-12-31", "prime_commerciale": 100}]}}
+    r, _ = calculer_provisions(d)
+    assert r["ppna"]["total"] == pytest.approx(365.0)
+
+
+def test_frais_base_hors_frais_et_frais_suffisants():
+    r, avert = calculer_provisions({"frais_gestion_sinistres": {
+        "psap_hors_frais": 1000, "frais_estimes": 60, "base_minimum": "psap_hors_frais"}})
+    f = r["frais_gestion_sinistres"]
+    assert f["minimum"] == pytest.approx(50) and f["frais_retenus"] == 60 and avert == []
+
+
+def test_auto_materiels_sans_cadences_refuse():
+    d = {"auto_materiels": {"dossier_par_dossier": 100, "cout_moyen": {"nombre_dossiers": 2, "cout_moyen": 10}}}
+    with pytest.raises(ValueError, match="--cadences"):
+        calculer_provisions(d)
+    r, _ = calculer_provisions(d, CADENCES)
+    assert r["auto_materiels"]["methode_retenue"] == "cadences" and r["auto_materiels"]["provision"] == 500
+
+
+def test_dotation_plafonnee_a_zero_si_plafond_atteint():
+    r, _ = calculer_provisions({"egalisation_grele": {"provision_debut": 900, "excedent_technique": 100,
+                                                       "primes_exercice": 400}})
+    assert r["egalisation_grele"]["dotation"] == 0 and r["egalisation_grele"]["provision_fin"] == 900
+
+
+@pytest.mark.parametrize("d, message", [
+    ({}, "au moins un bloc"),
+    ({"ppna": {"date_inventaire": "31/12/2025", "contrats": []}}, "AAAA-MM-JJ"),
+    ({"ppna": {"date_inventaire": "2025-12-31", "contrats": [
+        {"date_effet": "2025-06-01", "date_echeance": "2025-06-01", "prime_commerciale": 1}]}}, "échéance"),
+    ({"prc": {"auto": {"charge_sinistres": 1, "frais": 0, "primes_acquises": 0, "ppna": 1}}}, "strictement positif"),
+    ({"frais_gestion_sinistres": {"psap_hors_frais": 1, "frais_estimes": 0, "base_minimum": "x"}}, "base_minimum"),
+    ({"equilibrage": {"provision_debut": 0, "excedent_technique": 1, "primes_nettes_5_exercices": [1, 2]}}, "5 exercices"),
+    ({"rentes": {"provision_mathematique": -1}}, "positif ou nul"),
+    ({"divers": {}}, "clés inconnues"),
+])
+def test_rejets_provisions(d, message):
+    with pytest.raises(ValueError, match=message):
+        calculer_provisions(d)
+
+
+def test_cli_cadences_refuse_autre_methode(tmp_path):
+    autre = tmp_path / "m.json"
+    autre.write_text(json.dumps({"methode": "mack", "resultats": {}}), encoding="utf-8")
+    entree = tmp_path / "p.json"
+    entree.write_text(json.dumps({"rentes": {"provision_mathematique": 1}}), encoding="utf-8")
+    with pytest.raises(ValueError, match="chain-ladder"):
+        calculer(["provisions-tn", "--entree", str(entree), "--cadences", str(autre)])

@@ -11,10 +11,12 @@ options:
   modele: td99
   taux: 0.03
   age: 30
-statut: en_attente
+statut: valide
 saisie_par: Claude, recopié de la sortie du script R
-valide_par: null
-date_validation: null
+valide_par: Yassine
+date_validation: '2026-11-05'
+methode_validation: Yassine a contrôlé les valeurs contre la sortie du script R (tests/references/r/marge_tunisie.sortie.txt),
+  la transcription des tables TD99/TV99 et les interprétations réglementaires le 2026-11-05.
 note: Vérifie le branchement de la table dans le moteur ; la transcription des l_x est contrôlée à part (tests/test_tunisie.py
   et relecture contre le PDF).
 valeurs:

@@ -1,0 +1,109 @@
+{
+  "statut": "ok",
+  "methode": "chain-ladder",
+  "moteur": {
+    "nom": "claude_actuaire",
+    "version": "0.5.0",
+    "environnement": {
+      "python": "3.13.18",
+      "numpy": "2.5.3",
+      "scipy": "1.18.1",
+      "pandas": "3.0.5"
+    }
+  },
+  "horodatage_utc": "2026-11-05T22:07:07+00:00",
+  "entrees": [
+    {
+      "role": "triangle",
+      "fichier": "../../../tests/donnees/tunisie/auto_materiels_payes.csv",
+      "sha256": "2edc1e3b3acf8d47ca7bcc6e2c95e9b4b7ecffdf9cab61ae573e5de79ce6eb9d"
+    }
+  ],
+  "options": {
+    "moyenne": "ponderee",
+    "periode": null,
+    "queue": 1.0,
+    "exclure": null,
+    "facteurs_imposes": null,
+    "arrondi": null
+  },
+  "hypotheses": [
+    {
+      "nom": "moyenne_des_facteurs",
+      "valeur": "ponderee",
+      "justification": "Pondérée = somme C(k+1) / somme C(k) ; simple = moyenne arithmétique des facteurs individuels.",
+      "source": "valeur par défaut"
+    },
+    {
+      "nom": "facteur_de_queue",
+      "valeur": 1.0,
+      "justification": "Aucun développement après la dernière période observée.",
+      "source": "valeur par défaut"
+    }
+  ],
+  "resultats": {
+    "facteurs": {
+      "1-2": 1.510204081632653,
+      "2-3": 1.1069182389937107,
+      "3-4": 1.027027027027027,
+      "4-5": 1.0091743119266054
+    },
+    "cdf_par_age": {
+      "1": 1.7326037217725931,
+      "2": 1.1472646265791495,
+      "3": 1.036449293330027,
+      "4": 1.0091743119266054,
+      "5": 1.0
+    },
+    "queue": 1.0,
+    "par_origine": {
+      "2021": {
+        "derniere_diagonale": 5500.0,
+        "cdf": 1.0,
+        "ultime": 5500.0,
+        "provision": 0.0
+      },
+      "2022": {
+        "derniere_diagonale": 5950.0,
+        "cdf": 1.0091743119266054,
+        "ultime": 6004.587155963302,
+        "provision": 54.58715596330239
+      },
+      "2023": {
+        "derniere_diagonale": 6500.0,
+        "cdf": 1.036449293330027,
+        "ultime": 6736.920406645177,
+        "provision": 236.92040664517663
+      },
+      "2024": {
+        "derniere_diagonale": 6300.0,
+        "cdf": 1.1472646265791495,
+        "ultime": 7227.767147448642,
+        "provision": 927.7671474486424
+      },
+      "2025": {
+        "derniere_diagonale": 4600.0,
+        "cdf": 1.7326037217725931,
+        "ultime": 7969.977120153929,
+        "provision": 3369.977120153929
+      }
+    },
+    "total": {
+      "derniere_diagonale": 28850.0,
+      "ultime": 33439.25183021105,
+      "provision": 4589.25183021105
+    }
+  },
+  "avertissements": [],
+  "reproduction": {
+    "arguments": [
+      "chain-ladder",
+      "--entree",
+      "../../../tests/donnees/tunisie/auto_materiels_payes.csv",
+      "--type",
+      "cumule"
+    ],
+    "commande": "python cli.py chain-ladder --entree ../../../tests/donnees/tunisie/auto_materiels_payes.csv --type cumule"
+  },
+  "empreinte_resultats": "a036acf8f4d8edd6007db6738dc6ec9f2084a561a49374b86d89c5561d28f29c"
+}

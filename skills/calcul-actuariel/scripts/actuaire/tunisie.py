@@ -222,3 +222,200 @@ def qx_table(nom: str, source: str = "lx") -> dict[int, float]:
             raise ValueError("q_x publié manquant pour un âge de la table")
         return q  # type: ignore[return-value]
     raise ValueError(f"source de q_x inconnue {source!r} (lx ou publie)")
+
+
+# --- Provisions techniques non-vie (arrêté du 27 février 2001) ---------------------------------
+
+ARRETE_2001 = "Arrêté du ministre des finances du 27 février 2001 (provisions techniques)"
+
+
+def _date(v, quoi: str):
+    from datetime import date
+    if not isinstance(v, str):
+        raise ValueError(f"{quoi} : date AAAA-MM-JJ attendue (reçu {v!r})")
+    try:
+        return date.fromisoformat(v)
+    except ValueError as e:
+        raise ValueError(f"{quoi} : date AAAA-MM-JJ attendue (reçu {v!r})") from e
+
+
+def _positif(d: dict, cle: str, chemin: str, defaut: float | None = None) -> float:
+    v = _nombre(d, cle, chemin, defaut)
+    if v < 0:
+        raise ValueError(f"{chemin}.{cle} doit être positif ou nul (reçu {v:g})")
+    return v
+
+
+def ppna_prorata(d: dict, avert: list[str]) -> dict:
+    """Art. 17 : prorata temporis contrat par contrat, sur la prime commerciale, en jours exacts."""
+    inventaire = _date(d.get("date_inventaire"), "ppna.date_inventaire")
+    contrats = d.get("contrats")
+    if not isinstance(contrats, list) or not contrats:
+        raise ValueError("ppna.contrats : liste de contrats attendue (date_effet, date_echeance, prime_commerciale)")
+    total = 0.0
+    par_categorie: dict[str, float] = {}
+    lignes = []
+    futurs = 0
+    for i, c in enumerate(contrats):
+        q = f"ppna.contrats[{i}]"
+        if not isinstance(c, dict):
+            raise ValueError(f"{q} : objet attendu")
+        effet = _date(c.get("date_effet"), f"{q}.date_effet")
+        echeance = _date(c.get("date_echeance"), f"{q}.date_echeance")
+        if echeance <= effet:
+            raise ValueError(f"{q} : l'échéance doit suivre la date d'effet")
+        prime = _nombre(c, "prime_commerciale", q)
+        duree = (echeance - effet).days
+        if inventaire >= echeance:
+            jours = 0
+        elif inventaire < effet:
+            jours = duree
+            futurs += 1
+        else:
+            jours = (echeance - inventaire).days
+        p = prime * jours / duree
+        cat = str(c.get("categorie", "toutes"))
+        par_categorie[cat] = par_categorie.get(cat, 0.0) + p
+        total += p
+        lignes.append({"contrat": c.get("id", i), "categorie": cat, "prime_commerciale": prime,
+                       "jours_garantie": duree, "jours_non_acquis": jours, "ppna": p})
+    if futurs:
+        avert.append(f"{futurs} contrat(s) à effet postérieur à l'inventaire : prime entièrement non acquise.")
+    return {"date_inventaire": inventaire.isoformat(), "convention": "jours exacts", "par_contrat": lignes,
+            "par_categorie": par_categorie, "total": total}
+
+
+def prc(d: dict, avert: list[str]) -> dict:
+    """Art. 19 : (sinistres + frais) / primes acquises des deux derniers exercices ; l'excédent sur 100 %
+    s'applique à la PPNA."""
+    if not isinstance(d, dict) or not d:
+        raise ValueError("prc : un objet par catégorie d'assurance attendu")
+    out = {}
+    total = 0.0
+    for cat, v in d.items():
+        q = f"prc.{cat}"
+        if not isinstance(v, dict):
+            raise ValueError(f"{q} : objet attendu")
+        sin = _nombre(v, "charge_sinistres", q)
+        frais = _positif(v, "frais", q)
+        primes = _nombre(v, "primes_acquises", q)
+        ppna = _positif(v, "ppna", q)
+        if primes <= 0:
+            raise ValueError(f"{q}.primes_acquises doit être strictement positif")
+        ratio = (sin + frais) / primes
+        montant = max(ratio - 1.0, 0.0) * ppna
+        out[cat] = {"charge_sinistres": sin, "frais": frais, "primes_acquises": primes, "ratio": ratio,
+                    "ppna": ppna, "prc": montant}
+        total += montant
+    return {"par_categorie": out, "total": total}
+
+
+def frais_gestion_sinistres(d: dict, avert: list[str]) -> dict:
+    """Art. 21 : frais de gestion des sinistres évalués sur les frais réels, au moins 5 % des PSAP."""
+    q = "frais_gestion_sinistres"
+    psap = _positif(d, "psap_hors_frais", q)
+    estimes = _positif(d, "frais_estimes", q)
+    base = d.get("base_minimum", "psap_totale")
+    if base == "psap_totale":
+        minimum = 0.05 / 0.95 * psap   # f >= 5 % (psap + f)
+    elif base == "psap_hors_frais":
+        minimum = 0.05 * psap
+    else:
+        raise ValueError(f"{q}.base_minimum : psap_totale ou psap_hors_frais")
+    retenus = max(estimes, minimum)
+    if estimes < minimum:
+        avert.append(f"Frais de gestion des sinistres estimés ({estimes:g}) sous le minimum de 5 % ({minimum:g}) : "
+                     "minimum retenu.")
+    return {"psap_hors_frais": psap, "frais_estimes": estimes, "base_minimum": base, "minimum": minimum,
+            "frais_retenus": retenus, "minimum_applique": estimes < minimum, "psap_totale": psap + retenus}
+
+
+def auto_materiels(d: dict, avert: list[str], cadences: dict | None) -> dict:
+    """Art. 22 : la plus élevée des trois évaluations (dossier par dossier, coût moyen, cadences)."""
+    q = "auto_materiels"
+    dossier = _positif(d, "dossier_par_dossier", q)
+    if "cout_moyen" in d:
+        cm = d["cout_moyen"]
+        if not isinstance(cm, dict):
+            raise ValueError(f"{q}.cout_moyen : objet {{nombre_dossiers, cout_moyen}} attendu")
+        n = _positif(cm, "nombre_dossiers", f"{q}.cout_moyen")
+        c = _positif(cm, "cout_moyen", f"{q}.cout_moyen")
+        e_cm = n * c
+        detail_cm = {"nombre_dossiers": n, "cout_moyen": c, "evaluation": e_cm}
+    else:
+        raise ValueError(f"{q}.cout_moyen manquant (nombre de dossiers en suspens et coût moyen des exercices "
+                         "antérieurs)")
+    if cadences is None:
+        raise ValueError(f"{q} : l'évaluation par les cadences exige --cadences (sortie chain-ladder archivée "
+                         "sur le triangle des règlements)")
+    e_cad = float(cadences["provision"])
+    evals = {"dossier_par_dossier": dossier, "cout_moyen": e_cm, "cadences": e_cad}
+    retenue = max(evals, key=evals.get)
+    return {"evaluations": evals, "cout_moyen": detail_cm, "cadences": cadences, "methode_retenue": retenue,
+            "provision": evals[retenue]}
+
+
+def _dotation(provision: float, excedent: float, plafond: float) -> dict:
+    if excedent >= 0:
+        dot = min(0.75 * excedent, max(plafond - provision, 0.0))
+        return {"dotation": dot, "reprise": 0.0, "provision_fin": provision + dot}
+    rep = min(-excedent, provision)
+    return {"dotation": 0.0, "reprise": rep, "provision_fin": provision - rep}
+
+
+def equilibrage(d: dict, avert: list[str]) -> dict:
+    """Art. 24 : crédit et caution, 75 % de l'excédent technique jusqu'à 150 % de la plus forte prime nette
+    des cinq exercices précédents."""
+    q = "equilibrage"
+    prov = _positif(d, "provision_debut", q)
+    exc = _nombre(d, "excedent_technique", q)
+    primes = d.get("primes_nettes_5_exercices")
+    if not isinstance(primes, list) or len(primes) != 5:
+        raise ValueError(f"{q}.primes_nettes_5_exercices : liste des 5 exercices précédents attendue")
+    for v in primes:
+        if isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v) or v < 0:
+            raise ValueError(f"{q}.primes_nettes_5_exercices : montants positifs attendus")
+    plafond = 1.5 * max(primes)
+    return {"provision_debut": prov, "excedent_technique": exc, "plafond": plafond, **_dotation(prov, exc, plafond)}
+
+
+def egalisation_grele(d: dict, avert: list[str]) -> dict:
+    """Art. 25 : grêle, 75 % de l'excédent technique jusqu'à 200 % des primes de l'exercice."""
+    q = "egalisation_grele"
+    prov = _positif(d, "provision_debut", q)
+    exc = _nombre(d, "excedent_technique", q)
+    primes = _positif(d, "primes_exercice", q)
+    plafond = 2.0 * primes
+    return {"provision_debut": prov, "excedent_technique": exc, "plafond": plafond, **_dotation(prov, exc, plafond)}
+
+
+def rentes(d: dict, avert: list[str]) -> dict:
+    """Art. 27 : provision mathématique des rentes majorée de 5 % pour frais de gestion."""
+    pm = _positif(d, "provision_mathematique", "rentes")
+    return {"provision_mathematique": pm, "chargement": 0.05, "provision_chargee": 1.05 * pm}
+
+
+BLOCS_PROVISIONS = ["ppna", "prc", "frais_gestion_sinistres", "auto_materiels", "equilibrage",
+                    "egalisation_grele", "rentes"]
+
+
+def calculer_provisions(donnees: dict, cadences: dict | None = None) -> tuple[dict, list[str]]:
+    if not isinstance(donnees, dict):
+        raise ValueError("le fichier d'entrée doit contenir un objet JSON")
+    inconnus = sorted(set(donnees) - set(BLOCS_PROVISIONS) - {"unite", "commentaire"})
+    if inconnus:
+        raise ValueError(f"clés inconnues {inconnus} ; attendues : {BLOCS_PROVISIONS}")
+    if not set(BLOCS_PROVISIONS) & set(donnees):
+        raise ValueError(f"au moins un bloc parmi {BLOCS_PROVISIONS} est requis")
+    avert: list[str] = []
+    r: dict = {}
+    fonctions = {"ppna": ppna_prorata, "prc": prc, "frais_gestion_sinistres": frais_gestion_sinistres,
+                 "equilibrage": equilibrage, "egalisation_grele": egalisation_grele, "rentes": rentes}
+    for b in BLOCS_PROVISIONS:
+        if b not in donnees:
+            continue
+        if not isinstance(donnees[b], dict):
+            raise ValueError(f"{b} : objet attendu")
+        r[b] = (auto_materiels(donnees[b], avert, cadences) if b == "auto_materiels"
+                else fonctions[b](donnees[b], avert))
+    return r, avert
