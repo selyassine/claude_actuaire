@@ -11,6 +11,7 @@ Ce skill contient des scripts Python testés contre des valeurs publiées. Ils r
 
 1. **Aucun chiffre actuariel sans script.** Pour toute valeur calculée (facteur, ultime, provision, erreur de prédiction, quantile, prime, SCR), lance la commande correspondante. Ne recalcule pas toi-même ce que le script sait faire, même pour vérifier.
 2. **Cite la sortie et ses hypothèses.** Dans ta réponse, reprends les chiffres tels que le script les rend, les options retenues et les hypothèses listées dans le JSON (`hypotheses`). Mentionne tout `avertissement`.
+   Le chiffre que tu donnes comme résultat (tableau final, bloc demandé, conclusion) est toujours celui du moteur, même si une autre méthode te semble meilleure. Une estimation différente (par exemple une erreur type GPD tirée de la hessienne observée au lieu de la formule asymptotique du moteur) peut être citée à côté, marquée « autre méthode, non validée par le moteur », jamais à la place.
 3. **Signale ce qui ne vient pas du moteur.** Si une méthode demandée n'existe pas encore dans le moteur, dis-le clairement, puis calcule en Python explicite et marque ces chiffres « non validés par le moteur ».
 4. **Les choix de jugement restent visibles.** Exclusions de facteurs, facteur de queue, ratio a priori, seuil GPD : passe-les en option et explique pourquoi dans la réponse.
 
@@ -84,7 +85,7 @@ Modèle de survie : `--modele sssm` (défaut, Standard Select Survival Model d'A
 | --- | --- | --- |
 | `gpd` | Loi de Pareto généralisée au-delà d'un seuil : xi, sigma, erreurs types, quantiles, primes pures de tranches | testé : McNeil (1997) tableau 1, données danoises |
 
-Pour `gpd`, le fichier contient une ligne par sinistre (colonne choisie avec `--colonne`, sinon la première colonne numérique). Le seuil est un choix de jugement : utilise `--diagnostic-seuils` (excès moyen empirique) et compare plusieurs seuils avant de conclure, comme McNeil. Les quantiles et les primes de tranche portent sur la distribution des sinistres du fichier (au-delà de son seuil de collecte). Une tranche s'écrit `priorité,limite` et sa priorité doit dépasser le seuil.
+Pour `gpd`, le fichier contient une ligne par sinistre (colonne choisie avec `--colonne`, sinon la première colonne numérique). Le seuil est un choix de jugement : utilise `--diagnostic-seuils` (excès moyen empirique) et compare plusieurs seuils avant de conclure, comme McNeil. Les quantiles et les primes de tranche portent sur la distribution des sinistres du fichier (au-delà de son seuil de collecte). Une tranche s'écrit `priorité,limite` et sa priorité doit dépasser le seuil. Les erreurs types rendues sont les erreurs asymptotiques de McNeil, (1 + ξ)/√N_u pour ξ : ce sont elles qu'il faut reporter.
 
 | Commande | Rôle | Statut |
 | --- | --- | --- |
