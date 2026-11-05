@@ -17,6 +17,7 @@ Les erreurs par année d'origine étaient justes dans les deux cas. L'erreur ne 
 
 - Chaque méthode est validée sur au moins une publication (Mack 1993, England et Verrall 2002, McNeil 1997, AMLCR…). Les valeurs attendues sont recopiées des publications, jamais produites par Claude, puis contrôlées par un actuaire.
 - Chaque calcul rend une sortie traçable : entrées (avec empreinte SHA-256), options, hypothèses, résultats, avertissements, versions des bibliothèques, commande exacte et empreinte des résultats. `cli.py rejouer` refait un calcul archivé et prouve qu'il donne les mêmes chiffres sur les mêmes données.
+- Le moteur sert aussi de deuxième implémentation pour valider un modèle existant : `cli.py comparer` confronte les résultats d'un modèle externe (Excel, logiciel interne) à une sortie du moteur et classe chaque écart.
 - Le moteur refuse de calculer quand les données ou les hypothèses ne le permettent pas (triangle troué, facteur non estimable, table de mortalité incomplète, unité incohérente…) au lieu de rendre un chiffre faux.
 - Le [guide des méthodes](docs/guide-des-methodes.md) donne pour chaque méthode les formules, conventions, domaine de validité, refus, limites et la publication qui la valide.
 - Un banc d'essai compare Claude sans skill et avec skill ; ses règles sont fixées à l'avance dans [`banc_essai/REGLES.md`](banc_essai/REGLES.md).
@@ -30,8 +31,10 @@ Les erreurs par année d'origine étaient justes dans les deux cas. L'erreur ne 
 | Mack, ODP analytique, bootstrap ODP | disponible (Mack 1993, England et Verrall 2002) |
 | Survie, primes et provisions vie (SSSM d'AMLCR, Zillmer FPT) | disponible (note MLC SN2.3-SN2.4, validée par Yassine) |
 | GPD (valeurs extrêmes) | disponible (McNeil 1997, données danoises, validé par Yassine) |
+| Tranche de réassurance XL sur un an (Poisson × GPD, Panjer, VaR, CTE, burning cost) | testé contre un calcul R indépendant (evir, actuar), en attente de validation |
 | Crédibilité (Bühlmann, Bühlmann-Straub, hiérarchique, Hachemeister) | disponible (vignette actuar, données de Hachemeister, validé par Yassine) |
 | Agrégation SCR formule standard | disponible (SFCR CCR 2024 et IPBP 2016, validé par Yassine) |
+| Comparaison avec un modèle externe (`comparer`) | disponible : rapport d'écarts ligne à ligne, arrondis publiés, facteurs d'unité |
 
 ## Installation
 
