@@ -1,0 +1,14 @@
+famille: mack
+fiche_source: variante-mack-01
+source_r: R ChainLadder::MackChainLadder(est.sigma = "Mack")
+statut: en_attente_validation
+valeurs:
+- nom: provision_totale
+  attendu: 10941.118993
+  tolerance_relative: 0.0005
+- nom: erreur_prediction_totale
+  attendu: 430.590578
+  tolerance_relative: 0.0005
+- nom: erreur_prediction_2022
+  attendu: 333.577107
+  tolerance_relative: 0.0005

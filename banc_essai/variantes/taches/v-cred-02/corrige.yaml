@@ -1,0 +1,17 @@
+famille: credibilite
+fiche_source: variante-cred-02
+source_r: R actuar::cm(~cohorte + cohorte:entite, method = "iterative")
+statut: en_attente_validation
+valeurs:
+- nom: prime_collective
+  attendu: 2021.364354
+  tolerance_absolue: 0.5
+- nom: prime_cohorte_A
+  attendu: 2185.153397
+  tolerance_absolue: 0.5
+- nom: prime_cohorte_B
+  attendu: 1857.575312
+  tolerance_absolue: 0.5
+- nom: prime_portefeuille_5
+  attendu: 1906.492808
+  tolerance_absolue: 0.5

@@ -1,0 +1,15 @@
+famille: bf_cape_cod
+fiche_source: variante-bf-02
+source_r: facteurs R ChainLadder::chainladder, formule Cape Cod explicite en R (à
+  vérifier)
+statut: en_attente_validation
+valeurs:
+- nom: ratio_cape_cod
+  attendu: 0.643766
+  tolerance_absolue: 0.0005
+- nom: ultime_total
+  attendu: 33422650.712326
+  tolerance_relative: 0.0005
+- nom: ibnr_total
+  attendu: 12258382.712326
+  tolerance_relative: 0.0005

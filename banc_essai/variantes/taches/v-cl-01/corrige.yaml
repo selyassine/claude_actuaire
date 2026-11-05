@@ -1,0 +1,14 @@
+famille: chain_ladder
+fiche_source: variante-cl-01
+source_r: R ChainLadder::chainladder (facteurs pondérés toutes années)
+statut: en_attente_validation
+valeurs:
+- nom: provision_totale
+  attendu: 71638.923481
+  tolerance_relative: 0.0005
+- nom: ultime_2020
+  attendu: 23448.258941
+  tolerance_relative: 0.0005
+- nom: facteur_1_2
+  attendu: 3.120745
+  tolerance_absolue: 0.0005

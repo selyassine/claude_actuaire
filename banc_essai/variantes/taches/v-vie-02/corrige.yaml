@@ -1,0 +1,17 @@
+famille: vie
+fiche_source: variante-vie-02
+source_r: R lifecontingencies (axn, Axn) sur une table Makeham exacte
+statut: en_attente_validation
+valeurs:
+- nom: annuite_due_55
+  attendu: 13.213821
+  tolerance_absolue: 0.0005
+- nom: prime_pure
+  attendu: 3685.349315
+  tolerance_absolue: 0.005
+- nom: provision_nette_10
+  attendu: 29156.603284
+  tolerance_absolue: 0.005
+- nom: provision_nette_25
+  attendu: 68730.869008
+  tolerance_absolue: 0.005

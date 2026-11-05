@@ -43,10 +43,10 @@ def args_tarif(sp: argparse.ArgumentParser) -> None:
     c.add_argument("--capital", type=float, required=True)
     c.add_argument("--duree", type=int, help="Durée de couverture (temporaire, mixte).")
     c.add_argument("--duree-primes", type=int, help="Durée de paiement des primes (défaut : durée du contrat).")
-    c.add_argument("--frais-initiaux-pct", type=float, default=0.0, help="Frais initiaux en % de la prime commerciale.")
+    c.add_argument("--frais-initiaux-pct", type=float, default=0.0, help="Frais initiaux en %% de la prime commerciale.")
     c.add_argument("--frais-initiaux-fixe", type=float, default=0.0, help="Frais initiaux fixes.")
     c.add_argument("--frais-renouvellement-pct", type=float, default=0.0,
-                   help="Frais en % de chaque prime commerciale après la première.")
+                   help="Frais en %% de chaque prime commerciale après la première.")
     c.add_argument("--frais-renouvellement-fixe", type=float, default=0.0,
                    help="Frais fixes à chaque échéance de prime après la première.")
     c.add_argument("--durees", default="0,1,2,5,10",
