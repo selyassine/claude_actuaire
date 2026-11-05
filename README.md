@@ -51,7 +51,7 @@ Les erreurs par année d'origine étaient justes dans les deux cas. L'erreur ne 
 /plugin install claude-actuaire@claude-actuaire
 ```
 
-Pour un projet actuariel dans Claude Code, [`docs/modele-CLAUDE.md`](docs/modele-CLAUDE.md) donne un modèle de CLAUDE.md : dictionnaire des données, règles de calcul avec le moteur, registre des choix de jugement, confidentialité.
+Pour un projet actuariel dans Claude Code, [`docs/modele-CLAUDE.md`](docs/modele-CLAUDE.md) donne un modèle de CLAUDE.md : dictionnaire des données, règles de calcul avec le moteur, registre des choix de jugement, confidentialité. [`docs/modele-CLAUDE-tunisie.md`](docs/modele-CLAUDE-tunisie.md) en donne la variante pour un inventaire tunisien (Code des assurances, arrêté de 2001, règlement CGA 01/2021).
 
 ## Développement
 
