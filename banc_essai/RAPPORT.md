@@ -82,3 +82,18 @@ Les scores A et B sont donc probablement surestimés par rapport à des données
 2. Dans SKILL.md, demander de reporter dans le résultat la valeur du moteur, et de signaler à part une autre estimation (cas de l'erreur type GPD).
 3. Pour mesurer un vrai écart C − B, construire les variantes prévues par les règles d'origine (données modifiées, corrigés tirés de R) : ce sont elles qui neutralisent la mémorisation.
 4. Revoir le seuil de 30 points : avec l'exécution de code, Claude sans skill est déjà à 93 % sur ces tâches standard.
+
+## Passage complémentaire du 2026-11-05 : SCR avec le skill à jour
+
+Signalé comme complémentaire : il n'entre pas dans les scores officiels ci-dessus.
+
+Yassine a réinstallé `calcul-actuariel.zip` (version avec la commande `scr`) le 2026-11-05. scr-01 et scr-02 ont été rejoués en condition C, dans des conversations neuves, avec les mêmes réglages. Le skill a été appelé dans les deux sessions.
+
+| Tâche | Valeurs justes |
+| --- | --- |
+| scr-01 | 3/3 |
+| scr-02 | 4/4 |
+
+Avec le skill à jour, la famille SCR passe de 5/7 à 7/7 en C. Si l'on remplaçait les deux réponses SCR du passage officiel par celles-ci, C serait à 54/55 (98,2 %) et seule la famille GPD resterait sous 90 % (8/9). L'écart C − B resterait faible (+5,5 points), loin des 30 points visés.
+
+Réponses : `banc_essai/reponses_complementaires/C/`.
