@@ -34,6 +34,7 @@ Les erreurs par année d'origine étaient justes dans les deux cas. L'erreur ne 
 | Tranche de réassurance XL sur un an (Poisson × GPD, Panjer, VaR, CTE, burning cost) | testé contre un calcul R indépendant (evir, actuar), en attente de validation |
 | Crédibilité (Bühlmann, Bühlmann-Straub, hiérarchique, Hachemeister) | disponible (vignette actuar, données de Hachemeister, validé par Yassine) |
 | Agrégation SCR formule standard | disponible (SFCR CCR 2024 et IPBP 2016, validé par Yassine) |
+| Contrôle qualité des données sans calcul (`controler`) | disponible : triangles, sinistres, primes ; rien n'est corrigé |
 | Comparaison avec un modèle externe (`comparer`) | disponible : rapport d'écarts ligne à ligne, arrondis publiés, facteurs d'unité |
 
 ## Installation
@@ -46,6 +47,8 @@ Les erreurs par année d'origine étaient justes dans les deux cas. L'erreur ne 
 /plugin marketplace add selyassine/claude_actuaire
 /plugin install claude-actuaire@claude-actuaire
 ```
+
+Pour un projet actuariel dans Claude Code, [`docs/modele-CLAUDE.md`](docs/modele-CLAUDE.md) donne un modèle de CLAUDE.md : dictionnaire des données, règles de calcul avec le moteur, registre des choix de jugement, confidentialité.
 
 ## Développement
 

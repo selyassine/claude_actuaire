@@ -20,6 +20,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from actuaire import __version__  # noqa: E402
+from actuaire.cli_controle import COMMANDES as COMMANDES_CONTROLE  # noqa: E402
 from actuaire.cli_credibilite import COMMANDES as COMMANDES_CREDIBILITE  # noqa: E402
 from actuaire.cli_extremes import COMMANDES as COMMANDES_EXTREMES  # noqa: E402
 from actuaire.cli_provisionnement import (
@@ -133,6 +134,7 @@ def cmd_rejouer(args: argparse.Namespace) -> Resultat:
 COMMANDES = {
     "environnement": (cmd_environnement, "Vérifie que le moteur et ses dépendances sont disponibles.",
                       lambda sp: None),
+    **COMMANDES_CONTROLE,
     "triangle": (cmd_triangle, "Lit un triangle, contrôle sa forme et donne la dernière diagonale.",
                  args_triangle),
     **COMMANDES_PROVISIONNEMENT,

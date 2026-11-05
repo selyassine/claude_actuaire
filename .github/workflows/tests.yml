@@ -93,4 +93,12 @@ jobs:
         run: python outils/notes_de_version.py "${GITHUB_REF_NAME#v}" > notes.md
       - env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "${GITHUB_REF_NAME}" dist/calcul-actuariel.zip --title "${GITHUB_REF_NAME}" --notes-file notes.md
+        # La version peut déjà exister si le tag a été créé depuis l'interface « Draft a new release » :
+        # on y joint alors l'archive et les notes au lieu d'échouer.
+        run: |
+          if gh release view "${GITHUB_REF_NAME}" > /dev/null 2>&1; then
+            gh release upload "${GITHUB_REF_NAME}" dist/calcul-actuariel.zip --clobber
+            gh release edit "${GITHUB_REF_NAME}" --title "${GITHUB_REF_NAME}" --notes-file notes.md
+          else
+            gh release create "${GITHUB_REF_NAME}" dist/calcul-actuariel.zip --title "${GITHUB_REF_NAME}" --notes-file notes.md
+          fi

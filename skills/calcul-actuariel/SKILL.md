@@ -24,6 +24,7 @@ Les scripts sont dans le dossier `scripts/` à côté de ce fichier. Remplace `<
 python <skill>/scripts/cli.py --help                 # liste des commandes
 python <skill>/scripts/cli.py <commande> --help      # options d'une commande
 python <skill>/scripts/cli.py environnement          # vérifie l'installation
+python <skill>/scripts/cli.py controler --entree triangle.csv --nature triangle --type cumule   # qualité des données, sans calcul
 python <skill>/scripts/cli.py triangle --entree triangle.csv --format texte
 python <skill>/scripts/cli.py chain-ladder --entree payes.csv --type cumule --periode 5 --queue 1.01
 python <skill>/scripts/cli.py bf --entree declares.csv --primes primes.csv --ratio 0.65
@@ -53,11 +54,14 @@ Sortie par défaut : JSON avec `statut` (`ok`, `avertissements` ou `incomplet`),
 
 Si les données de l'utilisateur sont dans un autre format, convertis-les d'abord dans ce format en fichier, puis appelle le script.
 
+Sur un nouveau fichier, lance d'abord `controler`. Présente les anomalies bloquantes et les alertes à l'utilisateur et demande-lui comment les traiter : ne corrige rien toi-même (ne complète pas un trou, ne retire pas un doublon, n'exclus pas un facteur atypique) sans son accord, puis passe sa décision en option explicite de la méthode. Pour organiser un projet actuariel dans Claude Code, `references/modele-CLAUDE.md` donne un modèle de CLAUDE.md.
+
 ## Commandes disponibles
 
 | Commande | Rôle | Statut |
 | --- | --- | --- |
 | `environnement` | Vérifie Python, numpy, scipy, pandas | disponible |
+| `controler` | Audit de qualité d'un triangle, d'un fichier de sinistres ou de primes, sans calcul : anomalies bloquantes, alertes, informations | disponible |
 | `triangle` | Lit et contrôle un triangle, dernière diagonale | disponible |
 | `chain-ladder` | Facteurs, CDF, ultimes, provisions | testé : Friedland (2010) ch. 7, Mack (1993) |
 | `bf` | Bornhuetter-Ferguson | testé : Friedland (2010) ch. 9 |

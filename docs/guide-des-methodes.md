@@ -2,7 +2,7 @@
 
 Ce guide décrit, pour chaque méthode, ce que le moteur calcule, sous quelles conventions, dans quel domaine il refuse de calculer et comment le résultat a été validé. Les valeurs citées en exemple sont les valeurs **publiées** ; le moteur les reproduit dans les tolérances indiquées (fiches de `tests/references/`, tests de `tests/test_publications.py`).
 
-Version du moteur décrite : 0.4.0.
+Version du moteur décrite : 0.4.1.
 
 ## Sommaire
 
@@ -17,6 +17,7 @@ Version du moteur décrite : 0.4.0.
 8. [Agrégation du SCR](#8-agrégation-du-scr)
 9. [Traçabilité et reproduction d'un calcul](#9-traçabilité-et-reproduction-dun-calcul)
 10. [Validation d'un modèle externe : comparer](#10-validation-dun-modèle-externe--comparer)
+11. [Contrôle qualité des données : controler](#11-contrôle-qualité-des-données--controler)
 
 ---
 
@@ -205,3 +206,23 @@ C'est la validation par réplication indépendante : le modèle de l'utilisateur
 **Diagnostic des écarts.** Si au moins trois écarts suivent le même rapport externe / moteur à 1 % près, une alerte le signale : facteur d'unité (1 000, 1 000 000, 100 et leurs inverses), convention de signe (rapport −1) ou hypothèse commune divergente (taux, exposition). Ce sont des pistes, pas des conclusions.
 
 **Limites.** Le moteur compare des chiffres, il ne lit pas la spécification du modèle externe : la correspondance entre les grandeurs (le fichier `chemin;valeur`) est un travail d'analyse à vérifier.
+
+## 11. Contrôle qualité des données : controler
+
+Commande : `controler` (nouveau en 0.4.1). Aucun calcul actuariel : le moteur signale et compte, il ne corrige rien. Chaque traitement reste une décision de l'actuaire, à passer ensuite en option explicite de la méthode (`--exclure`, cellule complétée, ligne retirée) et à documenter.
+
+**Gravités.** `bloquant` : la méthode refusera le fichier tel quel. `alerte` : le calcul passera, mais le résultat peut être faussé. `info` : caractéristique à connaître. Conclusion : `bloquant`, `a_examiner` ou `pret`.
+
+**Triangle** (`--nature triangle --type cumule|incremental`).
+
+- Bloquant : triangle vide ou d'une seule période, origine sans libellé ou en double, période en double, texte non numérique, valeur infinie, ligne vide, trou avant la dernière valeur observée.
+- Alerte : forme inattendue (nombre de valeurs observées croissant d'une origine à la suivante), montant négatif, baisse du cumulé, cumulé nul puis positif (facteur infini), facteur individuel atypique.
+- Facteur atypique : pour chaque passage, médiane m et MAD normalisée s (1,4826 × médiane des écarts absolus) des log-facteurs individuels, avec au moins 4 facteurs ; signalé si \(|\ln f - m| > 3{,}5\,s\). Le message donne l'option `--exclure` correspondante. Sur le triangle RAA, seul le facteur 1982, 3-4 (1,977 contre une médiane de 1,163) est signalé.
+
+**Sinistres** (`--nature sinistres`). Bloquant : montant négatif, valeur infinie, aucune colonne numérique, colonne en double. Alerte : texte non numérique (ignoré par `gpd` et `tranche-xl`), montants nuls, montants répétés (double saisie ou forfait). Info : cellules vides, maximum plus de dix fois supérieur au suivant.
+
+**Primes** (`--nature primes`, avec `--triangle` pour confronter les origines). Bloquant : colonne `Prime` absente, origine sans libellé ou en double, prime manquante, valeur non numérique ou négative, origine du triangle absente. Alerte : prime nulle, ratio a priori supérieur à 3 (pourcentage saisi au lieu d'une fraction), origines en trop.
+
+**Cohérence avec les méthodes.** Ce que `controler` classe bloquant, les méthodes le refusent : un test l'impose sur un triangle à trou.
+
+**En-têtes en double (correction 0.4.1).** pandas renommait en silence une colonne en double (« 24 » devenait « 24.1 »), si bien qu'une période dupliquée passait pour une période nouvelle. Les en-têtes sont désormais lus tels quels : une période en double est refusée par les méthodes de triangle, une colonne en double par les autres lectures.

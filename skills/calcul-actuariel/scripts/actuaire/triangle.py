@@ -139,19 +139,35 @@ def nombre_ou_nan(x) -> float:
         return np.nan
 
 
-def lire_tableau(chemin: str | Path, feuille: str | int | None = None) -> pd.DataFrame:
-    """Lit un CSV (séparateur détecté) ou un Excel en texte brut."""
+def lire_tableau(chemin: str | Path, feuille: str | int | None = None,
+                 doublons_autorises: bool = False) -> pd.DataFrame:
+    """Lit un CSV (séparateur détecté) ou un Excel en texte brut.
+
+    Les en-têtes sont lus tels quels : pandas renommerait en silence une colonne en double
+    (« 24 » devient « 24.1 »), ce qui ferait d'une période dupliquée une période nouvelle.
+    Une colonne en double est refusée, sauf si l'appelant la contrôle lui-même."""
     chemin = Path(chemin)
     if chemin.suffix.lower() in {".xlsx", ".xlsm", ".xls"}:
-        return pd.read_excel(chemin, sheet_name=feuille or 0, header=0, dtype=object)
-    with open(chemin, newline="", encoding="utf-8-sig") as f:
-        echantillon = f.read(4096)
-    try:
-        sep = csv.Sniffer().sniff(echantillon, delimiters=",;\t").delimiter
-    except csv.Error:
-        sep = ","
-    return pd.read_csv(chemin, sep=sep, header=0, dtype=str, keep_default_na=False,
-                       encoding="utf-8-sig")
+        brut = pd.read_excel(chemin, sheet_name=feuille or 0, header=None, dtype=object)
+    else:
+        with open(chemin, newline="", encoding="utf-8-sig") as f:
+            echantillon = f.read(4096)
+        try:
+            sep = csv.Sniffer().sniff(echantillon, delimiters=",;\t").delimiter
+        except csv.Error:
+            sep = ","
+        brut = pd.read_csv(chemin, sep=sep, header=None, dtype=str, keep_default_na=False,
+                           encoding="utf-8-sig")
+    if brut.shape[0] == 0:
+        return pd.DataFrame()
+    entetes = ["" if v is None or (isinstance(v, float) and v != v) else libelle(v) for v in brut.iloc[0].tolist()]
+    df = brut.iloc[1:].reset_index(drop=True)
+    df.columns = entetes
+    if not doublons_autorises:
+        doubles = sorted({c for c in entetes if entetes.count(c) > 1 and c != ""})
+        if doubles:
+            raise ValueError(f"colonne(s) en double dans {chemin.name} : {doubles}")
+    return df
 
 
 def libelle(v) -> str:
@@ -163,7 +179,7 @@ def libelle(v) -> str:
 
 
 def lire_triangle(chemin: str | Path, feuille: str | int | None = None) -> Triangle:
-    df = lire_tableau(chemin, feuille)
+    df = lire_tableau(chemin, feuille, doublons_autorises=True)
     if df.shape[1] < 2 or df.shape[0] < 1:
         raise ValueError("triangle vide : une colonne de libellés et au moins une période sont attendues")
     origines = [libelle(v) for v in df.iloc[:, 0].tolist()]
