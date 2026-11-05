@@ -1,0 +1,34 @@
+id: r-tunisie-marge-non-vie
+methode: marge-solvabilite-tn
+source:
+  reference: Calcul indépendant du moteur avec R 4.5.3 (jsonlite), à partir du Code des assurances tunisien, art.
+    58 et 58 bis (loi n° 2002-37 du 1er avril 2002).
+  url: https://www.cga.gov.tn
+  emplacement: script tests/references/r/marge_tunisie.R, sortie tests/references/r/marge_tunisie.sortie.txt (bloc
+    « marge_non_vie »)
+donnees: donnees/tunisie/marge_non_vie.json
+options: {}
+statut: en_attente
+saisie_par: Claude, recopié de la sortie du script R
+valide_par: null
+date_validation: null
+note: 'Cas construit : plancher de 50 % appliqué au rapport sinistres (40 %), recours encaissés déduits.'
+valeurs:
+- chemin: resultats.non_vie.base_primes.montant
+  attendu: 12000
+  tolerance_relative: 1.0e-12
+- chemin: resultats.non_vie.base_sinistres.charge_periode
+  attendu: 140000
+  tolerance_relative: 1.0e-12
+- chemin: resultats.non_vie.base_sinistres.montant
+  attendu: 5833.33333333333
+  tolerance_relative: 1.0e-12
+- chemin: resultats.minimum_reglementaire
+  attendu: 12000
+  tolerance_relative: 1.0e-12
+- chemin: resultats.marge_constituee.total
+  attendu: 13500
+  tolerance_relative: 1.0e-12
+- chemin: resultats.taux_couverture
+  attendu: 1.125
+  tolerance_relative: 1.0e-12

@@ -1,0 +1,32 @@
+id: r-tunisie-marge-vie
+methode: marge-solvabilite-tn
+source:
+  reference: Calcul indépendant du moteur avec R 4.5.3 (jsonlite), à partir du Code des assurances tunisien, art.
+    58 et 58 bis (loi n° 2002-37 du 1er avril 2002).
+  url: https://www.cga.gov.tn
+  emplacement: script tests/references/r/marge_tunisie.R, sortie tests/references/r/marge_tunisie.sortie.txt (bloc
+    « marge_vie »)
+donnees: donnees/tunisie/marge_vie.json
+options: {}
+statut: en_attente
+saisie_par: Claude, recopié de la sortie du script R
+valide_par: null
+date_validation: null
+note: 'Cas construit : plancher de 85 % appliqué au rapport PM (80 %), capitaux sous risque = capitaux assurés −
+  PM, marge insuffisante.'
+valeurs:
+- chemin: resultats.vie.provisions_mathematiques.montant
+  attendu: 17000
+  tolerance_relative: 1.0e-12
+- chemin: resultats.vie.capitaux_sous_risque.montant
+  attendu: 3600
+  tolerance_relative: 1.0e-12
+- chemin: resultats.minimum_reglementaire
+  attendu: 20600
+  tolerance_relative: 1.0e-12
+- chemin: resultats.marge_constituee.total
+  attendu: 18000
+  tolerance_relative: 1.0e-12
+- chemin: resultats.taux_couverture
+  attendu: 0.87378640776699
+  tolerance_relative: 1.0e-12

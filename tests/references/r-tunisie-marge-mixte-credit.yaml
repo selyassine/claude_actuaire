@@ -1,0 +1,41 @@
+id: r-tunisie-marge-mixte-credit
+methode: marge-solvabilite-tn
+source:
+  reference: Calcul indépendant du moteur avec R 4.5.3 (jsonlite), à partir du Code des assurances tunisien, art.
+    58 et 58 bis (loi n° 2002-37 du 1er avril 2002).
+  url: https://www.cga.gov.tn
+  emplacement: script tests/references/r/marge_tunisie.R, sortie tests/references/r/marge_tunisie.sortie.txt (bloc
+    « marge_mixte_credit »)
+donnees: donnees/tunisie/marge_mixte_credit.json
+options: {}
+statut: en_attente
+saisie_par: Claude, recopié de la sortie du script R
+valide_par: null
+date_validation: null
+note: 'Cas construit : société mixte, assurance crédit (7 exercices), base sinistres dominante, plancher de 50 %
+  sur les capitaux sous risque.'
+valeurs:
+- chemin: resultats.non_vie.base_primes.montant
+  attendu: 1800
+  tolerance_relative: 1.0e-12
+- chemin: resultats.non_vie.base_sinistres.charge_periode
+  attendu: 103000
+  tolerance_relative: 1.0e-12
+- chemin: resultats.non_vie.base_sinistres.montant
+  attendu: 2500
+  tolerance_relative: 1.0e-12
+- chemin: resultats.vie.provisions_mathematiques.montant
+  attendu: 3040
+  tolerance_relative: 1.0e-12
+- chemin: resultats.vie.capitaux_sous_risque.montant
+  attendu: 450
+  tolerance_relative: 1.0e-12
+- chemin: resultats.minimum_reglementaire
+  attendu: 5990
+  tolerance_relative: 1.0e-12
+- chemin: resultats.marge_constituee.total
+  attendu: 9000
+  tolerance_relative: 1.0e-12
+- chemin: resultats.taux_couverture
+  attendu: 1.5025041736227
+  tolerance_relative: 1.0e-12

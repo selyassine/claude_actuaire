@@ -1,0 +1,16 @@
+{
+  "unite": "milliers de dinars",
+  "commentaire": "Cas construit : rétention PM 80 % (plancher 85 % appliqué), capitaux sous risque déduits des capitaux assurés.",
+  "vie": {
+    "provisions_mathematiques_brutes": 500000,
+    "provisions_mathematiques_nettes": 400000,
+    "capitaux_assures_bruts": 2500000,
+    "capitaux_sous_risque_nets": 1200000
+  },
+  "marge_constituee": {
+    "capital_libere": 15000,
+    "reserves": 4000,
+    "benefices_reportes": 1000,
+    "actifs_incorporels": 2000
+  }
+}

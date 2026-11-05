@@ -6,6 +6,7 @@ import argparse
 
 from .sortie import Hypothese, Resultat
 from .triangle import _nombre, lire_tableau
+from .tunisie import qx_table
 from .vie import Base, Contrat, ModeleSurvie, tarifer
 
 # Paramètres publiés dans AMLCR (Dickson, Hardy et Waters), sections 4.3 et 6.3
@@ -15,9 +16,13 @@ SSSM_SELECTION = {"facteur": 0.9, "duree": 2}
 
 def args_modele(sp: argparse.ArgumentParser) -> None:
     g = sp.add_argument_group("modèle de survie")
-    g.add_argument("--modele", choices=["sssm", "susm", "makeham", "table"], default="sssm",
+    g.add_argument("--modele", choices=["sssm", "susm", "makeham", "table", "td99", "tm99", "tv99"], default="sssm",
                    help="sssm (défaut) : Standard Select Survival Model d'AMLCR ; susm : modèle ultime ; "
-                        "makeham : paramètres --A --B --c ; table : fichier --table (colonnes Age, qx).")
+                        "makeham : paramètres --A --B --c ; table : fichier --table (colonnes Age, qx) ; "
+                        "td99 (alias tm99) / tv99 : tables réglementaires tunisiennes (arrêté du 27/02/2001, "
+                        "art. 5).")
+    g.add_argument("--qx-source", choices=["lx", "publie"], default="lx",
+                   help="Tables TD99/TV99 : q_x tirés des l_x (défaut) ou de la colonne q_x imprimée.")
     g.add_argument("--A", type=float, help="Makeham : constante A.")
     g.add_argument("--B", type=float, help="Makeham : B.")
     g.add_argument("--c", type=float, help="Makeham : c.")
@@ -87,6 +92,28 @@ def construire_modele(args, res: Resultat) -> ModeleSurvie:
             raise ValueError("le modèle makeham exige --A, --B et --c")
         m = ModeleSurvie.makeham(args.A, args.B, args.c, **kw)
         res.hypotheses.append(Hypothese("loi_de_mortalite", m.description, "Paramètres fournis."))
+    elif args.modele in ("td99", "tm99", "tv99"):
+        nom = "TV99" if args.modele == "tv99" else "TD99"
+        m = ModeleSurvie.table(qx_table(args.modele, args.qx_source), **kw)
+        res.hypotheses.append(Hypothese(
+            "loi_de_mortalite", nom + (" (demandée sous le nom TM99)" if args.modele == "tm99" else ""),
+            "Table réglementaire tunisienne, arrêté du ministre des finances du 27/02/2001, art. 5 (modifié le "
+            "5/01/2009) : TD99 pour les contrats en cas de décès, TV99 pour les contrats en cas de survie. "
+            "Transcription du Code des assurances (Imprimerie Officielle), pages 200 à 207.", "valeur par défaut"
+            if args.modele != "tm99" else "option utilisateur"))
+        res.hypotheses.append(Hypothese(
+            "source_qx", args.qx_source,
+            "q_x = 1 − l_{x+1}/l_x" if args.qx_source == "lx"
+            else "q_x imprimés (arrondis à 0,01 %) ; ils s'écartent des l_x à partir de 92 ans.",
+            "valeur par défaut" if args.qx_source == "lx" else "option utilisateur"))
+        res.hypotheses.append(Hypothese(
+            "fermeture_table", "q = 1 au dernier âge où l_x > 0",
+            "Une vie qui atteint le dernier âge de la table décède dans l'année.", "méthode"))
+        if args.taux > 0.04:
+            res.avertissements.append(
+                f"Taux technique {args.taux:g} supérieur à 4 % : plafond absolu de l'arrêté du 27/02/2001 "
+                "(art. 5 b) pour les contrats de plus de 10 ans ; le plafond de 70 % du taux moyen des titres "
+                "d'État n'est pas vérifié par le moteur.")
     else:
         if not args.table:
             raise ValueError("le modèle table exige --table")

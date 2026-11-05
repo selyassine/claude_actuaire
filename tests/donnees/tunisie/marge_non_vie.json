@@ -1,0 +1,22 @@
+{
+  "unite": "milliers de dinars",
+  "commentaire": "Cas construit : rétention primes 60 %, rétention sinistres 40 % (plancher 50 % appliqué).",
+  "non_vie": {
+    "primes_emises_acceptees": 100000,
+    "primes_retenues": 60000,
+    "sinistres": {
+      "reglements": [40000, 45000, 50000],
+      "psap_debut": 70000,
+      "psap_fin": 80000,
+      "recours_encaisses": 5000,
+      "charge_nette": 56000
+    }
+  },
+  "marge_constituee": {
+    "capital_libere": 10000,
+    "capital_non_libere": 4000,
+    "reserves": 3000,
+    "pertes": 1000,
+    "actifs_incorporels": 500
+  }
+}

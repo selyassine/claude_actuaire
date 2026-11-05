@@ -2,7 +2,7 @@
 
 Ce guide décrit, pour chaque méthode, ce que le moteur calcule, sous quelles conventions, dans quel domaine il refuse de calculer et comment le résultat a été validé. Les valeurs citées en exemple sont les valeurs **publiées** ; le moteur les reproduit dans les tolérances indiquées (fiches de `tests/references/`, tests de `tests/test_publications.py`).
 
-Version du moteur décrite : 0.4.2.
+Version du moteur décrite : 0.5.0.
 
 ## Sommaire
 
@@ -15,6 +15,7 @@ Version du moteur décrite : 0.4.2.
    - [6 bis. Tranche de réassurance XL sur un an](#6-bis-tranche-de-réassurance-xl-sur-un-an)
 7. [Crédibilité](#7-crédibilité)
 8. [Agrégation du SCR](#8-agrégation-du-scr)
+   - [8 bis. Marge de solvabilité tunisienne](#8-bis-marge-de-solvabilité-tunisienne)
 9. [Traçabilité et reproduction d'un calcul](#9-traçabilité-et-reproduction-dun-calcul)
 10. [Validation d'un modèle externe : comparer](#10-validation-dun-modèle-externe--comparer)
 11. [Contrôle qualité des données : controler](#11-contrôle-qualité-des-données--controler)
@@ -88,7 +89,9 @@ Commandes : `odp`, `bootstrap`.
 
 Commandes : `survie`, `tarif-vie`.
 
-**Modèles de survie.** SSSM d'AMLCR par défaut (Makeham \(\mu_x = A + B c^x\), A = 0,00022, B = 2,7 × 10⁻⁶, c = 1,124, sélection \(0{,}9^{2-s}\) appliquée à la force de mortalité pendant 2 ans) ; `susm` (sans sélection) ; `makeham` (paramètres fournis) ; `table` (q_x fournis). Avec une table, la sélection s'applique à q (années entières).
+**Modèles de survie.** SSSM d'AMLCR par défaut (Makeham \(\mu_x = A + B c^x\), A = 0,00022, B = 2,7 × 10⁻⁶, c = 1,124, sélection \(0{,}9^{2-s}\) appliquée à la force de mortalité pendant 2 ans) ; `susm` (sans sélection) ; `makeham` (paramètres fournis) ; `table` (q_x fournis) ; `td99` (alias `tm99`) et `tv99`, tables réglementaires tunisiennes de l'arrêté du 27 février 2001 (art. 5, modifié le 5 janvier 2009), TD99 pour les contrats en cas de décès et TV99 pour les contrats en cas de survie. Avec une table, la sélection s'applique à q (années entières).
+
+**Tables tunisiennes.** Transcrites des pages 200 à 207 du Code des assurances (Imprimerie Officielle) dans `scripts/actuaire/donnees/tables_tunisie_99.csv`. Par défaut q_x = 1 − l_{x+1}/l_x ; `--qx-source publie` prend la colonne q_x imprimée, arrondie à 0,01 %, qui s'écarte des l_x à partir de 92 ans. Un taux technique au-dessus de 4 % est signalé (plafond de l'art. 5 b pour les contrats de plus de 10 ans) ; le plafond de 70 % du taux moyen des titres d'État n'est pas vérifié.
 
 **Conventions.** Temps discret annuel. Capital décès payé en fin d'année du décès ; primes et annuités payables d'avance. Frais initiaux à la souscription, frais de renouvellement à chaque échéance suivante. Provisions prospectives, juste avant la prime de l'année t : nette (base de la prime pure), brute (prime commerciale et frais), de frais (brute − nette), Zillmer complet (FPT).
 
@@ -165,6 +168,38 @@ Commande : `scr`.
 **Domaine et refus.** Clés inconnues refusées (une faute de frappe ne passe pas inaperçue) ; montants finis, positifs, sauf les capacités d'absorption (négatives) ; `scenario_taux` obligatoire dès que le module marché est détaillé (paramètre A de l'article 164).
 
 **Validation.** SFCR publiés de CCR (2024, état S.25.01) et de l'IPBP (2016), à l'euro. Exemple publié (CCR 2024, milliers d'euros) : BSCR 2 738 047, SCR 2 414 456. Les matrices non-vie (art. 114, 119) sont contrôlées contre le règlement mais sans cas publié détaillé.
+
+## 8 bis. Marge de solvabilité tunisienne
+
+Commande : `marge-solvabilite-tn` (nouveau en 0.5.0).
+
+**Ce que le moteur fait.** Il calcule le montant minimum réglementaire de la marge de solvabilité du Code des assurances tunisien (art. 58 bis, loi n° 2002-37 du 1er avril 2002) :
+
+- non-vie : le plus élevé de 20 % des primes émises et acceptées × max(primes retenues / primes émises ; 50 %) et de 25 % de la charge annuelle moyenne des sinistres × max(charge nette / charge brute ; 50 %) ;
+- la charge de la période = règlements des 3 derniers exercices (7 pour l'assurance crédit à titre principal) + PSAP de fin − PSAP de début − recours encaissés ;
+- vie : 4 % des provisions mathématiques × max(net / brut ; 85 %) + 3 ‰ des capitaux sous risque × max(net / brut ; 50 %), les capitaux sous risque étant les capitaux assurés moins les provisions mathématiques ;
+- société mixte : somme des deux.
+
+Avec `marge_constituee`, il additionne les éléments de l'article 58 (50 % du capital non libéré, pertes et incorporels déduits) et rend l'excédent et le taux de couverture.
+
+**Ce qu'il ne fait pas.** Il n'évalue pas les éléments constitutifs et ne vérifie pas l'accord du CGA sur les plus-values ou les autres éléments. Il ne calcule pas les provisions : PSAP, PM et capitaux sont des entrées.
+
+**Entrée.** Un fichier JSON :
+
+```json
+{"non_vie": {"primes_emises_acceptees": 100000, "primes_retenues": 60000,
+             "sinistres": {"reglements": [40000, 45000, 50000], "psap_debut": 70000, "psap_fin": 80000,
+                           "recours_encaisses": 5000, "charge_nette": 56000}},
+ "vie": {"provisions_mathematiques_brutes": 500000, "provisions_mathematiques_nettes": 400000,
+         "capitaux_assures_bruts": 2500000, "capitaux_sous_risque_nets": 1200000},
+ "marge_constituee": {"capital_libere": 10000, "reserves": 3000, "actifs_incorporels": 500}}
+```
+
+**Interprétations rendues comme hypothèses.** Les recours encaissés sont déduits de la charge (lecture de « après déduction des PSAP [...] et les recours encaissés »). Le rapport de rétention sinistres est la charge nette sur la charge brute de la même période.
+
+**Domaine et refus.** Clés inconnues refusées ; nombre d'exercices de règlements égal à 3 (7 avec `assurance_credit`) ; primes et bruts strictement positifs ; montants de la marge constituée positifs (le signe est appliqué par le moteur). Un net supérieur au brut est signalé. Une marge constituée inférieure au minimum est signalée.
+
+**Validation.** Aucun texte ne publie d'exemple chiffré : trois cas construits (non-vie, vie, mixte avec assurance crédit) sont recalculés indépendamment en R (`tests/references/r/marge_tunisie.R`), fiches en attente de validation par l'actuaire.
 
 ## 9. Traçabilité et reproduction d'un calcul
 
