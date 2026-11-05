@@ -58,7 +58,7 @@ Sortie par défaut : JSON avec `statut` (`ok`, `avertissements` ou `incomplet`),
 
 Si les données de l'utilisateur sont dans un autre format, convertis-les d'abord dans ce format en fichier, puis appelle le script.
 
-Sur un nouveau fichier, lance d'abord `controler`. Présente les anomalies bloquantes et les alertes à l'utilisateur et demande-lui comment les traiter : ne corrige rien toi-même (ne complète pas un trou, ne retire pas un doublon, n'exclus pas un facteur atypique) sans son accord, puis passe sa décision en option explicite de la méthode. Pour organiser un projet actuariel dans Claude Code, `references/modele-CLAUDE.md` donne un modèle de CLAUDE.md.
+Sur un nouveau fichier, lance d'abord `controler`. Présente les anomalies bloquantes et les alertes à l'utilisateur et demande-lui comment les traiter : ne corrige rien toi-même (ne complète pas un trou, ne retire pas un doublon, n'exclus pas un facteur atypique) sans son accord, puis passe sa décision en option explicite de la méthode. Pour organiser un projet actuariel dans Claude Code, `references/modele-CLAUDE.md` donne un modèle de CLAUDE.md ; `references/modele-CLAUDE-tunisie.md` en est la variante pour un inventaire tunisien.
 
 ## Commandes disponibles
 

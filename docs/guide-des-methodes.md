@@ -2,7 +2,7 @@
 
 Ce guide décrit, pour chaque méthode, ce que le moteur calcule, sous quelles conventions, dans quel domaine il refuse de calculer et comment le résultat a été validé. Les valeurs citées en exemple sont les valeurs **publiées** ; le moteur les reproduit dans les tolérances indiquées (fiches de `tests/references/`, tests de `tests/test_publications.py`).
 
-Version du moteur décrite : 0.5.1.
+Version du moteur décrite : 0.5.2.
 
 ## Sommaire
 
