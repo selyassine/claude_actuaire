@@ -1,7 +1,9 @@
 famille: bf_cape_cod
 fiche_source: variante-bf-01
 source_r: facteurs R ChainLadder::chainladder, formule BF explicite en R (à vérifier)
-statut: en_attente_validation
+statut: valide
+valide_par: Yassine Selmi
+date_validation: '2026-11-05'
 valeurs:
 - nom: ultime_total
   attendu: 33731765.459596

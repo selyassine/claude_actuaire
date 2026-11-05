@@ -1,7 +1,9 @@
 famille: vie
 fiche_source: variante-vie-02
 source_r: R lifecontingencies (axn, Axn) sur une table Makeham exacte
-statut: en_attente_validation
+statut: valide
+valide_par: Yassine Selmi
+date_validation: '2026-11-05'
 valeurs:
 - nom: annuite_due_55
   attendu: 13.213821

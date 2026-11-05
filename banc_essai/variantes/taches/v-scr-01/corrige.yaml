@@ -2,7 +2,9 @@ famille: scr
 fiche_source: variante-scr-01
 source_r: 'agrégation formule standard écrite en R (generer_scr.R) : à recalculer
   par l''actuaire'
-statut: en_attente_validation
+statut: valide
+valide_par: Yassine Selmi
+date_validation: '2026-11-05'
 valeurs:
 - nom: scr_marche
   attendu: 103078.373823

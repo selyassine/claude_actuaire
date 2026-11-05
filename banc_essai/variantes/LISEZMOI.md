@@ -2,7 +2,7 @@
 
 16 tâches (2 par famille) sur **données nouvelles** : triangles publiés perturbés, sinistres et expériences simulés avec une graine fixe, autres âges, taux, seuils et contrats. Elles reprennent les méthodes des 16 tâches de `taches/`, mais leurs réponses ne se trouvent dans aucune publication : Claude ne peut pas les avoir mémorisées.
 
-Statut : **corrigés en attente de validation par Yassine** (champ `statut` de chaque `corrige.yaml`). Ne pas lancer de passage avant.
+Statut : **corrigés validés par Yassine le 2026-11-05** (champ `statut` de chaque `corrige.yaml`).
 
 ## D'où viennent les valeurs attendues
 
@@ -18,7 +18,7 @@ Statut : **corrigés en attente de validation par Yassine** (champ `statut` de c
 | v-vie-01, v-vie-02 | Makeham A = 0,0002, B = 0,00004, c = 1,11 | `lifecontingencies` (axn, Axn, Exn), **équations de prime et de provision écrites en R** |
 | v-scr-01, v-scr-02 | SCR de sous-modules inventés | **agrégation écrite en R** à partir du règlement délégué 2015/35 |
 
-Les lignes en gras ne sortent pas directement d'une fonction de package : la formule a été écrite pour l'occasion. La règle « jamais Claude » demande donc que Yassine recalcule ces valeurs dans Excel avant de les valider : **v-bf-01, v-bf-02, v-vie-01, v-vie-02, v-scr-01, v-scr-02**. Les autres sortent des fonctions des packages ; il suffit de vérifier les consignes et les options.
+Les lignes en gras ne sortent pas directement d'une fonction de package : la formule a été écrite pour l'occasion. Ces 6 tâches (**v-bf-01, v-bf-02, v-vie-01, v-vie-02, v-scr-01, v-scr-02**) ont été recalculées dans `verification/verification-corriges-variantes.xlsx`, avec des formules Excel visibles relues par Yassine : les 22 valeurs sont identiques à R (écart relatif maximal 4 × 10⁻¹⁵). Les 10 autres sortent directement des fonctions des packages.
 
 Versions : R 4.5.3, ChainLadder 0.2.21, actuar 3.3.7, evir 1.7.4, lifecontingencies 1.6.3 (conda-forge et sources CRAN).
 
