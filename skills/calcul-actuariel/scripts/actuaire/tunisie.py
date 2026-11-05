@@ -226,7 +226,10 @@ def qx_table(nom: str, source: str = "lx") -> dict[int, float]:
 
 # --- Provisions techniques non-vie (arrêté du 27 février 2001) ---------------------------------
 
-ARRETE_2001 = "Arrêté du ministre des finances du 27 février 2001 (provisions techniques)"
+ARRETE_2001 = ("Arrêté du ministre des finances du 27 février 2001 (provisions techniques), modifié par les arrêtés "
+               "du 28 mars 2005 (art. 33), du 5 janvier 2009 (art. 5 et 8), du 6 juin 2011 (art. 25, al. 2), "
+               "du 3 mars 2012 (art. 19, al. 2) et du 1er mars 2016 (art. 31 et 31 bis) ; texte consolidé du Code "
+               "des assurances, édition IORT 2020")
 
 
 def _date(v, quoi: str):
@@ -351,6 +354,11 @@ def auto_materiels(d: dict, avert: list[str], cadences: dict | None) -> dict:
     e_cad = float(cadences["provision"])
     evals = {"dossier_par_dossier": dossier, "cout_moyen": e_cm, "cadences": e_cad}
     retenue = max(evals, key=evals.get)
+    positives = [v for v in evals.values() if v > 0]
+    if len(positives) == 3 and max(positives) / min(positives) > 2:
+        avert.append("Auto matériels : la plus forte évaluation dépasse le double de la plus faible "
+                     f"({ {k: round(v, 2) for k, v in evals.items()} }). Vérifier que les trois portent sur le même "
+                     "périmètre (exercices, unité, sinistres tardifs compris ou non) avant de retenir le maximum.")
     return {"evaluations": evals, "cout_moyen": detail_cm, "cadences": cadences, "methode_retenue": retenue,
             "provision": evals[retenue]}
 

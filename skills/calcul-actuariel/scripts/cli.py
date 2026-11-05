@@ -37,6 +37,7 @@ from actuaire.sortie import (  # noqa: E402
     Resultat,
     empreinte_fichier,
     empreinte_resultats,
+    verifier_empreinte,
 )
 
 
@@ -105,9 +106,7 @@ def cmd_rejouer(args: argparse.Namespace) -> Resultat:
         ancien = json.load(f)
     if not isinstance(ancien, dict) or "reproduction" not in ancien or "resultats" not in ancien:
         raise ValueError("ce fichier n'est pas une sortie du moteur avec bloc 'reproduction' (version 0.3.0 ou plus)")
-    attendue = ancien.get("empreinte_resultats")
-    if attendue and attendue != empreinte_resultats(ancien["resultats"]):
-        raise ValueError("les résultats du fichier archivé ont été modifiés depuis le calcul (empreinte différente)")
+    verifier_empreinte(ancien, "le fichier archivé")
     for e in ancien.get("entrees", []):
         if empreinte_fichier(e["fichier"]) != e["sha256"]:
             raise ValueError(f"le fichier d'entrée {e['fichier']} a changé depuis le calcul archivé")
