@@ -1,0 +1,78 @@
+id: r-actuar-danish-tranche-xl-exponentielle
+methode: tranche-xl
+source:
+  reference: Calcul indépendant du moteur avec R 4.5.3, evir 1.7.4 (jeu danish, gpd) et actuar 3.3.7
+    (discretize, aggregateDist méthode recursive, quantile, CTE).
+  url: https://cran.r-project.org/package=actuar
+  emplacement: script tests/references/r/tranche_xl.R, sortie tests/references/r/tranche_xl.sortie.txt (bloc « exponentielle xi=0 sigma=7 »)
+donnees: donnees/danish_mcneil.csv
+options:
+  seuil: 10
+  annees: 11
+  tranche: 50,200
+  franchise-annuelle: 20
+  limite-annuelle: 300
+  parametres: 0,7
+statut: en_attente
+saisie_par: Claude, recopié de la sortie du script R
+valide_par: null
+date_validation: null
+note: 'Cas limite xi = 0 (excès exponentiels de moyenne 7) imposé : vérifie la branche exponentielle du moteur.'
+valeurs:
+- chemin: resultats.n_depassements
+  attendu: 109
+  tolerance_absolue: 0
+- chemin: resultats.probabilite_sinistre_atteint_tranche
+  attendu: 3.29850575593909e-03
+  tolerance_relative: 1.0e-9
+- chemin: resultats.probabilite_sinistre_epuise_tranche
+  attendu: 1.62932199300135e-12
+  tolerance_relative: 1.0e-9
+- chemin: resultats.charge_moyenne_par_sinistre_au_dela_du_seuil
+  attendu: 2.30895402801684e-02
+  tolerance_relative: 1.0e-9
+- chemin: resultats.prime_pure_annuelle
+  attendu: 0.228796353685305
+  tolerance_relative: 1.0e-9
+- chemin: resultats.ecart_type_annuel
+  attendu: 1.78973431483267
+  tolerance_relative: 1.0e-9
+- chemin: resultats.probabilite_annee_sans_charge
+  attendu: 0.968180381752331
+  tolerance_relative: 1.0e-9
+- chemin: resultats.discretisation.prime_pure_discretisee
+  attendu: 0.228791976096460
+  tolerance_relative: 1.0e-9
+- chemin: resultats.var.0.99
+  attendu: 8.25
+  tolerance_absolue: 1.0e-9
+- chemin: resultats.var.0.995
+  attendu: 13.2
+  tolerance_absolue: 1.0e-9
+- chemin: resultats.esperance_conditionnelle_queue.0.99
+  attendu: 15.4395529749207
+  tolerance_relative: 1.0e-9
+- chemin: resultats.esperance_conditionnelle_queue.0.995
+  attendu: 20.3891230844200
+  tolerance_relative: 1.0e-9
+- chemin: resultats.conditions_annuelles.prime_pure_annuelle
+  attendu: 1.37572031501789e-02
+  tolerance_relative: 1.0e-9
+- chemin: resultats.conditions_annuelles.ecart_type_annuel
+  attendu: 0.442164774995133
+  tolerance_relative: 1.0e-9
+- chemin: resultats.conditions_annuelles.probabilite_franchise_depassee
+  attendu: 1.92717199395109e-03
+  tolerance_relative: 1.0e-9
+- chemin: resultats.conditions_annuelles.probabilite_limite_epuisee
+  attendu: 0
+  tolerance_absolue: 1.0e-15
+- chemin: resultats.burning_cost.charge_annuelle_moyenne
+  attendu: 34.2254439759624
+  tolerance_relative: 1.0e-12
+- chemin: resultats.burning_cost.sinistres_dans_tranche
+  attendu: 7
+  tolerance_absolue: 0
+- chemin: resultats.burning_cost.sinistres_epuisant_tranche
+  attendu: 1
+  tolerance_absolue: 0

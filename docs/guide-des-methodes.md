@@ -2,7 +2,7 @@
 
 Ce guide décrit, pour chaque méthode, ce que le moteur calcule, sous quelles conventions, dans quel domaine il refuse de calculer et comment le résultat a été validé. Les valeurs citées en exemple sont les valeurs **publiées** ; le moteur les reproduit dans les tolérances indiquées (fiches de `tests/references/`, tests de `tests/test_publications.py`).
 
-Version du moteur décrite : 0.3.0.
+Version du moteur décrite : 0.4.0.
 
 ## Sommaire
 
@@ -12,9 +12,11 @@ Version du moteur décrite : 0.3.0.
 4. [ODP analytique et bootstrap ODP](#4-odp-analytique-et-bootstrap-odp)
 5. [Vie : survie, primes, provisions](#5-vie--survie-primes-provisions)
 6. [Valeurs extrêmes : GPD](#6-valeurs-extrêmes--gpd)
+   - [6 bis. Tranche de réassurance XL sur un an](#6-bis-tranche-de-réassurance-xl-sur-un-an)
 7. [Crédibilité](#7-crédibilité)
 8. [Agrégation du SCR](#8-agrégation-du-scr)
 9. [Traçabilité et reproduction d'un calcul](#9-traçabilité-et-reproduction-dun-calcul)
+10. [Validation d'un modèle externe : comparer](#10-validation-dun-modèle-externe--comparer)
 
 ---
 
@@ -115,6 +117,27 @@ Commande : `gpd`.
 
 **Validation.** McNeil (1997) tableau 1, données danoises du paquet R `evir` (2 167 observations au lieu des 2 156 de l'article : dépassements et ξ exacts, quantiles à 1,5 %). Exemple publié (u = 10) : quantile à 99,9 % ≈ 95, prime de la tranche (50, 200) ≈ 0,13. Les intervalles profilés et les statistiques d'ajustement sont recalculés indépendamment avec scipy dans `tests/test_production.py`.
 
+## 6 bis. Tranche de réassurance XL sur un an
+
+Commande : `tranche-xl` (nouveau en 0.4.0).
+
+**Modèle collectif.** Nombre annuel de sinistres au-delà du seuil u : Poisson de paramètre \(\lambda = N_u / \text{années}\). Montant d'un tel sinistre : \(u + \text{GPD}(\xi, \sigma)\), ajustée comme dans `gpd` ou imposée (`--parametres`). Charge d'un sinistre pour la tranche (r, R) : \(L = \min(\max(X - r, 0), R - r)\). Charge annuelle \(S = L_1 + \dots + L_N\).
+
+**Calculs.**
+
+- Prime pure et écart type exacts : \(E[S] = \lambda \int_r^R \bar F_u(x)\,dx\) et \(\mathrm{Var}[S] = \lambda \int_r^R 2(x - r) \bar F_u(x)\,dx\), où \(\bar F_u\) est la survie GPD conditionnelle au seuil. La prime annuelle est égale à la prime par sinistre de `gpd` (McNeil 1997, § 4.5) multipliée par le nombre de sinistres par an : un test l'impose.
+- Loi de S : discrétisation de L par la méthode des arrondis (pas h, défaut portée / 1000 ; la masse des sinistres qui épuisent la tranche est portée par le point R − r), puis récurrence de Panjer (1981) arrêtée quand la masse restante est sous 1e-12. VaR : plus petite valeur de la grille où la fonction de répartition atteint le niveau. CTE : \(E[S \mid S > \text{VaR}]\), définition d'actuar.
+- Franchise annuelle D et limite annuelle L (AAD, AAL) : \(\min(\max(S - D, 0), L)\) sur la loi discrète.
+- Burning cost : charge historique moyenne de la tranche par an, sans indexation, avec le nombre de sinistres historiques touchant et épuisant la tranche.
+
+**Domaine et refus.** Années d'observation > 0 ; priorité ≥ seuil ; limite > priorité ; pas qui divise la portée ; niveaux dans ]0, 1[ ; σ > 0 ; franchise ≥ 0 ; limite annuelle > 0 ; au moins un dépassement. Fréquence trop élevée pour Panjer (P(S = 0) nulle en précision machine) : refus, avec la piste d'un seuil ou d'une priorité plus haute.
+
+**Alertes.** Moins de 50 dépassements ; moins de 5 sinistres historiques dans la tranche (burning cost non fiable) ; prime du modèle hors de [0,5 ; 2] fois le burning cost ; discrétisation qui écarte la prime de plus de 0,1 % ; plus d'un sinistre sur deux épuisant la tranche.
+
+**Limites.** Pas d'indexation (les montants doivent être mis en as-if avant l'appel), fréquence stable sans tendance ni surdispersion, pas de reconstitutions payantes, pas de clause d'indexation du traité.
+
+**Validation.** Calcul indépendant en R (script `tests/references/r/tranche_xl.R`, sortie archivée à côté) : evir 1.7.4 pour l'ajustement GPD des données danoises, actuar 3.3.7 pour `discretize`, `aggregateDist` (méthode récursive), `quantile` et `CTE`. Trois fiches : paramètres d'evir imposés (accord à 1e-9 près), cas exponentiel ξ = 0 (accord à 1e-9 près), chaîne complète avec ajustement par le moteur (accord à 0,5 %, les deux optimiseurs trouvant ξ = 0,4970 et 0,4968). Fiches en attente de validation. Exemple (données danoises, u = 10, 11 ans, tranche 50-200) : prime pure annuelle 25,94, écart type 47,47, VaR à 99,5 % 232,8 ; burning cost 34,23.
+
 ## 7. Crédibilité
 
 Commande : `credibilite`.
@@ -162,3 +185,23 @@ python cli.py rejouer --sortie calcul.json
 `rejouer` vérifie d'abord que le bloc `resultats` n'a pas été retouché (empreinte), puis que chaque fichier d'entrée n'a pas changé (SHA-256). Il relance ensuite la commande archivée et compare les résultats à 10⁻⁹ près en relatif (`--tolerance`). La sortie liste les écarts et signale un changement de version du moteur ou des bibliothèques.
 
 **Ce que la traçabilité ne prouve pas.** Une empreinte prouve l'identité d'un fichier, pas la qualité des données ni l'identité de la personne qui a lancé le calcul. La validation humaine d'un résultat reste à tracer dans le processus de l'utilisateur.
+
+## 10. Validation d'un modèle externe : comparer
+
+Commande : `comparer` (nouveau en 0.4.0).
+
+C'est la validation par réplication indépendante : le modèle de l'utilisateur et le moteur calculent sur les mêmes données, et chaque écart désigne une erreur, une hypothèse divergente, une ambiguïté de spécification ou un arrondi.
+
+**Entrées.** Une sortie JSON du moteur (son empreinte de résultats est vérifiée : un fichier retouché est refusé) et un CSV ou Excel du modèle externe avec les colonnes `chemin` et `valeur`, et en option `libelle` et `tolerance_relative` (qui remplace la tolérance générale pour la ligne). `--lister` donne tous les chemins numériques de la sortie du moteur.
+
+**Classement de chaque ligne.**
+
+- `conforme` : \(|e - m| \le \max(\text{tolérance absolue}, \text{tolérance relative} \times |m|)\), défauts 0 et 0,1 %.
+- `arrondi` : hors tolérance, mais l'écart est au plus la demi-unité de la dernière décimale écrite dans le fichier externe (« 18 402,4 » couvre ± 0,05). Seulement pour une valeur écrite en texte (CSV) ; une cellule Excel numérique n'a pas de décimales publiées.
+- `ecart`, `chemin_absent`, `valeur_externe_invalide`, `non_numerique_moteur`.
+
+**Conclusion.** `conforme` si toutes les lignes sont conformes ou arrondies, sinon `ecarts_a_analyser`. Le rapport donne le décompte, l'écart relatif maximal et le nombre de chemins du moteur non comparés.
+
+**Diagnostic des écarts.** Si au moins trois écarts suivent le même rapport externe / moteur à 1 % près, une alerte le signale : facteur d'unité (1 000, 1 000 000, 100 et leurs inverses), convention de signe (rapport −1) ou hypothèse commune divergente (taux, exposition). Ce sont des pistes, pas des conclusions.
+
+**Limites.** Le moteur compare des chiffres, il ne lit pas la spécification du modèle externe : la correspondance entre les grandeurs (le fichier `chemin;valeur`) est un travail d'analyse à vérifier.

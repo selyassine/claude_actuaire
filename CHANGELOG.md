@@ -1,5 +1,26 @@
 # Historique des versions
 
+## 0.4.0 (2026-11-05) : tranche de réassurance XL et validation d'un modèle externe
+
+Deux usages tirés du guide « Claude Code for Actuaries » (Nzati et Schraub, 2026), cas 15 et 30, réalisés selon les règles du moteur : valeurs attendues calculées sans le moteur, refus explicites, sortie traçable.
+
+Nouvelle commande `tranche-xl` :
+
+- Tranche XL par risque sur un an : fréquence de Poisson des dépassements du seuil, sévérité GPD (ajustée ou imposée avec `--parametres`).
+- Prime pure et écart type exacts ; loi de la charge annuelle par discrétisation (méthode des arrondis) et récurrence de Panjer ; VaR et CTE ; probabilité d'une année sans charge.
+- Franchise et limite annuelles (`--franchise-annuelle`, `--limite-annuelle`).
+- Burning cost historique et rapport prime du modèle / burning cost.
+- Alertes : peu de dépassements, peu de sinistres historiques dans la tranche, écart au burning cost, discrétisation trop grossière, tranche épuisée par la plupart des sinistres. Refus : priorité sous le seuil, années ou pas invalides, paramètres impossibles, fréquence hors de portée de Panjer.
+- Validation : trois fiches calculées indépendamment en R (evir et actuar ; script et sortie dans `tests/references/r/`), en attente de validation. Accord à 1e-9 près à paramètres égaux.
+
+Nouvelle commande `comparer` :
+
+- Confronte les résultats d'un modèle externe (CSV ou Excel `chemin;valeur`) à une sortie archivée du moteur, dont l'empreinte est vérifiée.
+- Classe chaque ligne : conforme, arrondi (écart couvert par la dernière décimale écrite), écart, chemin absent, valeur invalide ; conclusion et écart relatif maximal.
+- Repère un facteur commun aux écarts (unités, signe, hypothèse commune). `--lister` donne les chemins comparables.
+
+Tests : 314 (259 en 0.3.0).
+
 ## 0.3.0 (2026-11-05) : contrôles métier, reproductibilité, industrialisation
 
 Réponse à l'analyse du 2026-11-05 au soir. Les résultats publiés et les 16 variantes restent reproduits à l'identique (59/59).

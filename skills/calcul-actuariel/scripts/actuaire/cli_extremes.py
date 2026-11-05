@@ -7,6 +7,7 @@ import argparse
 import numpy as np
 
 from .extremes import excedent_moyen, gpd_seuil
+from .reassurance import tarif_tranche_xl
 from .sortie import Hypothese, Resultat
 from .triangle import lire_tableau, nombre_ou_nan
 
@@ -108,6 +109,77 @@ def cmd_gpd(args) -> Resultat:
     return res
 
 
+def args_tranche_xl(sp: argparse.ArgumentParser) -> None:
+    sp.add_argument("--entree", required=True, help="CSV ou Excel des montants de sinistres (une ligne par sinistre).")
+    sp.add_argument("--colonne", help="Nom de la colonne des montants (défaut : première colonne numérique).")
+    sp.add_argument("--feuille", default=None, help="Feuille Excel (nom ou numéro).")
+    sp.add_argument("--seuil", type=float, required=True, help="Seuil u de la GPD (au plus égal à la priorité).")
+    sp.add_argument("--annees", type=float, required=True,
+                    help="Nombre d'années d'observation couvertes par le fichier (donne la fréquence annuelle).")
+    sp.add_argument("--tranche", required=True, help="'priorité,limite haute', ex. 50,200 (portée 150).")
+    sp.add_argument("--niveaux", default="0.99,0.995", help="Niveaux de VaR et de CTE (défaut 0.99,0.995).")
+    sp.add_argument("--pas", type=float, help="Pas de discrétisation (défaut : portée / 1000 ; doit diviser la portée).")
+    sp.add_argument("--franchise-annuelle", type=float, default=0.0, help="Franchise annuelle globale (AAD), défaut 0.")
+    sp.add_argument("--limite-annuelle", type=float, help="Limite annuelle globale (AAL), défaut : aucune.")
+    sp.add_argument("--parametres", help="'xi,sigma' imposés au lieu de l'ajustement (ex. étude de sensibilité) ; "
+                         "si xi est négatif, écrire --parametres=-0.2,5.")
+
+
+def cmd_tranche_xl(args) -> Resultat:
+    tranche = _liste(args.tranche)
+    if len(tranche) != 2:
+        raise ValueError(f"tranche mal formée : {args.tranche} (attendu 'priorité,limite')")
+    niveaux = _liste(args.niveaux)
+    parametres = None
+    if args.parametres:
+        v = _liste(args.parametres)
+        if len(v) != 2:
+            raise ValueError(f"paramètres mal formés : {args.parametres} (attendu 'xi,sigma')")
+        parametres = (v[0], v[1])
+    res = Resultat("tranche-xl", {}, options={
+        "seuil": args.seuil, "annees": args.annees, "tranche": tranche, "niveaux": niveaux, "pas": args.pas,
+        "franchise_annuelle": args.franchise_annuelle, "limite_annuelle": args.limite_annuelle,
+        "parametres": list(parametres) if parametres else None})
+    x = _lire_pertes(args, res)
+    r = tarif_tranche_xl(x, args.seuil, args.annees, tranche[0], tranche[1], niveaux, args.pas,
+                         args.franchise_annuelle, args.limite_annuelle, parametres)
+    res.hypotheses += [
+        Hypothese("frequence", "Poisson, lambda = dépassements du seuil / années d'observation",
+                  "Fréquence supposée stable sur la période ; pas de tendance ni de surdispersion.", "méthode"),
+        Hypothese("severite", "u + GPD(xi, sigma) au-delà du seuil",
+                  "Paramètres imposés par l'utilisateur." if parametres else
+                  "Maximum de vraisemblance sur les excès (McNeil 1997), comme la commande gpd.",
+                  "option utilisateur" if parametres else "méthode"),
+        Hypothese("as_if", "aucune indexation ni mise à l'échelle",
+                  "Les montants sont pris tels quels : indexer les sinistres historiques avant l'appel si "
+                  "l'inflation ou l'exposition ont changé sur la période.", "valeur par défaut"),
+        Hypothese("discretisation", f"pas {r['discretisation']['pas']:g}, méthode des arrondis",
+                  "La VaR et la CTE sont lues sur une grille de ce pas ; la prime pure et l'écart type sont exacts.",
+                  "option utilisateur" if args.pas else "valeur par défaut"),
+    ]
+    if parametres is None and r["n_depassements"] < 50:
+        res.avertissements.append(f"Seulement {r['n_depassements']} dépassements du seuil : paramètres GPD très incertains.")
+    if not r["convergence"]:
+        res.avertissements.append("Ajustement GPD non concluant : vérifier avec la commande gpd (diagnostic_optimisation).")
+    bc = r["burning_cost"]
+    if bc["sinistres_dans_tranche"] < 5:
+        res.avertissements.append(f"{bc['sinistres_dans_tranche']} sinistre(s) historique(s) dans la tranche : le burning "
+                                  "cost n'est pas fiable, la prime repose surtout sur l'extrapolation GPD.")
+    rapport = bc["rapport_modele_sur_burning_cost"]
+    if rapport is not None and not 0.5 <= rapport <= 2:
+        res.avertissements.append(f"Prime du modèle {rapport:.2f} fois le burning cost : vérifier le seuil, l'indexation "
+                                  "et la période d'observation.")
+    ecart = r["discretisation"]["ecart_relatif_prime"]
+    if ecart is not None and abs(ecart) > 1e-3:
+        res.avertissements.append(f"La discrétisation écarte la prime de {ecart:.2%} : réduire le pas.")
+    if r["probabilite_sinistre_epuise_tranche"] > 0.5:
+        res.avertissements.append("Plus d'un sinistre sur deux au-delà du seuil épuise la tranche : vérifier la limite.")
+    res.resultats = r
+    return res
+
+
 COMMANDES = {
     "gpd": (cmd_gpd, "GPD au-delà d'un seuil (McNeil 1997) : xi, sigma, quantiles, primes de tranche.", args_gpd),
+    "tranche-xl": (cmd_tranche_xl, "Tranche XL annuelle (Poisson × GPD, Panjer) : prime pure, écart type, VaR, CTE, "
+                   "burning cost, franchise et limite annuelles.", args_tranche_xl),
 }
