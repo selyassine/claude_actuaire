@@ -41,6 +41,7 @@ python <skill>/scripts/cli.py survie --modele sssm --taux 0.04 --age 50 --n 20
 python <skill>/scripts/cli.py tarif-vie --modele sssm --taux 0.04 --type vie-entiere --age 50 --capital 100000 \
     --frais-initiaux-pct 0.5 --frais-initiaux-fixe 250 --frais-renouvellement-pct 0.03 --frais-renouvellement-fixe 25 --durees 0,1,2,10
 python <skill>/scripts/cli.py rejouer --sortie calcul.json     # refait un calcul archivé et compare
+python <skill>/scripts/cli.py registre --sorties sorties/ --note hypotheses.md            # registre des hypothèses du dossier
 python <skill>/scripts/cli.py comparer --resultats calcul.json --lister                  # chemins comparables
 python <skill>/scripts/cli.py comparer --resultats calcul.json --externe modele.csv      # rapport d'écarts
 ```
@@ -104,7 +105,10 @@ Pour `tranche-xl`, même fichier de sinistres que `gpd`. `--annees` (nombre d'an
 
 | Commande | Rôle | Statut |
 | --- | --- | --- |
+| `registre` | Registre des hypothèses d'un dossier : consolide les sorties archivées, classe les hypothèses (choix de jugement, valeurs par défaut, méthode), détecte les incohérences, écrit la note d'hypothèses | disponible |
 | `comparer` | Rapport d'écarts ligne à ligne entre les résultats d'un modèle externe et une sortie archivée du moteur | testé (propriétés et refus) |
+
+Pour un dossier de plusieurs calculs, enregistre chaque sortie JSON dans un même dossier (par exemple `sorties/`), puis lance `registre --sorties sorties/ --note hypotheses.md` avant de rédiger la synthèse. Présente d'abord les incohérences, puis les valeurs par défaut à faire confirmer par l'utilisateur. Ne présente pas une note dont la conclusion est `bloquant`.
 
 Pour valider le modèle d'un utilisateur (Excel, logiciel interne) : 1) lance la méthode du moteur sur les mêmes données et enregistre la sortie JSON dans un fichier ; 2) lance `comparer --lister` pour voir les chemins ; 3) écris un CSV `chemin;valeur` (colonnes facultatives `libelle`, `tolerance_relative`) en recopiant les valeurs du modèle externe telles quelles, sans les arrondir ni les convertir ; 4) lance `comparer`. Rapporte la conclusion, chaque ligne `ecart` avec sa valeur moteur et externe, et les avertissements (facteur d'unité, convention de signe, hypothèse commune). Une ligne `arrondi` est conforme à l'arrondi publié près. N'explique jamais un écart sans l'avoir vérifié : propose des causes, présente-les comme des pistes.
 

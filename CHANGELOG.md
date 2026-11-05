@@ -1,5 +1,15 @@
 # Historique des versions
 
+## 0.4.2 (2026-11-05) : registre des hypothèses d'un dossier
+
+Nouvelle commande `registre` :
+
+- Relit les sorties JSON archivées d'un dossier (fichiers ou répertoires) et rend les calculs, les données utilisées avec leur empreinte, et les hypothèses classées en choix de jugement, valeurs par défaut à confirmer et hypothèses de méthode.
+- Détecte les incohérences du dossier : résultats retouchés, même fichier de données avec des contenus différents, données modifiées depuis le calcul, même hypothèse avec deux valeurs sur les mêmes données, versions du moteur différentes, calculs incomplets.
+- `--note` écrit la note d'hypothèses en Markdown (incohérences, calculs et commandes de reproduction, données, hypothèses, avertissements).
+
+Tests : 342.
+
 ## 0.4.1 (2026-11-05) : contrôle qualité des données, modèle de CLAUDE.md
 
 Nouvelle commande `controler` :

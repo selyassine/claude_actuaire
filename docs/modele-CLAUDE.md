@@ -32,6 +32,7 @@ Conventions :
 - Avant tout calcul sur un nouveau fichier : `cli.py controler --nature [triangle|sinistres|primes]`. Les anomalies bloquantes et les alertes me sont présentées ; je décide du traitement. Ne rien corriger sans mon accord, et noter chaque décision dans `hypotheses.md`.
 - Chaque sortie JSON du moteur est enregistrée dans `sorties/` sous un nom explicite (`sorties/2026-12-31_mack_auto_payes.json`). Ce sont ces fichiers qui font foi ; les rapports citent leurs chiffres et leur `empreinte_resultats`.
 - Pour revérifier un chiffre archivé : `cli.py rejouer --sortie <fichier>`.
+- Avant toute synthèse : `cli.py registre --sorties sorties/ --note hypotheses_moteur.md`. Les incohérences sont traitées ou expliquées, les valeurs par défaut sont confirmées par moi.
 - Pour valider un autre modèle (Excel, logiciel interne) : `cli.py comparer` contre la sortie du moteur sur les mêmes données ; les écarts sont expliqués ou signalés, jamais effacés.
 - Méthode absente du moteur : le dire, calculer en Python explicite dans `scripts/`, et marquer les chiffres « non validés par le moteur ».
 
