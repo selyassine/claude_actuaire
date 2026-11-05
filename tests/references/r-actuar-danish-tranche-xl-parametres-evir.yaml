@@ -13,10 +13,11 @@ options:
   franchise-annuelle: 20
   limite-annuelle: 300
   parametres: 0.496806243649915,6.97455226472975
-statut: en_attente
+statut: valide
 saisie_par: Claude, recopié de la sortie du script R
-valide_par: null
-date_validation: null
+valide_par: Yassine
+date_validation: '2026-11-05'
+methode_validation: Yassine a contrôlé les valeurs contre la sortie du script R (tests/references/r/tranche_xl.sortie.txt) le 2026-11-05.
 note: 'Paramètres GPD imposés égaux à l''ajustement d''evir (u = 10) : la fiche teste la fréquence, la sévérité de la tranche, la récurrence de Panjer, la VaR, la CTE et les conditions annuelles sans dépendre de l''optimiseur. Années 1980-1990 (11 ans, attribut times du jeu danish). Tolérance relative 1e-9 : seules les 15 décimales affichées par R limitent la comparaison.'
 valeurs:
 - chemin: resultats.n_depassements

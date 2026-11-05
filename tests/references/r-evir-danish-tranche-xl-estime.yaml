@@ -12,10 +12,11 @@ options:
   tranche: 50,200
   franchise-annuelle: 20
   limite-annuelle: 300
-statut: en_attente
+statut: valide
 saisie_par: Claude, recopié de la sortie du script R
-valide_par: null
-date_validation: null
+valide_par: Yassine
+date_validation: '2026-11-05'
+methode_validation: Yassine a contrôlé les valeurs contre la sortie du script R (tests/references/r/tranche_xl.sortie.txt) le 2026-11-05.
 note: 'Chaîne complète : le moteur ajuste lui-même la GPD. evir trouve xi = 0,49681 et le moteur 0,49699 (optimiseurs différents, même vraisemblance à 1e-6 près) : tolérance relative 0,5 % sur les montants et 0,5 (un peu plus de trois pas de grille) sur les VaR.'
 valeurs:
 - chemin: resultats.n_depassements
