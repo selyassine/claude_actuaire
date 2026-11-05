@@ -8,10 +8,12 @@ source:
 donnees: donnees/tunisie/provisions.json
 options:
   cadences: donnees/tunisie/cadences_chain_ladder.json
-statut: en_attente
+statut: valide
 saisie_par: Claude, recopié de la sortie du script R
-valide_par: null
-date_validation: null
+valide_par: Yassine
+date_validation: '2026-11-05'
+methode_validation: Yassine a contrôlé les valeurs contre la sortie du script R (tests/references/r/provisions_tunisie.sortie.txt),
+  la transcription des tables TD99/TV99 et les interprétations réglementaires le 2026-11-05.
 note: 'Cas construit : PPNA en jours exacts avec un contrat à effet futur et un contrat échu, PRC sur deux catégories,
   minimum de 5 % des frais (PSAP frais compris), auto matériels retenu par les cadences, dotation plafonnée (équilibrage),
   reprise (grêle).'

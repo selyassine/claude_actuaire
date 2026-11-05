@@ -108,8 +108,8 @@ Pour `tranche-xl`, même fichier de sinistres que `gpd`. `--annees` (nombre d'an
 
 | Commande | Rôle | Statut |
 | --- | --- | --- |
-| `marge-solvabilite-tn` | Marge de solvabilité minimale du Code des assurances tunisien (art. 58 bis : non-vie, vie, mixte) et taux de couverture (art. 58) | testé : cas construits recalculés en R, fiches en attente de validation |
-| `provisions-tn` | Règles de provisions non-vie de l'arrêté tunisien du 27/02/2001 : PPNA prorata temporis, PRC, minimum de 5 % des frais de gestion des sinistres, auto matériels (la plus haute de trois évaluations), équilibrage, égalisation grêle, rentes + 5 % | testé : cas construit recalculé en R, fiche en attente de validation |
+| `marge-solvabilite-tn` | Marge de solvabilité minimale du Code des assurances tunisien (art. 58 bis : non-vie, vie, mixte) et taux de couverture (art. 58) | testé : cas construits recalculés en R, fiches validées par Yassine |
+| `provisions-tn` | Règles de provisions non-vie de l'arrêté tunisien du 27/02/2001 : PPNA prorata temporis, PRC, minimum de 5 % des frais de gestion des sinistres, auto matériels (la plus haute de trois évaluations), équilibrage, égalisation grêle, rentes + 5 % | testé : cas construit recalculé en R, fiche validée par Yassine |
 | `registre` | Registre des hypothèses d'un dossier : consolide les sorties archivées, classe les hypothèses (choix de jugement, valeurs par défaut, méthode), détecte les incohérences, écrit la note d'hypothèses | disponible |
 | `comparer` | Rapport d'écarts ligne à ligne entre les résultats d'un modèle externe et une sortie archivée du moteur | testé (propriétés et refus) |
 

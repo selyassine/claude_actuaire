@@ -200,7 +200,7 @@ Avec `marge_constituee`, il additionne les éléments de l'article 58 (50 % du c
 
 **Domaine et refus.** Clés inconnues refusées ; nombre d'exercices de règlements égal à 3 (7 avec `assurance_credit`) ; primes et bruts strictement positifs ; montants de la marge constituée positifs (le signe est appliqué par le moteur). Un net supérieur au brut est signalé. Une marge constituée inférieure au minimum est signalée.
 
-**Validation.** Aucun texte ne publie d'exemple chiffré : trois cas construits (non-vie, vie, mixte avec assurance crédit) sont recalculés indépendamment en R (`tests/references/r/marge_tunisie.R`), fiches en attente de validation par l'actuaire.
+**Validation.** Aucun texte ne publie d'exemple chiffré : trois cas construits (non-vie, vie, mixte avec assurance crédit) sont recalculés indépendamment en R (`tests/references/r/marge_tunisie.R`), fiches et interprétations validées par Yassine le 2026-11-05.
 
 ## 8 ter. Provisions techniques tunisiennes
 
@@ -222,7 +222,7 @@ Commande : `provisions-tn` (nouveau en 0.5.1). Règles non-vie de l'arrêté du 
 
 **Domaine et refus.** Clés inconnues refusées ; dates au format AAAA-MM-JJ, échéance après l'effet ; primes acquises strictement positives ; 5 exercices de primes pour l'équilibrage ; `--cadences` obligatoire pour `auto_materiels` et limitée à une sortie `chain-ladder` dont l'empreinte est intacte.
 
-**Validation.** Aucun texte ne publie d'exemple chiffré : un cas construit couvrant les sept règles est recalculé indépendamment en R (`tests/references/r/provisions_tunisie.R`), fiche en attente de validation.
+**Validation.** Aucun texte ne publie d'exemple chiffré : un cas construit couvrant les sept règles est recalculé indépendamment en R (`tests/references/r/provisions_tunisie.R`), fiche et interprétations validées par Yassine le 2026-11-05.
 
 ## 9. Traçabilité et reproduction d'un calcul
 

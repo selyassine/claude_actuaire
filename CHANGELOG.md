@@ -4,6 +4,7 @@
 
 - `docs/modele-CLAUDE-tunisie.md` (inclus dans l'archive du skill sous `references/`) : modèle de CLAUDE.md pour un inventaire d'une société d'assurance tunisienne. Il couvre le référentiel (Code, arrêté de 2001, règlement CGA 01/2021, décision CGA 01/2016), le dictionnaire des données relié aux tableaux B du rapport annuel, les commandes `marge-solvabilite-tn`, `provisions-tn` et `--modele td99|tv99`, les interprétations réglementaires à confirmer et la confidentialité des tableaux non publiables.
 - Aucun changement de calcul.
+- Fiches tunisiennes (0.5.0 et 0.5.1), transcription des tables TD99/TV99 et interprétations réglementaires validées par Yassine le 2026-11-05.
 
 ## 0.5.1 (2026-11-05) : règles de provisions tunisiennes
 
