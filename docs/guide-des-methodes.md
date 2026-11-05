@@ -2,7 +2,7 @@
 
 Ce guide décrit, pour chaque méthode, ce que le moteur calcule, sous quelles conventions, dans quel domaine il refuse de calculer et comment le résultat a été validé. Les valeurs citées en exemple sont les valeurs **publiées** ; le moteur les reproduit dans les tolérances indiquées (fiches de `tests/references/`, tests de `tests/test_publications.py`).
 
-Version du moteur décrite : 0.4.1.
+Version du moteur décrite : 0.4.2.
 
 ## Sommaire
 
@@ -18,6 +18,7 @@ Version du moteur décrite : 0.4.1.
 9. [Traçabilité et reproduction d'un calcul](#9-traçabilité-et-reproduction-dun-calcul)
 10. [Validation d'un modèle externe : comparer](#10-validation-dun-modèle-externe--comparer)
 11. [Contrôle qualité des données : controler](#11-contrôle-qualité-des-données--controler)
+12. [Registre des hypothèses d'un dossier : registre](#12-registre-des-hypothèses-dun-dossier--registre)
 
 ---
 
@@ -226,3 +227,23 @@ Commande : `controler` (nouveau en 0.4.1). Aucun calcul actuariel : le moteur si
 **Cohérence avec les méthodes.** Ce que `controler` classe bloquant, les méthodes le refusent : un test l'impose sur un triangle à trou.
 
 **En-têtes en double (correction 0.4.1).** pandas renommait en silence une colonne en double (« 24 » devenait « 24.1 »), si bien qu'une période dupliquée passait pour une période nouvelle. Les en-têtes sont désormais lus tels quels : une période en double est refusée par les méthodes de triangle, une colonne en double par les autres lectures.
+
+## 12. Registre des hypothèses d'un dossier : registre
+
+Commande : `registre` (nouveau en 0.4.2). Un dossier (inventaire, étude de provisions, tarification) réunit plusieurs calculs faits à des moments différents. Le registre relit toutes leurs sorties JSON archivées et contrôle que le dossier tient ensemble.
+
+**Entrées.** `--sorties` : fichiers JSON du moteur ou dossiers (tous leurs `.json`, sous-dossiers compris). Les fichiers qui ne sont pas des sorties du moteur sont ignorés et comptés. `--note` écrit la note d'hypothèses en Markdown ; `--titre` la nomme.
+
+**Ce qu'il rend.**
+
+- Les calculs : méthode, statut, version, date, commande de reproduction, empreinte des résultats vérifiée.
+- Les données : chaque fichier, son empreinte, les calculs qui l'utilisent et son état actuel (inchangé, modifié depuis, introuvable).
+- Les hypothèses en trois groupes : **choix de jugement** (options passées explicitement, à justifier), **valeurs par défaut à confirmer** (retenues par le moteur faute d'option) et **hypothèses de méthode**.
+
+**Incohérences détectées.**
+
+- Bloquant : résultats retouchés (empreinte qui ne correspond plus) ; même fichier de données avec des contenus différents d'un calcul à l'autre.
+- Alerte : fichier de données modifié depuis le calcul (relancer avec `rejouer`) ; même hypothèse avec deux valeurs sur les mêmes données (par exemple un facteur de queue de 1 dans un calcul et 1,05 dans un autre : sensibilité voulue ou incohérence) ; plusieurs versions du moteur ; calcul incomplet.
+- Info : données introuvables depuis le dossier courant, environnements différents, sortie sans empreinte (antérieure à 0.3.0).
+
+**Limites.** Le registre ne juge pas la pertinence d'un choix : il le rend visible. Les justifications métier (source d'un ratio a priori, raison d'une exclusion) restent à écrire et à signer par l'actuaire dans la note.
