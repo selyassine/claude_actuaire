@@ -66,7 +66,7 @@ Les scores A et B sont donc probablement surestimés par rapport à des données
 ## Conditions de passage et écarts au protocole
 
 - **Modèle** : le modèle par défaut de claude.ai au 2026-11-04, effort « Moyen », identique pour les 48 sessions (nom exact noté dans le fil du projet). Compte Pro de Yassine.
-- **Lancement** : sessions lancées par Claude depuis le navigateur de Yassine (extension Claude in Chrome), consigne et fichiers de données joints automatiquement. Aucune intervention pendant les réponses.
+- **Lancement** : sessions lancées automatiquement depuis le navigateur (extension Claude in Chrome), consigne et fichiers de données joints automatiquement. Aucune intervention pendant les réponses.
 - **Condition A** : conversations incognito, skills `calcul-actuariel` et `actuarial-review` désactivés, exécution de code désactivée. Aucun outil utilisé.
 - **Conditions B et C** : conversations normales. Le mode incognito bloque l'exécution de code : les 3 premières tâches B, d'abord jouées en incognito, ont été rejouées en conversation normale, et seules ces réponses sont notées. Les 32 conversations B et C sont dans l'historique claude.ai de Yassine.
 - **Condition C** : seul `calcul-actuariel` activé (`actuarial-review` désactivé). Le skill a été appelé dans les 16 sessions.

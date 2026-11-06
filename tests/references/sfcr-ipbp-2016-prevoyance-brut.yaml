@@ -9,7 +9,7 @@ source:
 donnees: donnees/scr_ipbp_2016_prevoyance_brut.json
 options: {}
 statut: valide
-saisie_par: Claude, extraction du texte du PDF fourni par Yassine
+saisie_par: extraction automatisée du texte du PDF fourni par Yassine
 valide_par: Yassine
 date_validation: '2026-11-03'
 methode_validation: Yassine a contrôlé les valeurs contre le SFCR publié et les matrices de corrélation contre le règlement délégué (UE) 2015/35 le 2026-11-03.

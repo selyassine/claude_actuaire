@@ -32,7 +32,7 @@ Chaque point a été vérifié dans le code avant correction. « Fait » renvoie
 | Publication de versions | Fait : un tag `vX.Y.Z` publie la version GitHub avec l'archive et les notes du CHANGELOG. |
 | Documentation par méthode | Fait : `docs/guide-des-methodes.md`, inclus dans le skill. |
 | Démonstration avant/après | Fait : README, cas réel du banc d'essai (Mack, covariance). |
-| Description et topics GitHub | À faire par Yassine (réglages du dépôt, non modifiables depuis cette session) : description et topics `actuarial-science`, `insurance`, `python`, `claude`, `claude-skills`, `reserving`, `solvency-ii`, `risk-management`. |
+| Description et topics GitHub | À faire dans les réglages du dépôt sur GitHub : description et topics `actuarial-science`, `insurance`, `python`, `claude`, `claude-skills`, `reserving`, `solvency-ii`, `risk-management`. |
 | SCR : dire clairement qu'aucun choc n'est appliqué | Fait : guide § 8 et README, section Limites. |
 | Sécurité des données | Fait : section Confidentialité du README. |
 

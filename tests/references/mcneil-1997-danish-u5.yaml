@@ -11,7 +11,7 @@ options:
   quantiles: 0.995,0.999,0.9999
   tranche: 50,200
 statut: valide
-saisie_par: Claude, extraction du texte du PDF fourni par Yassine
+saisie_par: extraction automatisée du texte du PDF fourni par Yassine
 valide_par: Yassine
 date_validation: '2026-11-03'
 methode_validation: Yassine a contrôlé les valeurs contre le tableau 1 de McNeil (1997) le 2026-11-03.

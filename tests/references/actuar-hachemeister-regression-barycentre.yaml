@@ -12,7 +12,7 @@ options:
   periode-future: 13
   barycentre: true
 statut: valide
-saisie_par: Claude, extraction du texte de la vignette (PDF)
+saisie_par: extraction automatisée du texte de la vignette (PDF)
 valide_par: Yassine
 date_validation: '2026-11-03'
 methode_validation: Yassine a contrôlé les valeurs contre la vignette actuar le 2026-11-03.

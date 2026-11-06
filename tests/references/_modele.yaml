@@ -3,7 +3,7 @@
 # Les fichiers dont le nom commence par "_" ne sont pas chargés par les tests.
 #
 # Règles :
-# - Toute valeur attendue est recopiée de la publication citée, jamais calculée par Claude.
+# - Toute valeur attendue est recopiée de la publication citée, jamais calculée au moment de la saisie.
 # - "statut" passe de "en_attente" à "valide" uniquement quand l'auteur a contrôlé
 #   chaque valeur contre la publication. Les tests "en_attente" sont signalés mais ne bloquent pas.
 # - "tolerance_absolue" reflète l'arrondi publié (0.5 si la source arrondit à l'unité).
@@ -17,7 +17,7 @@ source:
 donnees: donnees/taylor_ashe.csv  # chemin relatif à tests/
 options: {}                       # options passées à la commande
 statut: en_attente                # en_attente | valide
-saisie_par: "Claude, depuis la publication"
+saisie_par: "depuis la publication"
 valide_par: null                  # nom de l'actuaire qui a contrôlé
 date_validation: null
 valeurs:

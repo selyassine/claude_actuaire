@@ -22,7 +22,7 @@ N'ouvre pas `corrige.yaml` dans la conversation.
 3. Ne réponds pas aux questions de Claude et ne corrige rien. Si Claude pose une question au lieu de répondre, note « question » et passe à la suite.
 4. Copie la **réponse complète** de Claude dans `banc_essai/reponses_a_remplir.md`, sous le titre `## <condition> <tâche>` correspondant (par exemple `## C gpd-01`).
 
-Ensuite, envoie-moi le fichier rempli. Je lance :
+Ensuite, importer et noter le fichier rempli :
 
 ```bash
 python banc_essai/importer.py banc_essai/reponses_a_remplir.md

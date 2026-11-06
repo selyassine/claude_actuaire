@@ -54,7 +54,7 @@ Aucune.
 - **Modèle** : le même modèle Claude et le même effort (« Moyen ») pour les 48 sessions.
 - **Condition A** : conversations incognito, skill `calcul-actuariel` désactivé, aucune exécution de code. Aucun outil utilisé dans les 16 sessions.
 - **Condition B** : conversations normales, exécution de code active, `calcul-actuariel` désactivé. Claude a écrit du Python dans 14 sessions sur 16. Les deux tâches SCR ont été faites sans code.
-- **Condition C** : conversations normales, `calcul-actuariel` activé en version 0.2.0. Yassine a réinstallé le zip 0.2.0 pendant le passage B. Avant la première session C, j'ai vérifié que le skill installé était bien la nouvelle version (le `SKILL.md` installé décrit le champ `statut`, ajouté en 0.2.0). Le skill a été chargé dans 15 sessions sur 16. Sur v-bf-02 (Cape Cod), Claude a codé le calcul lui-même sans lire le skill, et a trouvé les bonnes valeurs.
+- **Condition C** : conversations normales, `calcul-actuariel` activé en version 0.2.0. Yassine a réinstallé le zip 0.2.0 pendant le passage B. Avant la première session C, on a vérifié que le skill installé était bien la nouvelle version (le `SKILL.md` installé décrit le champ `statut`, ajouté en 0.2.0). Le skill a été chargé dans 15 sessions sur 16. Sur v-bf-02 (Cape Cod), Claude a codé le calcul lui-même sans lire le skill, et a trouvé les bonnes valeurs.
 - **Contrôle automatique** : avant chaque envoi, le script de lancement vérifiait le mode incognito (A seulement) et l'état du skill (désactivé en A et B, activé en C). Aucune session n'a été refusée par ce contrôle.
 - **Recherche web** : activée dans les trois conditions (réglage du compte), utilisée dans aucune session.
 - **Réglages restaurés** : `calcul-actuariel` est de nouveau activé à la fin du passage, comme avant.
@@ -70,4 +70,4 @@ Aucune.
 ## Limites
 
 - Un seul passage par variante et par condition. Un écart de 4 valeurs sur 59 entre B et C peut varier d'un passage à l'autre.
-- Les variantes ont été construites par Claude à partir de méthodes publiées. Les corrigés viennent de logiciels indépendants et ont été validés par Yassine, mais les consignes restent proches du premier banc d'essai.
+- Les variantes ont été construites à partir de méthodes publiées. Les corrigés viennent de logiciels indépendants et ont été validés par Yassine, mais les consignes restent proches du premier banc d'essai.

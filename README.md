@@ -15,7 +15,7 @@ Les erreurs par année d'origine étaient justes dans les deux cas. L'erreur ne 
 
 ## Principe
 
-- Chaque méthode est validée sur au moins une publication (Mack 1993, England et Verrall 2002, McNeil 1997, AMLCR…). Les valeurs attendues sont recopiées des publications, jamais produites par Claude, puis contrôlées par l'auteur (Yassine Selmi). Aucune revue par un actuaire externe n'a encore été faite.
+- Chaque méthode est validée sur au moins une publication (Mack 1993, England et Verrall 2002, McNeil 1997, AMLCR…). Les valeurs attendues sont recopiées des publications, jamais produites par le modèle, puis contrôlées par l'auteur (Yassine Selmi). Aucune revue par un actuaire externe n'a encore été faite.
 - Chaque calcul rend une sortie traçable : entrées (avec empreinte SHA-256), options, hypothèses, résultats, avertissements, versions des bibliothèques, commande exacte et empreinte des résultats. `cli.py rejouer` refait un calcul archivé et prouve qu'il donne les mêmes chiffres sur les mêmes données.
 - Le moteur sert aussi de deuxième implémentation pour valider un modèle existant : `cli.py comparer` confronte les résultats d'un modèle externe (Excel, logiciel interne) à une sortie du moteur et classe chaque écart.
 - Le moteur refuse de calculer quand les données ou les hypothèses ne le permettent pas (triangle troué, facteur non estimable, table de mortalité incomplète, unité incohérente…) au lieu de rendre un chiffre faux.
