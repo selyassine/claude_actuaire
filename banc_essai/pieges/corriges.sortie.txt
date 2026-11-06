@@ -1,0 +1,11 @@
+== p-tn-marge-2ex ==
+base_primes = 7800
+== p-tn-marge-ttc ==
+base_primes = 5200
+base_sinistres = 3833.33333333333
+minimum_reglementaire = 5200
+== p-tn-marge-recours ==
+charge_periode = 107000
+base_primes = 3600
+base_sinistres = 4458.33333333333
+minimum_reglementaire = 4458.33333333333

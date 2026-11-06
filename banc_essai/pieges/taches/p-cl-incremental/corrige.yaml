@@ -1,0 +1,11 @@
+famille: pieges
+piege: triangle incrémental présenté comme « paiements de chaque période »
+source: triangle de v-cl-01 converti en incréments ; corrigé validé de v-cl-01 (R
+  ChainLadder)
+statut: en_attente
+valide_par: null
+date_validation: null
+valeurs:
+- nom: provision_totale
+  attendu: 71638.923481
+  tolerance_relative: 0.0005
