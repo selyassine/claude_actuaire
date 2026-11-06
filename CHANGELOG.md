@@ -1,5 +1,14 @@
 # Historique des versions
 
+## Non publié
+
+Tests :
+
+- Première reproduction d'une marge de solvabilité publiée par un assureur tunisien (STAR, rapport annuel 2025, données des rapports 2023 à 2025).
+  - Fiche `ra-star-2025-marge-constituee`, validée par Yassine : la marge constituée publiée (378 525 kDT) est retrouvée à l'arrondi près, en excluant le fonds social des réserves.
+  - Fiche `r-star-2025-marge-non-vie`, en attente de validation : la marge non-vie est recalculée en R (74 079,19 kDT, base sinistres).
+  - La marge réglementaire publiée (88 403 kDT) n'est pas testée, parce que les capitaux sous risque vie ne sont pas publiés.
+
 ## 0.5.3 (2026-11-05) : corrections de l'analyse du 2026-11-05 (soir)
 
 Distribution :

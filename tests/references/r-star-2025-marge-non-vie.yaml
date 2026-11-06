@@ -1,0 +1,29 @@
+id: r-star-2025-marge-non-vie
+methode: marge-solvabilite-tn
+source:
+  reference: Calcul indépendant du moteur avec R 4.5.3 (jsonlite), sur les données publiées par STAR (rapports annuels
+    2023, 2024, 2025, états de résultat technique non-vie et bilans individuels), art. 58 bis a du Code des assurances.
+  url: ''
+  emplacement: script tests/references/r/marge_tunisie.R, sortie tests/references/r/marge_tunisie.sortie.txt (bloc
+    « marge_star_2025 »)
+donnees: donnees/tunisie/marge_star_2025.json
+options: {}
+statut: en_attente
+saisie_par: Claude, recopié de la sortie du script R
+valide_par: null
+date_validation: null
+note: 'STAR ne publie pas la marge non-vie seule : la valeur attendue vient de R. Base sinistres retenue (74 079,19)
+  contre base primes 73 399,54.'
+valeurs:
+- chemin: resultats.non_vie.base_primes.montant
+  attendu: 73399.5354
+  tolerance_relative: 1.0e-12
+- chemin: resultats.non_vie.base_sinistres.charge_periode
+  attendu: 928986.944
+  tolerance_relative: 1.0e-12
+- chemin: resultats.non_vie.base_sinistres.montant
+  attendu: 74079.1875
+  tolerance_relative: 1.0e-12
+- chemin: resultats.minimum_reglementaire
+  attendu: 74079.1875
+  tolerance_relative: 1.0e-12

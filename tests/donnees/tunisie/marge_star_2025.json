@@ -1,0 +1,25 @@
+{
+  "unite": "milliers de dinars",
+  "commentaire": "STAR, états financiers individuels (rapports annuels STAR 2023, 2024, 2025). Non-vie : règlements bruts CHNV11 2023-2025, PSAP non-vie PA331 fin 2022 et fin 2025, charge nette = somme des CHNV1 nets 2023-2025, recours supposés déduits des montants payés. Marge constituée : CP1 ; réserves = CP2 − fonds social (21 273,398) + CP4 ; CP5 ; actifs incorporels AC1. Partie vie omise : capitaux sous risque non publiés.",
+  "non_vie": {
+    "primes_emises_acceptees": 416946.271,
+    "primes_retenues": 366997.677,
+    "sinistres": {
+      "reglements": [
+        271860.153,
+        288830.353,
+        296145.172
+      ],
+      "psap_debut": 634989.124,
+      "psap_fin": 707140.39,
+      "recours_encaisses": 0,
+      "charge_nette": 888950.25
+    }
+  },
+  "marge_constituee": {
+    "capital_libere": 50000.015,
+    "reserves": 153989.02,
+    "benefices_reportes": 185000.212,
+    "actifs_incorporels": 10464.36
+  }
+}

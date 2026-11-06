@@ -51,7 +51,7 @@ marge <- function(fichier) {
   out
 }
 
-for (f in c("marge_non_vie", "marge_vie", "marge_mixte_credit")) {
+for (f in c("marge_non_vie", "marge_vie", "marge_mixte_credit", "marge_star_2025")) {
   cat("==", f, "==\n")
   r <- marge(file.path("tests/donnees/tunisie", paste0(f, ".json")))
   for (k in names(r)) cat(sprintf("%s = %.15g\n", k, r[[k]]))
