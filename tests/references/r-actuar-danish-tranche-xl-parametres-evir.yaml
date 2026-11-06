@@ -14,7 +14,7 @@ options:
   limite-annuelle: 300
   parametres: 0.496806243649915,6.97455226472975
 statut: valide
-saisie_par: Claude, recopié de la sortie du script R
+saisie_par: recopié de la sortie du script R
 valide_par: Yassine
 date_validation: '2026-11-05'
 methode_validation: Yassine a contrôlé les valeurs contre la sortie du script R (tests/references/r/tranche_xl.sortie.txt) le 2026-11-05.

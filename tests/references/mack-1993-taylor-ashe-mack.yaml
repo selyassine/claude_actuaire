@@ -9,7 +9,7 @@ donnees: donnees/taylor_ashe_cumule.csv
 options:
   type: cumule
 statut: valide
-saisie_par: Claude, extraction du texte du PDF fourni par Yassine
+saisie_par: extraction automatisée du texte du PDF fourni par Yassine
 valide_par: Yassine
 date_validation: '2026-11-03'
 note: 'Erreurs publiées en % de la provision, arrondies au point de pourcentage ; sigma² publiés en milliers
@@ -19,7 +19,7 @@ note: 'Erreurs publiées en % de la provision, arrondies au point de pourcentage
   0,477), à confirmer.'
 methode_validation: >-
   Yassine a contrôlé les valeurs clés contre le PDF (2026-11-03). Contrôle
-  complémentaire par Claude : valeurs relevées dans le texte du PDF et reproduites par le moteur.
+  complémentaire : valeurs relevées dans le texte du PDF et reproduites par le moteur.
 valeurs:
 - chemin: resultats.par_origine.2.erreur_prediction_pct
   attendu: 0.8

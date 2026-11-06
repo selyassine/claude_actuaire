@@ -8,7 +8,7 @@ source:
 donnees: donnees/tunisie/marge_star_2025.json
 options: {}
 statut: valide
-saisie_par: Claude, depuis la publication
+saisie_par: depuis la publication
 valide_par: Yassine
 date_validation: '2026-11-06'
 methode_validation: Yassine a validé le 2026-11-06 la reproduction de la marge publiée et l'exclusion du fonds social
