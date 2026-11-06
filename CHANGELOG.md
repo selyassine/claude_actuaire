@@ -1,6 +1,14 @@
 # Historique des versions
 
-## Non publié
+## 0.5.4 (2026-11-06) : SKILL.md découpé par famille
+
+Distribution :
+
+- SKILL.md passe de 18,2 Ko à 7,9 Ko. Il garde les règles, les exemples de commandes, le format de sortie, un tableau qui associe chaque famille de commandes à son fichier de référence, et la liste des points à ne jamais deviner.
+- Le détail par commande passe dans sept fichiers de `references/` : `provisionnement.md`, `vie.md`, `extremes-reassurance.md`, `credibilite.md`, `scr.md`, `tunisie.md`, `dossiers-validation.md`. Le texte est repris sans changement de fond.
+- Nouveaux tests :
+  - SKILL.md doit rester sous 10 Ko ;
+  - chaque commande du moteur doit avoir une famille dans SKILL.md et être décrite dans le fichier de cette famille.
 
 Tests :
 
