@@ -40,6 +40,12 @@ Les erreurs par année d'origine étaient justes dans les deux cas. L'erreur ne 
 | Registre des hypothèses d'un dossier (`registre`) | disponible : choix de jugement, valeurs par défaut, incohérences entre calculs, note Markdown |
 | Comparaison avec un modèle externe (`comparer`) | disponible : rapport d'écarts ligne à ligne, arrondis publiés, facteurs d'unité |
 
+## Comment ce projet a été fait
+
+J'ai défini le besoin, l'architecture et les règles du moteur (refus explicites, traçabilité, banc d'essai pré-enregistré), choisi les publications de référence, validé les valeurs attendues et décidé de chaque évolution. Le code et une partie de la documentation ont été développés avec Claude Code, sous ma direction. — Yassine Selmi
+
+*I defined the requirements, architecture and engine rules (explicit refusals, traceability, pre-registered benchmark), chose the reference publications, validated the expected values and decided every change. The code and part of the documentation were developed with Claude Code under my direction.*
+
 ## Installation
 
 **Sur claude.ai** : télécharger `calcul-actuariel.zip` (onglet Actions du dépôt, ou `python outils/construire_zip.py`), puis le téléverser dans les paramètres de Claude, rubrique des skills. L'exécution de code doit être activée.
