@@ -38,3 +38,5 @@ Chaque choix de jugement apparaît dans `hypotheses` : explique-le à l'utilisat
 | `bootstrap` | Bootstrap ODP : moyenne, erreur de prédiction, quantiles (dont 99,5 %) | testé : England et Verrall (2002) tableaux 33-34, à 5 % près |
 
 Ces trois commandes exigent un triangle carré complet et utilisent les facteurs Chain Ladder standards (sans queue ni exclusion). Options : `mack --sigma-dernier mack|precedent`, `odp --dispersion pearson|deviance`, `bootstrap --simulations N --graine G`. Donne toujours la graine utilisée : elle rend le résultat reproductible.
+
+Pour `bootstrap`, cite `part_cellules_moyenne_negative` quand elle n'est pas nulle : ces cellules ne reçoivent pas d'aléa de processus, et au-delà de 1 % l'erreur de prédiction et les quantiles sont sous-estimés. Pour `odp`, un refus pour mauvais conditionnement ne se contourne pas : présente-le à l'utilisateur.

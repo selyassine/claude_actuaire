@@ -6,7 +6,7 @@ import argparse
 
 from .cli_provisionnement import _triangle_cumule, args_triangle
 from .sortie import Hypothese, Resultat
-from .stochastique import bootstrap_odp, mack, odp_analytique
+from .stochastique import CONDITIONNEMENT_ALERTE, bootstrap_odp, mack, odp_analytique
 
 
 def args_mack(sp: argparse.ArgumentParser) -> None:
@@ -65,7 +65,14 @@ def cmd_odp(args) -> Resultat:
         + " / degrés de liberté (observations - 2n + 1).",
         "option utilisateur" if explicite else "valeur par défaut"))
     res.resultats = odp_analytique(tri, args.dispersion)
+    if res.resultats["conditionnement_information"] > CONDITIONNEMENT_ALERTE:
+        res.avertissements.append(
+            f"Matrice d'information mal conditionnée ({res.resultats['conditionnement_information']:.3g}) : les "
+            "erreurs de prédiction perdent de la précision numérique ; vérifier les lignes et colonnes peu remplies.")
     return res
+
+
+SEUIL_PART_NEGATIVE = 0.01
 
 
 def cmd_bootstrap(args) -> Resultat:
@@ -78,9 +85,14 @@ def cmd_bootstrap(args) -> Resultat:
         "pseudo-données, puis loi de processus Gamma de moyenne m et de variance phi × m.", "méthode"))
     r = bootstrap_odp(tri, args.simulations, args.graine)
     if r["cellules_moyenne_negative"]:
-        res.avertissements.append(
-            f"{r['cellules_moyenne_negative']} cellules futures simulées avaient une moyenne négative ou nulle : "
-            "aucun aléa de processus n'y a été ajouté.")
+        part = r["part_cellules_moyenne_negative"]
+        msg = (f"{r['cellules_moyenne_negative']} cellules futures simulées ({part:.2%} du total) avaient une moyenne "
+               "négative ou nulle : aucun aléa de processus n'y a été ajouté (la valeur simulée est la moyenne).")
+        if part > SEUIL_PART_NEGATIVE:
+            msg += (f" Au-delà de {SEUIL_PART_NEGATIVE:.0%}, l'erreur de prédiction et les quantiles sont "
+                    "sous-estimés : signaler cette limite, ou revoir le triangle (incréments négatifs, années "
+                    "atypiques) avec l'utilisateur.")
+        res.avertissements.append(msg)
     if args.simulations < 5000:
         res.avertissements.append("Moins de 5 000 simulations : les quantiles élevés sont instables.")
     res.resultats = r

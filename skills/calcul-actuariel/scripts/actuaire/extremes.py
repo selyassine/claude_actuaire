@@ -125,21 +125,26 @@ def p_valeur_ajustement(excedents: np.ndarray, xi: float, sigma: float, simulati
             "graine": graine}
 
 
-def _ll_profil(xi: float, y: np.ndarray) -> float:
-    """Log-vraisemblance maximisée en sigma pour xi fixé."""
+def profil_xi(xi: float, y: np.ndarray) -> tuple[float, float]:
+    """Log-vraisemblance maximisée en sigma pour xi fixé, et le sigma correspondant."""
     ymax, m = float(y.max()), float(y.mean())
     bas = math.log(max(-xi * ymax * (1 + 1e-9), m * 1e-8)) if xi < 0 else math.log(m * 1e-8)
     haut = math.log(100.0 * (ymax + m))
     r = optimize.minimize_scalar(lambda ls: _log_vraisemblance_negative(np.array([xi, ls]), y),
                                  bounds=(bas, haut), method="bounded", options={"xatol": 1e-10})
-    return -float(r.fun)
+    return -float(r.fun), math.exp(float(r.x))
+
+
+def _ll_profil(xi: float, y: np.ndarray) -> float:
+    return profil_xi(xi, y)[0]
 
 
 def intervalle_profil_xi(excedents: np.ndarray, xi: float, sigma: float, niveau: float = 0.95) -> list:
     """Intervalle de confiance de xi par vraisemblance profilée (Coles 2001, section 4.3.4).
 
     Plus fiable que l'intervalle de Wald pour les petits échantillons et les queues lourdes, car
-    il ne suppose pas la normalité de l'estimateur. Une borne non atteinte dans [-1, xi + 5] vaut None."""
+    il ne suppose pas la normalité de l'estimateur. Une borne non atteinte dans [-1, xi + 5] vaut None ;
+    les deux bornes valent None si xi <= -0,5 (estimateur non régulier) ou si le profil ne retrouve pas le maximum."""
     y = np.asarray(excedents, dtype=float)
     ll_max = -_log_vraisemblance_negative(np.array([xi, math.log(sigma)]), y)
     seuil = stats.chi2.ppf(niveau, 1) / 2.0
@@ -147,9 +152,16 @@ def intervalle_profil_xi(excedents: np.ndarray, xi: float, sigma: float, niveau:
     def g(t: float) -> float:
         return ll_max - _ll_profil(t, y) - seuil
 
+    if xi <= -0.5:
+        # Smith (1985) : pour xi <= -0,5 l'estimateur du maximum de vraisemblance n'est pas régulier,
+        # le profil n'a pas de sens asymptotique.
+        return [None, None]
     bornes = []
     for sens, limite in ((-1, -1.0), (1, xi + 5.0)):
         a, pas, borne = xi, 0.02, None
+        if g(a) >= 0:  # le profil ne retrouve pas le maximum : pas de borne fiable
+            bornes.append(None)
+            continue
         while (sens < 0 and a > limite) or (sens > 0 and a < limite):
             b = max(a - pas, limite) if sens < 0 else min(a + pas, limite)
             if g(b) > 0:
