@@ -1,0 +1,22 @@
+id: ra-star-2025-marge-constituee
+methode: marge-solvabilite-tn
+source:
+  reference: STAR (Société Tunisienne d'Assurances et de Réassurances), Rapport annuel 2025, états financiers individuels.
+  url: ''
+  emplacement: p. 25 « Marge de solvabilité » (marge réelle avant résultat 378 525 kDT) ; éléments au bilan p. 26-28
+    (CP1, CP2, CP4, CP5, AC1) et tableau de variation des capitaux propres p. 57 (fonds social).
+donnees: donnees/tunisie/marge_star_2025.json
+options: {}
+statut: valide
+saisie_par: Claude, depuis la publication
+valide_par: Yassine
+date_validation: '2026-11-06'
+methode_validation: Yassine a validé le 2026-11-06 la reproduction de la marge publiée et l'exclusion du fonds social
+  des éléments de l'art. 58.
+note: 'Première reproduction d''une marge publiée par un assureur tunisien. La marge constituée publiée est retrouvée
+  à l''arrondi près (378 524,887) en excluant le fonds social (21 273,398). La même règle retrouve 2024 (370 710).
+  La marge réglementaire publiée (88 403) n''est pas testée : les capitaux sous risque vie ne sont pas publiés.'
+valeurs:
+- chemin: resultats.marge_constituee.total
+  attendu: 378525
+  tolerance_absolue: 0.5

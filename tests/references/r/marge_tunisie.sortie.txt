@@ -24,6 +24,14 @@ vie_minimum = 3490
 minimum_reglementaire = 5990
 marge_constituee = 9000
 taux_couverture = 1.5025041736227
+== marge_star_2025 ==
+non_vie_base_primes = 73399.5354
+non_vie_charge_periode = 928986.944
+non_vie_base_sinistres = 74079.1875
+non_vie_minimum = 74079.1875
+minimum_reglementaire = 74079.1875
+marge_constituee = 378524.887
+taux_couverture = 5.10973324322705
 == TD99 age 30 taux 0.03 ==
 annuite_due_vie_entiere = 24.36399519095
 == TD99 age 60 taux 0.03 ==
