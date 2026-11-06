@@ -1,5 +1,26 @@
 # Historique des versions
 
+## 0.5.5 (2026-11-06) : points P2 de l'analyse du 2026-11-05 (soir)
+
+- **`bootstrap`** :
+  - nouvelle sortie `part_cellules_moyenne_negative`, la part des cellules futures simulées dont la moyenne est négative ou nulle ; ces cellules ne reçoivent pas d'aléa de processus ;
+  - l'avertissement cite cette part. Au-delà de 1 %, il précise que l'erreur de prédiction et les quantiles sont sous-estimés ;
+  - sur RAA, la part est d'environ 13 %. Les valeurs validées ne changent pas.
+- **`odp`** :
+  - nouvelle sortie `conditionnement_information`, le conditionnement de la matrice d'information ;
+  - avertissement au-delà de 10⁸, refus au-delà de 10¹² ;
+  - la matrice est résolue par `solve` au lieu de `inv`.
+- **`comparer`** : la tolérance relative par défaut passe de 0,1 % à 10⁻⁶. Un modèle qui applique la même méthode doit reproduire le moteur à la précision numérique près ; une tolérance plus large se justifie ligne par ligne.
+- **`tranche-xl`** :
+  - nouvelle sortie `sensibilite_xi`, la prime pure annuelle aux deux bornes de l'intervalle à 95 % de ξ par vraisemblance profilée (σ réestimé, fréquence inchangée) ;
+  - l'hypothèse est rendue, et un avertissement est émis si une borne s'écarte de plus de 50 % de la prime centrale.
+- **`gpd` et `tranche-xl`** : l'intervalle profilé de ξ n'est plus calculé quand ξ ≤ −0,5 (estimateur non régulier) ou quand le profil ne retrouve pas le maximum.
+  - Avant, ces cas faisaient échouer la commande. Par exemple, `gpd` au seuil 60 sur les données danoises, avec 4 dépassements, sortait en erreur.
+- **Panjer** : la récurrence travaille sur un tableau préalloué, au lieu de convertir une liste à chaque pas. Les résultats sont identiques, et les fiches passent à 10⁻¹².
+- **Tests et documentation** :
+  - 10 nouveaux tests (`tests/test_corrections_p2.py`) ;
+  - le guide des méthodes et les références par famille sont mis à jour.
+
 ## 0.5.4 (2026-11-06) : SKILL.md découpé par famille
 
 Distribution :

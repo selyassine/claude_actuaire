@@ -21,7 +21,7 @@ import math
 import numpy as np
 from scipy import integrate
 
-from .extremes import XI_NUL, ajuster_gpd
+from .extremes import XI_NUL, ajuster_gpd, intervalle_profil_xi, profil_xi
 
 POINTS_MAX = 400_000
 RESTE_TOLERE = 1e-12
@@ -74,22 +74,24 @@ def panjer_poisson(lam: float, f: np.ndarray) -> np.ndarray:
         raise ValueError(f"fréquence de Poisson invalide : {lam}")
     k = len(f) - 1
     jf = np.arange(k + 1) * f
-    g = [math.exp(-lam * (1.0 - f[0]))]
+    g = np.empty(1024)
+    g[0] = math.exp(-lam * (1.0 - f[0]))
     if g[0] <= 0:
         raise ValueError("fréquence trop élevée pour la récurrence de Panjer (probabilité de S = 0 nulle en "
                          "précision machine) : augmenter le seuil ou la priorité")
-    cumul = g[0]
+    cumul = float(g[0])
     s = 0
     while 1.0 - cumul > RESTE_TOLERE:
         s += 1
         if s > POINTS_MAX:
             raise ValueError("loi de la charge annuelle non convergée : augmenter le pas de discrétisation")
+        if s >= g.size:
+            g = np.concatenate([g, np.empty(g.size)])
         j = min(s, k)
-        precedents = np.array(g[s - j:s][::-1])  # g_{s-1}, ..., g_{s-j}
-        gs = lam / s * float(np.dot(jf[1:j + 1], precedents))
-        g.append(gs)
+        gs = lam / s * float(np.dot(jf[1:j + 1], g[s - j:s][::-1]))  # g_{s-1}, ..., g_{s-j}
+        g[s] = gs
         cumul += gs
-    return np.array(g)
+    return g[:s + 1].copy()
 
 
 def _var(valeurs: np.ndarray, cdf: np.ndarray, p: float) -> float:
@@ -105,6 +107,28 @@ def _cte(valeurs: np.ndarray, probas: np.ndarray, seuil: float) -> float | None:
     if masse <= 0:
         return None
     return float(np.dot(valeurs[au_dela], probas[au_dela]) / masse)
+
+
+def _sensibilite_xi(excedents: np.ndarray, xi: float, sigma: float, lam: float, seuil: float,
+                    priorite: float, limite: float) -> dict:
+    """Prime pure annuelle aux bornes de l'intervalle à 95 % de xi par vraisemblance profilée.
+
+    À chaque borne, sigma est réestimé par maximum de vraisemblance à xi fixé (même profil que l'intervalle) ;
+    la fréquence est inchangée. Donne l'ordre de grandeur de l'incertitude d'estimation sur la prime, pas un
+    intervalle de confiance de la prime."""
+    bornes = intervalle_profil_xi(excedents, xi, sigma)
+    primes = []
+    sigmas = []
+    for b in bornes:
+        if b is None:
+            primes.append(None)
+            sigmas.append(None)
+            continue
+        s_b = profil_xi(b, excedents)[1]
+        sigmas.append(s_b)
+        primes.append(lam * _moments_charge(seuil, b, s_b, priorite, limite)[0])
+    return {"intervalle_95_xi_profil": bornes, "sigma_aux_bornes": sigmas, "prime_pure_annuelle_aux_bornes": primes,
+            "methode": "xi aux bornes de l'intervalle profilé à 95 %, sigma réestimé à xi fixé, fréquence inchangée"}
 
 
 def tarif_tranche_xl(pertes: np.ndarray, seuil: float, annees: float, priorite: float, limite: float,
@@ -163,6 +187,10 @@ def tarif_tranche_xl(pertes: np.ndarray, seuil: float, annees: float, priorite: 
     var = {f"{p:g}": _var(valeurs, cdf, p) for p in niveaux}
     cte = {f"{p:g}": _cte(valeurs, g, var[f"{p:g}"]) for p in niveaux}
 
+    sensibilite = None
+    if parametres is None:
+        sensibilite = _sensibilite_xi(excedents, xi, sigma, lam, seuil, priorite, limite)
+
     observees = np.minimum(np.maximum(x - priorite, 0.0), portee)
     out = {
         "seuil": seuil,
@@ -190,6 +218,7 @@ def tarif_tranche_xl(pertes: np.ndarray, seuil: float, annees: float, priorite: 
             "rapport_modele_sur_burning_cost": (esperance / float(observees.sum() / annees)
                                                 if observees.sum() > 0 else None),
         },
+        "sensibilite_xi": sensibilite,
         "discretisation": {
             "methode": "arrondis (rounding), récurrence de Panjer",
             "pas": pas,

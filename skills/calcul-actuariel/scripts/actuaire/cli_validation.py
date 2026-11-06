@@ -87,8 +87,10 @@ def args_comparer(sp: argparse.ArgumentParser) -> None:
     sp.add_argument("--externe", help="CSV ou Excel du modèle externe : colonnes 'chemin' et 'valeur' (et, en option, "
                                       "'libelle' et 'tolerance_relative').")
     sp.add_argument("--feuille", default=None, help="Feuille Excel du fichier externe (nom ou numéro).")
-    sp.add_argument("--tolerance-relative", type=float, default=1e-3,
-                    help="Écart relatif accepté (défaut 0,001, soit 0,1 %%).")
+    sp.add_argument("--tolerance-relative", type=float, default=1e-6,
+                    help="Écart relatif accepté (défaut 1e-6, soit la précision numérique : un modèle qui applique "
+                         "la même méthode doit reproduire le moteur à ce niveau). Élargir seulement avec une "
+                         "justification, de préférence ligne par ligne (colonne 'tolerance_relative').")
     sp.add_argument("--tolerance-absolue", type=float, default=0.0,
                     help="Écart absolu toujours accepté, pour les valeurs proches de zéro (défaut 0).")
     sp.add_argument("--lister", action="store_true",

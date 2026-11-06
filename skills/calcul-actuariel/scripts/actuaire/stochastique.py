@@ -11,10 +11,17 @@ Notations : triangle cumulé C (n origines × n développements, carré, NaN dan
 
 from __future__ import annotations
 
+import math
+
 import numpy as np
 
 from .provisionnement import estimer_developpement, facteurs_individuels
 from .triangle import Triangle
+
+# Au-delà, l'inversion de la matrice d'information perd plus de 4 chiffres significatifs sur 16 : refus.
+CONDITIONNEMENT_MAX = 1e12
+# Au-delà, avertissement : précision réduite mais résultat utilisable.
+CONDITIONNEMENT_ALERTE = 1e8
 
 
 def _ratio(erreur: float, provision: float) -> float | None:
@@ -205,7 +212,13 @@ def odp_analytique(tri: Triangle, dispersion: str = "pearson") -> dict:
     cellules_f = [(i, j) for i in range(n) for j in range(n) if futur[i, j]]
     X = np.array([ligne(i, j) for i, j in cellules_p])
     W = np.array([m[i, j] for i, j in cellules_p])
-    cov_beta = phi * np.linalg.inv(X.T @ (W[:, None] * X))
+    information = X.T @ (W[:, None] * X)
+    conditionnement = float(np.linalg.cond(information))
+    if not math.isfinite(conditionnement) or conditionnement > CONDITIONNEMENT_MAX:
+        raise ValueError(f"ODP : matrice d'information mal conditionnée (conditionnement {conditionnement:.3g}) ; "
+                         "les erreurs de prédiction ne sont pas fiables (colonne ou ligne presque vide, "
+                         "montants d'échelles très différentes)")
+    cov_beta = phi * np.linalg.solve(information, np.eye(nb_param))
     Xf = np.array([ligne(i, j) for i, j in cellules_f])
     mf = np.array([m[i, j] for i, j in cellules_f])
     V = Xf @ cov_beta @ Xf.T
@@ -228,6 +241,7 @@ def odp_analytique(tri: Triangle, dispersion: str = "pearson") -> dict:
         "phi": phi,
         "dispersion": dispersion,
         "degres_de_liberte": int(ddl),
+        "conditionnement_information": conditionnement,
         "par_origine": par_origine,
         "total": {"provision": float(r_tot), "ultime": float(diag.sum() + r_tot),
                   "erreur_prediction": se_tot, "erreur_prediction_pct": _ratio(se_tot, float(r_tot))},
@@ -313,5 +327,6 @@ def bootstrap_odp(tri: Triangle, simulations: int = 10000, graine: int | None = 
             "quantiles": {f"{q:g}": float(np.quantile(total, q)) for q in quantiles},
         },
         "cellules_moyenne_negative": negatifs,
+        "part_cellules_moyenne_negative": negatifs / (simulations * int(futur.sum())),
     }
     return out

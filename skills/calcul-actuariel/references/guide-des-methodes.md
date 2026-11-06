@@ -80,9 +80,9 @@ Commandes : `odp`, `bootstrap`.
 
 **Formules (England et Verrall 2002).** Incréments \(X_{i,k}\) ~ Poisson sur-dispersé, \(E = m_{i,k}\), \(V = \phi m_{i,k}\), ajustés par les facteurs Chain Ladder. Dispersion \(\phi\) de Pearson ou de déviance divisée par \(n - p\) degrés de liberté. Erreur de prédiction analytique : \(\mathrm{mse} = \phi R + \mathrm{Var}(\hat R)\), la variance d'estimation étant obtenue par la méthode delta sur la matrice de covariance des paramètres du modèle log-linéaire (England et Verrall 2002, § 7.2). Bootstrap : rééchantillonnage des résidus de Pearson ajustés (facteur \(\sqrt{n/(n-p)}\)), réestimation, puis bruit de processus gamma de variance \(\phi m\).
 
-**Domaine et refus.** Triangle carré au moins 3 × 3, facteurs définis, valeurs ajustées passées strictement positives, \(\phi > 0\), au moins 2 simulations, quantiles dans ]0, 1[. Sans `--dispersion`, le moteur prend Pearson et le signale.
+**Domaine et refus.** Triangle carré au moins 3 × 3, facteurs définis, valeurs ajustées passées strictement positives, \(\phi > 0\), au moins 2 simulations, quantiles dans ]0, 1[. Sans `--dispersion`, le moteur prend Pearson et le signale. ODP analytique : le conditionnement de la matrice d'information \(X^\top W X\) est rendu (`conditionnement_information`). Au-delà de 10⁸, un avertissement est émis ; au-delà de 10¹², le moteur refuse, car l'inversion perdrait plus de 4 chiffres significatifs. La matrice est résolue par `solve`, sans inversion explicite.
 
-**Limites.** Le bootstrap dépend de la graine (défaut 2026, toujours rendue) ; à 10 000 simulations, l'écart Monte-Carlo sur l'erreur de prédiction atteint 2 % : la tolérance de validation est 5 %.
+**Limites.** Une cellule future dont la moyenne simulée est négative ou nulle ne reçoit pas d'aléa de processus : la valeur simulée est sa moyenne. Le moteur rend le nombre et la part de ces cellules (`part_cellules_moyenne_negative`) et avertit ; au-delà de 1 %, il précise que l'erreur de prédiction et les quantiles sont sous-estimés. Sur RAA, cette part est d'environ 13 %. Le bootstrap dépend de la graine (défaut 2026, toujours rendue) ; à 10 000 simulations, l'écart Monte-Carlo sur l'erreur de prédiction atteint 2 % : la tolérance de validation est 5 %.
 
 **Validation.** E&V (2002) tableau 3 (ODP analytique, déviance, \(\phi\) = 1 049,8 ; erreur totale publiée 18 193) et tableaux 33-34 (bootstrap ; quantile à 95 % publié 87 668, à 5 %).
 
@@ -139,6 +139,8 @@ Commande : `tranche-xl` (nouveau en 0.4.0).
 **Domaine et refus.** Années d'observation > 0 ; priorité ≥ seuil ; limite > priorité ; pas qui divise la portée ; niveaux dans ]0, 1[ ; σ > 0 ; franchise ≥ 0 ; limite annuelle > 0 ; au moins un dépassement. Fréquence trop élevée pour Panjer (P(S = 0) nulle en précision machine) : refus, avec la piste d'un seuil ou d'une priorité plus haute.
 
 **Alertes.** Moins de 50 dépassements ; moins de 5 sinistres historiques dans la tranche (burning cost non fiable) ; prime du modèle hors de [0,5 ; 2] fois le burning cost ; discrétisation qui écarte la prime de plus de 0,1 % ; plus d'un sinistre sur deux épuisant la tranche.
+
+**Sensibilité à ξ (0.5.5).** Quand les paramètres sont estimés, `sensibilite_xi` donne la prime pure annuelle recalculée aux deux bornes de l'intervalle à 95 % de ξ par vraisemblance profilée, σ étant réestimé à ξ fixé et la fréquence inchangée. C'est un ordre de grandeur de l'incertitude d'estimation, pas un intervalle de confiance de la prime. Un avertissement est émis si une borne s'écarte de plus de 50 % de la prime centrale. L'intervalle n'est pas calculé si ξ ≤ −0,5 (estimateur non régulier, Smith 1985).
 
 **Limites.** Pas d'indexation (les montants doivent être mis en as-if avant l'appel), fréquence stable sans tendance ni surdispersion, pas de reconstitutions payantes, pas de clause d'indexation du traité.
 
@@ -260,7 +262,7 @@ C'est la validation par réplication indépendante : le modèle de l'utilisateur
 
 **Classement de chaque ligne.**
 
-- `conforme` : \(|e - m| \le \max(\text{tolérance absolue}, \text{tolérance relative} \times |m|)\), défauts 0 et 0,1 %.
+- `conforme` : \(|e - m| \le \max(\text{tolérance absolue}, \text{tolérance relative} \times |m|)\), défauts 0 et 10⁻⁶ (précision numérique, depuis 0.5.5 ; 0,1 % auparavant). Un modèle qui applique la même méthode doit reproduire le moteur à ce niveau. Une tolérance plus large se justifie ligne par ligne, avec la colonne `tolerance_relative`.
 - `arrondi` : hors tolérance, mais l'écart est au plus la demi-unité de la dernière décimale écrite dans le fichier externe (« 18 402,4 » couvre ± 0,05). Seulement pour une valeur écrite en texte (CSV) ; une cellule Excel numérique n'a pas de décimales publiées.
 - `ecart`, `chemin_absent`, `valeur_externe_invalide`, `non_numerique_moteur`.
 

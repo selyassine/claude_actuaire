@@ -174,6 +174,25 @@ def cmd_tranche_xl(args) -> Resultat:
         res.avertissements.append(f"La discrétisation écarte la prime de {ecart:.2%} : réduire le pas.")
     if r["probabilite_sinistre_epuise_tranche"] > 0.5:
         res.avertissements.append("Plus d'un sinistre sur deux au-delà du seuil épuise la tranche : vérifier la limite.")
+    sens = r["sensibilite_xi"]
+    if sens is not None:
+        res.hypotheses.append(Hypothese(
+            "sensibilite_xi", "bornes de l'intervalle profilé à 95 %",
+            "La prime est recalculée aux deux bornes de l'intervalle de xi (sigma réestimé, fréquence inchangée) : "
+            "ordre de grandeur de l'incertitude d'estimation, pas un intervalle de confiance de la prime.", "méthode"))
+        primes = [p for p in sens["prime_pure_annuelle_aux_bornes"] if p is not None]
+        if r["prime_pure_annuelle"] > 0 and primes:
+            ecart = max(abs(p / r["prime_pure_annuelle"] - 1) for p in primes)
+            if ecart > 0.5:
+                res.avertissements.append(
+                    f"Prime très sensible à xi : aux bornes de l'intervalle à 95 % elle va de {min(primes):.6g} à "
+                    f"{max(primes):.6g} (estimation centrale {r['prime_pure_annuelle']:.6g}). Le citer avec la prime.")
+        if sens["intervalle_95_xi_profil"] == [None, None]:
+            res.avertissements.append("Pas d'intervalle profilé pour xi (xi <= -0,5 ou trop peu de dépassements) : "
+                                      "l'incertitude d'estimation sur la prime n'est pas quantifiée.")
+        elif None in sens["prime_pure_annuelle_aux_bornes"]:
+            res.avertissements.append("Une borne de l'intervalle profilé de xi n'est pas atteinte : l'incertitude "
+                                      "sur la prime n'est pas bornée de ce côté.")
     res.resultats = r
     return res
 
