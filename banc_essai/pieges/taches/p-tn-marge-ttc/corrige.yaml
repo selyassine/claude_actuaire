@@ -1,0 +1,10 @@
+famille: pieges
+piege: primes données toutes taxes comprises
+source: 'corriges.R (bloc p-tn-marge-ttc) : base primes sur 52 000 HT'
+statut: en_attente
+valide_par: null
+date_validation: null
+valeurs:
+- nom: minimum_reglementaire
+  attendu: 5200
+  tolerance_absolue: 0.5

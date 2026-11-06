@@ -1,0 +1,11 @@
+famille: pieges
+piege: recours encaissés à déduire de la charge (le plancher de 50 % rend l'oubli
+  visible)
+source: corriges.R (bloc p-tn-marge-recours)
+statut: en_attente
+valide_par: null
+date_validation: null
+valeurs:
+- nom: minimum_reglementaire
+  attendu: 4458.333333333333
+  tolerance_absolue: 0.5

@@ -1,0 +1,12 @@
+famille: pieges
+piege: 'rente viagère d''un homme : la table réglementaire des contrats en cas de
+  vie est TV99, pas TD99'
+source: 'fiche validée r-tunisie-tv99-annuite-60 : ä_60 = 14,7551743042141 (TV99,
+  3 %), × 1 000'
+statut: en_attente
+valide_par: null
+date_validation: null
+valeurs:
+- nom: prime_unique
+  attendu: 14755.1743042141
+  tolerance_absolue: 0.5

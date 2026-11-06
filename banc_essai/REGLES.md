@@ -78,3 +78,15 @@ Décidé par Yassine le 2026-11-05, **avant toute session** de ce passage.
 7. **Rapport séparé** : `banc_essai/variantes/RAPPORT.md`, sans mélanger avec le premier passage.
 
 Les seuils de réussite restent inchangés : 95 % en C, au moins 90 % par famille, écart C − B d'au moins 30 points.
+
+## Amendement du 2026-11-06 : famille « pièges »
+
+Proposé le 2026-11-06 à la suite de l'analyse de Yassine (point 8), **avant toute session** sur ces tâches.
+
+1. **Tâches** : les 9 tâches de `banc_essai/pieges/taches/`, dont 5 tunisiennes. Elles ne seront jouées qu'une fois leurs corrigés validés par Yassine.
+2. **Valeurs attendues non numériques** :
+   - une valeur `null` signifie que la donnée manque et que la bonne réponse est de ne pas chiffrer. La clé doit être présente et valoir `null`.
+   - une valeur booléenne doit être reproduite exactement.
+   - une clé absente reste fausse.
+3. **Conditions, passages et notation** : identiques à l'amendement du 2026-11-05. Les réponses vont dans `banc_essai/pieges/reponses/`, et le rapport est séparé dans `banc_essai/pieges/RAPPORT.md`. Le skill joué est le dernier publié au moment du passage, et sa version est notée.
+4. **Seuil propre à cette famille** : en condition C, au moins 8 tâches sur 9 justes. On mesure aussi, à part, l'écart C − B.

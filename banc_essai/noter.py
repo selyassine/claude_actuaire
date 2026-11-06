@@ -10,6 +10,8 @@ Format de corrige.yaml :
       - nom: ibnr_total
         attendu: 123456
         tolerance_absolue: 0.5      # ou tolerance_relative: 0.02
+      - nom: minimum_reglementaire
+        attendu: null               # piège : la clé doit être présente et valoir null
 
 Usage : python banc_essai/noter.py [--reponses banc_essai/reponses]
 """
@@ -41,12 +43,24 @@ def extraire_resultats(texte: str) -> dict:
     return d if isinstance(d, dict) else {}
 
 
+ABSENT = object()
+
+
 def juste(obtenu, attendu: dict) -> bool:
+    """Valeur numérique dans la tolérance ; `attendu: null` exige une clé présente valant null (donnée manquante :
+    Claude doit refuser de chiffrer) ; un booléen attendu exige le même booléen."""
+    cible = attendu["attendu"]
+    if cible is None:
+        return obtenu is None
+    if isinstance(cible, bool):
+        return obtenu is cible
+    if obtenu is ABSENT or isinstance(obtenu, bool):
+        return False
     try:
         x = float(obtenu)
     except (TypeError, ValueError):
         return False
-    cible = float(attendu["attendu"])
+    cible = float(cible)
     if "tolerance_relative" in attendu:
         return abs(x - cible) <= abs(cible) * float(attendu["tolerance_relative"])
     return abs(x - cible) <= float(attendu.get("tolerance_absolue", 0.5))
@@ -89,7 +103,7 @@ def noter(dossier_reponses: Path, dossier_taches: Path, conditions: list[str] | 
             for texte in textes:
                 res = extraire_resultats(texte)
                 for v in corrige["valeurs"]:
-                    ok = juste(res.get(v["nom"]), v)
+                    ok = juste(res.get(v["nom"], ABSENT), v)
                     for fam in (corrige["famille"], "ensemble"):
                         scores[cond][fam][0] += ok
                         scores[cond][fam][1] += 1
