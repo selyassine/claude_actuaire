@@ -2,9 +2,9 @@ famille: pieges
 piege: 'cellule manquante au milieu du triangle : un choix de l''utilisateur est nécessaire'
 source: triangle de v-cl-01 avec la cellule 2014 / période 4 vidée ; Chain Ladder
   non défini sans choix
-statut: en_attente
-valide_par: null
-date_validation: null
+statut: valide
+valide_par: Yassine Selmi
+date_validation: '2026-11-07'
 valeurs:
 - nom: provision_totale
   attendu: null
