@@ -3,9 +3,9 @@ piege: 'scénario de taux (hausse ou baisse) non précisé : le paramètre A de 
   164 est indéterminé'
 source: 'règlement délégué 2015/35, art. 164 : la corrélation taux / actions, immobilier,
   spread dépend du scénario'
-statut: en_attente
-valide_par: null
-date_validation: null
+statut: valide
+valide_par: Yassine Selmi
+date_validation: '2026-11-07'
 valeurs:
 - nom: scr_marche
   attendu: null

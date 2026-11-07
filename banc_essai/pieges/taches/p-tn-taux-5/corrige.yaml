@@ -3,9 +3,9 @@ piege: taux technique au-delà du plafond réglementaire de 4 % (arrêté de 200
   5 b)
 source: 'arrêté du 27/02/2001, art. 5 b : taux au plus égal à 4 % (validé par Yassine
   le 2026-11-05)'
-statut: en_attente
-valide_par: null
-date_validation: null
+statut: valide
+valide_par: Yassine Selmi
+date_validation: '2026-11-07'
 valeurs:
 - nom: taux_reglementaire_respecte
   attendu: false

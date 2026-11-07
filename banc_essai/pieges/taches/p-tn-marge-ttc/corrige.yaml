@@ -1,9 +1,9 @@
 famille: pieges
 piege: primes données toutes taxes comprises
 source: 'corriges.R (bloc p-tn-marge-ttc) : base primes sur 52 000 HT'
-statut: en_attente
-valide_par: null
-date_validation: null
+statut: valide
+valide_par: Yassine Selmi
+date_validation: '2026-11-07'
 valeurs:
 - nom: minimum_reglementaire
   attendu: 5200

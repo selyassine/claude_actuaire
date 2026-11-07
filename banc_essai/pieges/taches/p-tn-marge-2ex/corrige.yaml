@@ -2,9 +2,9 @@ famille: pieges
 piege: 'donnée manquante : règlements de 2 exercices au lieu de 3'
 source: 'art. 58 bis a : moyenne des 3 derniers exercices ; seuls 2 exercices de règlements
   sont fournis'
-statut: en_attente
-valide_par: null
-date_validation: null
+statut: valide
+valide_par: Yassine Selmi
+date_validation: '2026-11-07'
 valeurs:
 - nom: minimum_reglementaire
   attendu: null

@@ -2,7 +2,7 @@
 
 Neuf tâches où le calcul naïf donne une mauvaise réponse. Cinq d'entre elles sont tunisiennes. Elles mesurent si Claude détecte la difficulté, avec et sans le skill, et non sa précision de calcul.
 
-Statut : **corrigés en attente de validation par Yassine** (champ `statut` de chaque `corrige.yaml`).
+Statut : **corrigés validés par Yassine le 2026-11-07** (champ `statut` de chaque `corrige.yaml`).
 
 ## Les pièges
 

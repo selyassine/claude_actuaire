@@ -2,9 +2,9 @@ famille: pieges
 piege: 'nombre d''années d''observation absent : la fréquence annuelle n''est pas
   estimable'
 source: données de v-gpd-01 ; nombre d'années non donné
-statut: en_attente
-valide_par: null
-date_validation: null
+statut: valide
+valide_par: Yassine Selmi
+date_validation: '2026-11-07'
 valeurs:
 - nom: prime_pure_annuelle
   attendu: null

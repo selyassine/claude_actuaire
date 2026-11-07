@@ -8,10 +8,12 @@ source:
     « marge_star_2025 »)
 donnees: donnees/tunisie/marge_star_2025.json
 options: {}
-statut: en_attente
+statut: valide
 saisie_par: recopié de la sortie du script R
-valide_par: null
-date_validation: null
+valide_par: Yassine
+date_validation: '2026-11-07'
+methode_validation: Yassine a contrôlé la valeur contre la sortie du script R (tests/references/r/marge_tunisie.sortie.txt,
+  bloc « marge_star_2025 ») le 2026-11-07.
 note: 'STAR ne publie pas la marge non-vie seule : la valeur attendue vient de R. Base sinistres retenue (74 079,19)
   contre base primes 73 399,54.'
 valeurs:

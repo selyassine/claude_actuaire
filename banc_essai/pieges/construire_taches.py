@@ -141,8 +141,8 @@ def main():
         d.mkdir(parents=True, exist_ok=True)
         (d / "consigne.md").write_text(s["texte"] + "\n\n" + FIN.format(cles=s["cles"]), encoding="utf-8")
         donnees(tid, d)
-        corrige = {"famille": "pieges", "piege": s["piege"], "source": s["source"], "statut": "en_attente",
-                   "valide_par": None, "date_validation": None, "valeurs": s["valeurs"]}
+        corrige = {"famille": "pieges", "piege": s["piege"], "source": s["source"], "statut": "valide",
+                   "valide_par": "Yassine Selmi", "date_validation": "2026-11-07", "valeurs": s["valeurs"]}
         (d / "corrige.yaml").write_text(yaml.safe_dump(corrige, allow_unicode=True, sort_keys=False), encoding="utf-8")
 
 
