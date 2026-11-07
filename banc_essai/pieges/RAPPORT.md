@@ -41,7 +41,7 @@ Aucune. Le skill a été lu dans les 9 sessions. Sur les deux pièges que le mot
 
 - **p-scr-scenario (A et B).** Les deux réponses notent que le sens du choc de taux n'est pas donné. Elles chiffrent quand même : 121 505 avec le choc à la baisse, 103 078 avec la hausse, puis retiennent la baisse. La consigne demande `null` pour une valeur non calculable.
 - **p-cl-trou (A et B).** La cellule vide est comblée ou ignorée, et une provision est chiffrée (71 860).
-- **p-tn-marge-ttc (A et B).** Les deux réponses retirent bien les taxes (52 000 HT). L'écart vient du rapport de rétention de la base primes. Elles appliquent la charge nette sur la charge brute (46 000 / 50 000 = 92 %), alors que le corrigé applique les primes retenues sur les primes émises (20 000 / 52 000), ramenées au plancher de 50 %. Le piège TTC lui-même est donc détecté. C'est une question d'interprétation de l'art. 58 bis, tranchée par l'interprétation validée le 2026-11-05. Voir « À trancher » ci-dessous.
+- **p-tn-marge-ttc (A et B).** Les deux réponses retirent bien les taxes (52 000 HT). L'écart vient du rapport de rétention de la base primes. Elles appliquent la charge nette sur la charge brute (46 000 / 50 000 = 92 %), alors que le corrigé applique les primes retenues sur les primes émises (20 000 / 52 000), ramenées au plancher de 50 %. Le piège TTC lui-même est donc détecté. L'art. 58 bis a) prévoit pourtant le rapport des primes pour cette base. Voir « Interprétation vérifiée » ci-dessous.
 - **p-tn-rente-tv99 (A et B).** Les deux réponses cherchent la table de l'arrêté du 27/02/2001 sur le web, ne trouvent pas ses valeurs et répondent `null`. Ce refus est prudent, mais il est faux : la table fait partie du texte réglementaire, et l'attendu est 14 755,17.
 - **p-tn-marge-2ex (A seulement).** Calcul sur 2 exercices (7 800) au lieu d'un refus. B a refusé correctement.
 
@@ -51,9 +51,9 @@ Aucune. Le skill a été lu dans les 9 sessions. Sur les deux pièges que le mot
 - Il apporte aussi les **données réglementaires tunisiennes** (table TV99), introuvables pour Claude sans le skill.
 - Les pièges sur les recours, le taux technique, le nombre d'années XL et le triangle incrémental sont détectés sans le skill.
 
-## À trancher
+## Interprétation vérifiée
 
-Sur p-tn-marge-ttc, A et B appliquent le rapport sinistres à la base primes, comme dans la directive européenne de 1973. Le moteur et le corrigé utilisent le rapport des primes retenues. Si le texte tunisien vise un seul rapport (sinistres) pour les deux bases, le corrigé et le moteur sont à revoir. Avec ce rapport, le minimum serait 9 568 et non 5 200. À vérifier par Yassine sur le texte de l'art. 58 bis.
+Sur p-tn-marge-ttc, A et B appliquent à la base primes le rapport sinistres, comme la directive européenne de 1973. Le texte tunisien prévoit un rapport propre à chaque base. Art. 58 bis a), base primes : « multipliée par le rapport existant entre les primes retenues et les primes émises et acceptées nettes d'impôts et d'annulations ». Le moteur et le corrigé (5 200) sont donc conformes au texte, et l'erreur de A et B est réelle.
 
 ## Sessions
 
