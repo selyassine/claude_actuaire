@@ -2,6 +2,8 @@
 
 Moteur de calcul actuariel pour Claude, livré comme skill. Les calculs sont faits par des scripts Python testés contre des résultats publiés, au lieu d'être faits « de tête » par le modèle.
 
+> **In English.** claude_actuaire is an actuarial calculation engine packaged as a skill for Claude. Calculations are done by Python scripts tested against published results (Mack 1993, England and Verrall 2002, McNeil 1997) instead of being done "in the model's head". Each run returns a traceable, replayable output, and the engine refuses to compute when data or assumptions do not allow it. On a 16-variant benchmark the skill gets 59/59 values right, against 55/59 for Claude with Python and 47/59 without code. Not certified software, and no external actuarial review yet; documentation is in French.
+
 ## Pourquoi : un exemple réel
 
 Banc d'essai du 2026-11-05, variante `v-mack-01` (triangle inédit, corrigé calculé par le paquet R `ChainLadder` et validé) : erreur de prédiction totale de Mack.
