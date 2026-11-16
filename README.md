@@ -15,6 +15,14 @@ Banc d'essai du 2026-11-05, variante `v-mack-01` (triangle inédit, corrigé cal
 
 Les erreurs par année d'origine étaient justes dans les deux cas. L'erreur ne se voit pas à la lecture : c'est exactement le type d'erreur plausible que le moteur supprime. Sur les 16 variantes du banc d'essai, le skill obtient 59/59 valeurs justes, contre 55/59 pour Claude avec Python et 47/59 sans code ([rapport](banc_essai/variantes/RAPPORT.md)).
 
+## Aperçu
+
+| Mack (1993) sur le triangle RAA | GPD sur les sinistres incendie danois (McNeil 1997) | Commandes et tests |
+| :-: | :-: | :-: |
+| <img src="docs/apercu/mack_raa.png" alt="Sortie de la commande mack sur le triangle RAA" width="100%"> | <img src="docs/apercu/gpd_danois.png" alt="Sortie de la commande gpd sur les sinistres danois" width="100%"> | <img src="docs/apercu/commandes_et_tests.png" alt="Liste des commandes et 409 tests réussis" width="100%"> |
+
+<sub>Sorties réelles du moteur (<code>python skills/calcul-actuariel/scripts/cli.py</code>), abrégées aux endroits marqués <code>[…]</code>.</sub>
+
 ## Principe
 
 - Chaque méthode est validée sur au moins une publication (Mack 1993, England et Verrall 2002, McNeil 1997, AMLCR…). Les valeurs attendues sont recopiées des publications, jamais produites par le modèle, puis contrôlées par l'auteur (Yassine Selmi). Aucune revue par un actuaire externe n'a encore été faite.
